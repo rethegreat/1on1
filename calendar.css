@@ -36,12 +36,14 @@
     padding-bottom: 20px;
     align-items: center;
     font-weight: 100;
+    font-size: 20px;
 }
 
 .p-item {
     margin-left: 20px;
     display: flex;
     flex-direction: row;
+    align-items: center;
 }
 
 .more {
@@ -113,4 +115,54 @@
     height: 100%;
     width: 100%;
 
+}
+
+@media (max-width: 900px) {
+    .main {
+        padding: 10px;
+    }
+
+    .back {
+        font-size: 18px;
+    }
+
+    .back {
+        margin-bottom: 10px;
+    }
+
+    .preference {
+        padding-top: 30px;
+        padding-bottom: 10px;
+        font-size: 14px;
+        justify-content: space-between;
+    }
+
+    .p-item {
+        margin-left: 5px;
+    }
+
+    .more {
+        height: 25px;
+        width: 90px;
+        font-size: 14px;
+    }
+
+    .header {
+        height: 100px;
+        font-size: 50px;
+        padding-left: 10px;
+    }
+
+    .day {
+        font-size: 16px;
+        margin-right: 10px;
+    }
+
+    .time > div {
+        margin: 10px;
+    }
+
+    .label {
+        margin-left: 2px;
+    }
 }
