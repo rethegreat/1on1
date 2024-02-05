@@ -89,9 +89,8 @@ header {
     position: relative;
     background-color: white;
     padding: 2rem;
-    white-space: pre-wrap;
-    white-space: pre-wrap;
-    text-wrap: pre-wrap;
+    font-family: 'Verdana', Geneva, Tahoma, sans-serif;
+
 }
 
 .calendar-number {
@@ -101,7 +100,6 @@ header {
     border: 1px solid white;
     padding: 5px 15px;
     color: white;
-    font-weight: light;
 }
 
 /* Colour per cal */
@@ -117,11 +115,20 @@ header {
         background-color: #CCDD00;
     }
 
+    .pending {
+        border: 1px solid rgb(169, 169, 169);
+    }
+
 .calendar-title {
     padding-top: 1rem;
     padding-left: 0.4rem;
     font-size: 48px;
+
+    white-space: pre-wrap;
+    max-width: 100px;
+    font-family: 'Verdana';
 }
+
 
 .redirect-arrow {
     position: absolute;
@@ -131,11 +138,19 @@ header {
     height: 100px;
 }
 
-.create-calendar {
+.create-calendar, .pending {
     display: inline-block;
     vertical-align: top;
     text-align: center;
     justify-content: center;
+}
+
+.pending .calendar-title {
+    color: rgb(169, 169, 169);
+}
+
+.pending.calendar-card:hover {
+    background-color: white;
 }
 
 .add-icon { 
@@ -238,6 +253,4 @@ header {
     .add-icon {
         max-width: 130px;
     }
-
-
 }
