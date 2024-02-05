@@ -169,20 +169,24 @@ button {
 
 
 
-@media screen and (max-width: 900px) {
 
+@media screen and (max-width: 900px) {
+    
     .form-container {
         grid-column-start: 1;
+        grid-template-rows: auto auto;
         height: 50%;
 
         /* Adjusting the margin for the buttons */
-        /* margin-top: 25vh; */
+        margin-top: 18vh;
         /* margin-bottom: 10vh; */
+
     }
 
     input {
         width: 250px;
         padding-top: 20px;
+        margin-bottom: 50px;
     }
 
     .buttons-row {
@@ -190,10 +194,16 @@ button {
         /* Adjusting the margin for the buttons */
         /* margin-top: 20vh; */
 
-        flex-direction: row;
+        /* flex-direction: row;
         justify-content: baseline;
+        align-items: center; */
+
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin: 10px 0px;
+        margin-top: 20px;
         align-items: center;
-        margin-left: -10px;
     }
 
     button {
@@ -202,19 +212,32 @@ button {
         padding: 15px;
         font-size: 16px;
         white-space: nowrap;
-        margin-left: 30px;
     }
 
+    .sign-up-button {
+        margin-left: -10px;
+        grid-column: 1;
+    }
+
+    .login-button {
+        grid-column: 2;
+    }
 
     .learn-more-button {
-        margin-left: 0px;
-        white-space: wrap;
+        /* white-space: wrap; */
+        width: 95%;
+        grid-column: 1 / span 2;
+        grid-row: 2;
+        margin-left: 8px;
+        margin-top: 20px;
     }
+
 
     .sign-up-button, .login-button {
         min-width: 112px;
         padding-left: 0px;
         padding-right: 0px;
-        margin-left: 10px;
+        margin-left: 4px;
     }
+
 }
