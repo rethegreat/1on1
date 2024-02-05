@@ -1,0 +1,266 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+a{
+    text-decoration: none;
+    color: black;
+    font-size: 20px;
+    padding-left: 5rem;
+    padding-top: 2rem;
+}
+
+main{
+    display: flex;
+    flex-direction: column;
+}
+
+#pending{
+    padding-left: 1.5rem;
+}
+
+
+#submitted{
+    padding-left: 1.5rem;
+}
+
+.font{
+    margin-top: 20px;
+    font-size: 30px;
+}
+
+#font{
+    margin-top: 20px;
+    font-size: 30px;
+}
+
+.address{
+    display: flex; 
+    justify-content: space-between; 
+}
+
+.add{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.plus{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 100px;
+    border: 1px solid black;
+    padding: 0rem 35px;
+    margin: 1rem 5rem 1rem 0rem;
+    border-radius: 30px;
+}
+
+.circle{
+    display: flex;
+    align-items: center;
+    height: 15px;
+    width: 15px;
+    background-color: #dd7700;
+    border-radius: 50%;
+}
+
+.submitted{
+    display: flex;
+    align-items: center;
+    height: 15px;
+    width: 15px;
+    background-color: #ccdd00;
+    border-radius: 50%;
+}
+
+.remind{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #dd7700;
+    padding: 4px 0.5rem;
+    border-radius: 30px;
+    background-color: #dd7700;
+    color: white;
+}
+
+.delete{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid black;
+    padding: 4px 0.5rem;
+    margin-left: 0.5rem;
+    border-radius: 30px;
+}
+
+.card{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2rem 18px 18px 2rem;
+    margin: 1rem 5rem 0rem 5rem;
+    border: 1px solid black;
+    border-radius: 30px;
+    
+}
+.newcard{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2rem 0rem 18px 2rem;
+    margin: 1rem 1rem 1rem 5rem;
+    border: 1px solid black;
+    border-radius: 30px;
+}
+
+#line{
+    width: 65%;
+}
+
+.filter{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 2.5rem;
+}
+
+.buttons{
+    display: flex;
+    align-items: flex-end;
+}
+
+h1{
+    font-size: 90px;
+}
+
+
+hr {
+    margin-top: 20px;
+    min-width: 120px;
+    max-width: 350px;
+    /* align-items: right; */
+}
+
+.heading{
+    display:flex;
+    justify-content: space-between;
+    background-color: #0005dd;
+    color: white;
+    padding: 2rem;
+    margin: 1rem 5rem 0rem 5rem;
+    border-radius: 30px;
+}
+
+@media (max-width: 768px) {
+    h1{
+        font-size: 60px;
+    }
+
+    .filter {
+        padding-top: 25px;
+        /* font-size: 10px; */
+    }
+
+    .font{
+        font-size: 18px;
+    }
+    
+    #font{
+        font-size: 18px;
+    }
+
+    hr{
+        min-width: 100px;
+    }
+    
+}
+
+@media (max-width: 600px) {
+    .heading{
+        /* display:flex;
+        justify-content: space-between; */
+        padding: 2rem;
+        margin: 1rem 3rem 0rem 3rem;
+        border-radius: 30px;
+    }
+
+    a{
+        font-size: 15px;
+        padding-left: 3rem;
+    }
+
+    .circle{
+        margin: 13px 0 0 20px;
+    }
+
+    .submitted{
+        margin: 13px 0 0 20px;
+    }
+
+    .filter {
+        padding-top: 0;
+        font-size: 10px;
+    }
+
+    hr{
+        min-width: 50px;
+        margin-top: 15px;
+    }
+
+    h1{
+        font-size: 25px;
+    }
+
+    .card{
+        padding: 0rem;
+        height: 99px;
+        margin: 1rem 3rem 0rem 3rem;
+    }
+
+    .newcard{
+        height: 99px;
+        padding: 2rem;
+        margin: 1rem 0.5rem 0rem 3rem;
+    }
+
+    .plus{
+        height: 99px;
+        width: 99px;
+        margin-right: 3rem;
+    }
+
+    .font{
+        font-size: 12px;
+        margin: 35px 0 0 20px;
+    }
+
+    #font{
+        font-size: 12px;
+        margin: 11px 0 0 20px;
+    }
+
+    #pending{
+        font-size: 10px
+    }
+
+    #submitted{
+        font-size: 10px
+    }
+
+    .buttons{
+        font-size: 10px;
+        flex-direction: column;
+        padding: 0 20px 0px 0px;
+        margin-bottom: 15px;
+    }
+
+    .delete{
+        margin-top: 0.5rem;
+    }
+}
