@@ -13,6 +13,10 @@ a{
     padding-top: 2rem;
 }
 
+img{
+    transform: scale(.5);
+}
+
 main{
     display: flex;
     flex-direction: column;
@@ -50,14 +54,37 @@ main{
 
 .plus{
     display: flex;
+    position: relative;
     justify-content: center;
     align-items: center;
-    font-size: 100px;
+    font-size: 50px;
     border: 1px solid black;
-    padding: 0rem 35px;
+    padding: 0rem 5px;
     margin: 1rem 5rem 1rem 0rem;
     border-radius: 30px;
 }
+
+.plus hr {
+    position: absolute;
+    border: none;
+    background-color: black;
+    margin: 0; /* Remove default margin of hr */
+}
+
+.horizontal {
+    width: 100%;
+    height: 2px; /* thickness of the horizontal line */
+    top: 50%;
+    transform: translateY(-50%);
+}
+  
+.vertical {
+    height: 100%;
+    width: 2px; /* thickness of the vertical line */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
 
 .circle{
     display: flex;
@@ -155,6 +182,11 @@ hr {
     padding: 2rem;
     margin: 1rem 5rem 0rem 5rem;
     border-radius: 30px;
+} 
+
+
+.plus-image {
+    max-width: 200px;
 }
 
 @media (max-width: 768px) {
@@ -163,7 +195,7 @@ hr {
     }
 
     .filter {
-        padding-top: 25px;
+        padding-top: 15px;
         /* font-size: 10px; */
     }
 
@@ -176,7 +208,7 @@ hr {
     }
 
     hr{
-        min-width: 100px;
+        min-width: 90px;
     }
     
 }
@@ -224,14 +256,14 @@ hr {
     }
 
     .newcard{
-        height: 99px;
-        padding: 2rem;
+        height: 91px;
+        padding: 13px 0 15px 20px;
         margin: 1rem 0.5rem 0rem 3rem;
     }
 
     .plus{
-        height: 99px;
-        width: 99px;
+        height: 91px;
+        /* width: 99px; */
         margin-right: 3rem;
     }
 
@@ -264,3 +296,4 @@ hr {
         margin-top: 0.5rem;
     }
 }
+
