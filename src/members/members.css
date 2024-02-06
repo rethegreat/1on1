@@ -243,6 +243,24 @@ hr {
     max-width: 200px;
 }
 
+/* Error Message */
+
+#add-member-error-msg {
+    width: fit-content;
+    height: fit-content;
+    /* margin: 0px 0px 20px 27vw; */
+    font-size: 15px;
+    font-weight: bold;
+    color: #d77474;
+    opacity: 0;
+    white-space: nowrap;
+}
+
+.input-error {
+    border-bottom: 2px solid #d77474;
+    transition: border-bottom 0.3s;
+}
+
 
 
 
