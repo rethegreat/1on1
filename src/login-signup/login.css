@@ -21,19 +21,6 @@
     color: red;
 }
 
-@media screen and (max-width: 900px) {
-
-    * {
-        max-width: 100vw;
-        font-size: 16px;
-    }
-
-    .page-container {
-        width: 100%;
-        padding: 2rem;
-        margin-right: 0;
-    }
-}
 
 .content-container {
     display: grid;
@@ -41,13 +28,6 @@
     gap: 20px;
   
     background-color: #0005DD;
-}
-
-@media screen and (max-width: 900px) {
-    .content-container {
-        grid-template-columns: repeat(3, 30px);
-        gap: 5px;
-    }
 }
 
 .title {
@@ -58,16 +38,7 @@
     font-size: 128px;
     font-family: 'Gothic A1';
     font-weight: bolder;
-
     margin-top: 138px;
-}
-
-@media screen and (max-width: 900px) {
-    .title {
-        grid-column-start: 1;
-        font-size: 64px;
-        margin-top: 138px;
-    }
 }
 
 
@@ -184,6 +155,29 @@ button {
 
 
 @media screen and (max-width: 900px) {
+
+    * {
+        max-width: 100vw;
+        font-size: 16px;
+    }
+
+    .page-container {
+        width: 100%;
+        padding: 2rem;
+        margin-right: 0;
+    }
+    
+    .content-container {
+        grid-template-columns: repeat(3, 30px);
+        gap: 5px;
+    }
+
+    
+    .title {
+        grid-column-start: 1;
+        font-size: 64px;
+        margin-top: 138px;
+    }
     
     .form-container {
         grid-column-start: 1;
