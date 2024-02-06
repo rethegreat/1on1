@@ -43,7 +43,8 @@
 
 
 .form-container {
-    width: 100%;
+    /* width: 100%; */
+    width: 42vw;
     grid-column-start: 3;
     text-align: left;
 
@@ -71,7 +72,7 @@ label {
 }
 
 input {
-    width: 42vw;
+    /* width: 42vw; */
     padding: 8px;
     border: none;
     border-bottom: 1px solid white;
@@ -91,10 +92,18 @@ input {
 }
 
 
-.buttons-row {
+/* .buttons-row {
     margin-top: 1rem;
     display: flex;
     flex-direction: row;
+} */
+
+.buttons-row {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: auto auto auto; /* Three columns with auto widths */
+    justify-content: space-between; /* Align buttons to the start and end of the row */
+    align-items: center; /* Center align items vertically */
 }
 
 
@@ -123,6 +132,8 @@ button {
     display: flex;
     align-items: center;
     justify-content: center;
+    grid-template-columns: 1;
+    justify-self: start;
 }
 
 
@@ -132,7 +143,7 @@ button {
 }
 
 .sign-up-button {
-    margin-left: 180px;
+    /* margin-left: 180px; */
 
     background-color: white;
     color: #0005DD;
@@ -140,6 +151,9 @@ button {
     display: flex;
     align-items: center;
     justify-content: center;
+    grid-template-columns: 10;
+    justify-self: end;
+    margin-right: calc(155px - 20vw);
 }
 
 
@@ -155,9 +169,10 @@ button {
     background-color: #0005DD;
     color: white;
     border: 1px solid white;
-    display: flex;
+    justify-self: end;
+    /* display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: center; */
 }
 
 
@@ -285,7 +300,8 @@ button {
         gap: 10px;
         margin: 10px 0px;
         margin-top: 20px;
-        align-items: center;
+        margin-left: 1rem;
+        margin-right: 1rem;
     }
 
     button {
@@ -310,20 +326,29 @@ button {
         width: 95%;
         grid-column: 1 / span 2;
         grid-row: 2;
-        margin-left: 8px;
+        margin-left: 0px;
         margin-top: 20px;
+        align-self: center;
     }
 
+    .sign-up-button {
+        align-self: start;
+        margin-right: 0px;
+    }
+
+    .login-button {
+        margin-left: 0px;
+        align-self: end;
+    }
 
     .sign-up-button, .login-button {
         min-width: 112px;
         padding-left: 0px;
         padding-right: 0px;
-        margin-left: 4px;
     }
 
     #signup-form .buttons-row {
-        margin-top: 1rem;
+        margin-top: 0rem;
     }
 
 }
