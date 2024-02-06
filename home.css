@@ -78,7 +78,10 @@ header {
     /* margin: auto; */
     padding-top: 20px;
     overflow-x: auto;
-    /* overflow-x: hidden; */
+}
+
+.calendar-gallery::-webkit-scrollbar {
+    display: none;
 }
 
 .calendar-card {
