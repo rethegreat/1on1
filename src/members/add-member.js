@@ -6,19 +6,22 @@ const errorMsg = document.getElementById("add-member-error-msg");
 
 submitButton.addEventListener("click", (e) => {
     e.preventDefault();
+    const name = Form.name.value;
     const email = Form.email.value;
 
     // Reset error message and remove red border from input fields
+    Form.name.classList.remove('input-error');
     Form.email.classList.remove('input-error'); 
 
     // Check if both email fields are filled
-    if (!email) {
+    if (!name || !email) {
         errorMsg.textContent = "Please fill in all required fields.";
         errorMsg.style.opacity = 1;
 
         // 2. Add red border to email & password input fields
+        Form.name.classList.add('input-error');
         Form.email.classList.add('input-error'); 
-
+        
         return; // Exit the function if any required field is empty
     }
 
@@ -38,7 +41,7 @@ submitButton.addEventListener("click", (e) => {
 
     if (true /* Check if the email is not already in the database */) {
         alert("Member added successfully!");
-        
+
         var customValue = submitButton.dataset.customValue;
         window.location.assign(customValue);
 
