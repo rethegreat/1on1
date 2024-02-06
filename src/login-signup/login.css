@@ -8,6 +8,10 @@
     font-size: 20px;
 }
 
+body {
+    background-color: #0005DD;
+}
+
 .page-container {
     margin-left: 65px solid #0005DD;
     margin-right: 65px solid #0005DD;
