@@ -18,10 +18,11 @@ main {
     letter-spacing: .5px;
 }
 
-input{
+input {
     border: none;
     border-bottom: 1px solid black;
     outline: none;
+    width: max(100%, 50px);
 }
 
 .back{
@@ -69,6 +70,7 @@ main{
 input{
     display: flex; 
     justify-content: space-between; 
+    align-items: center;
 }
 
 .add{
@@ -174,17 +176,21 @@ input{
     margin: 1rem 0rem 0rem 0rem;
     border: 1px solid black;
     border-radius: 30px;
-    
 }
+
 .newcard{
     width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 2rem 0rem 18px 2rem;
+    padding: 1rem 0rem 18px 2rem;
     margin: 1rem 2rem 1rem 0rem;
     border: 1px solid black;
     border-radius: 30px;
+}
+
+form {
+    width: 30%;
 }
 
 #line{
@@ -285,6 +291,10 @@ hr {
     hr{
         min-width: 90px;
     }
+
+    form {
+        font-size: small;
+    }
     
 }
 
@@ -299,6 +309,7 @@ hr {
         margin: 0px;
         padding: 0px;
     }
+
 
 
     .heading{
@@ -340,7 +351,8 @@ hr {
 
     .card{
         padding: 0rem;
-        height: 99px;
+        /* height: 99px; */
+        height: fit-content;
         margin: 1rem 0rem 0rem 0rem;
     }
 
@@ -348,6 +360,10 @@ hr {
         height: 91px;
         padding: 13px 0 15px 20px;
         margin: 1rem 0.5rem 0rem 0rem;
+    }
+
+    input {
+        font-size: 10px;
     }
 
     .plus{
