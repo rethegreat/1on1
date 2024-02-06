@@ -9,14 +9,16 @@ loginButton.addEventListener("click", (e) => {
     const name = loginForm.name.value;
     const email = loginForm.email.value;
     const password = loginForm.password.value;
+    const confirmPassword = loginForm['password-confirm'].value;
 
     // Reset error message and remove red border from input fields
     loginForm.name.classList.remove('input-error'); 
     loginForm.email.classList.remove('input-error'); 
     loginForm.password.classList.remove('input-error');
+    loginForm['password-confirm'].classList.remove('input-error');
 
     // Check if both email and password fields are filled
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !confirmPassword) {
         loginErrorMsg.textContent = "Please fill in all required fields.";
         loginErrorMsg.style.opacity = 1;
 
@@ -24,6 +26,7 @@ loginButton.addEventListener("click", (e) => {
         loginForm.name.classList.add('input-error'); 
         loginForm.email.classList.add('input-error'); 
         loginForm.password.classList.add('input-error');
+        loginForm['password-confirm'].classList.add('input-error');
 
         return; // Exit the function if any required field is empty
     }
@@ -42,6 +45,18 @@ loginButton.addEventListener("click", (e) => {
         return; // Exit the function if email format is invalid
     }
 
+    // Check if passwords match
+    if (loginForm.password.value !== confirmPassword) {
+        loginErrorMsg.textContent = "Passwords do not match. Please try again.";
+        loginErrorMsg.style.opacity = 1;
+
+        // 2. Add red border to email input field
+        loginForm.password.classList.add('input-error'); 
+        loginForm['password-confirm'].classList.add('input-error');
+
+        return; // Exit the function if email format is invalid
+    }
+
     alert("Welcome! You have successfully signed up.");
     window.location.assign('../home-personal/home-empty.html');
-})
+    })
