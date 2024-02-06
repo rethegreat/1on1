@@ -241,17 +241,32 @@ hr {
 }
 
 @media (max-width: 600px) {
+
+    body {
+        margin: 1rem;
+        padding: 0px;
+    }
+    
+    main {
+        margin: 0px;
+        padding: 0px;
+    }
+
+
     .heading{
         /* display:flex;
         justify-content: space-between; */
         padding: 2rem;
-        margin: 1rem 3rem 0rem 3rem;
+        /* margin: 1rem 3rem 0rem 3rem; */
         border-radius: 30px;
+        height:fit-content;
     }
 
+
     a{
-        font-size: 15px;
-        padding-left: 3rem;
+        font-size: 18px;
+        padding-left: 0rem;
+        margin-bottom: 10px;
     }
 
     .circle{
@@ -273,25 +288,25 @@ hr {
     }
 
     h1{
-        font-size: 25px;
+        font-size: 50px;
     }
 
     .card{
         padding: 0rem;
         height: 99px;
-        margin: 1rem 3rem 0rem 3rem;
+        margin: 1rem 0rem 0rem 0rem;
     }
 
     .newcard{
         height: 91px;
         padding: 13px 0 15px 20px;
-        margin: 1rem 0.5rem 0rem 3rem;
+        margin: 1rem 0.5rem 0rem 0rem;
     }
 
     .plus{
         height: 91px;
         /* width: 99px; */
-        margin-right: 3rem;
+        margin-right: 0rem;
     }
 
     .font{
