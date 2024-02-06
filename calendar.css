@@ -12,7 +12,9 @@
 
 .back {
     font-size: 24px;
-    margin-bottom: 30px;
+    top: 40px;
+    left: 60px;
+    position: fixed;
 }
 
 .header {
@@ -25,8 +27,8 @@
     font-weight: 900;
     display: flex;
     align-items: center;
+    margin-top: 50px;
     padding-left: 50px;
-
 }
 
 .preference {
@@ -114,7 +116,24 @@
     border-radius: 30px;
     height: 100%;
     width: 100%;
+    display: flex;
+    flex-direction: column;
+}
 
+.small {
+    height: 20%;
+}
+
+.medium {
+    height: 40%;
+}
+
+.large {
+    height: 60%;
+}
+
+.column-spacer {
+    height: 20%;
 }
 
 @media (max-width: 900px) {
@@ -161,6 +180,11 @@
     .time > div {
         margin: 10px;
     }
+    
+    .column {
+        border-radius: 20px;
+    }
+
 
     .label {
         margin-left: 2px;
