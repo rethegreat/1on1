@@ -23,8 +23,6 @@
 
 .header {
     border-radius: 30px;
-    background-color: blue;
-
     height: 200px;
     color: white;
     font-size: 128px;
@@ -32,13 +30,21 @@
     display: flex;
     align-items: center;
     margin-top: 50px;
+    margin-bottom: 50px;
     padding-left: 50px;
+}
+
+.blue {
+    background-color: blue;
+}
+
+.pink {
+    background-color: #DD00AD;
 }
 
 .preference {
     display: flex;
     flex-direction: row;
-    padding-top: 50px;
     padding-bottom: 20px;
     align-items: center;
     font-weight: 100;
@@ -140,21 +146,68 @@
     height: 20%;
 }
 
+.bottom-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+}
+
+.cancel {
+    outline: 1px solid black;
+    border-radius: 50px;
+    height: 30px;
+    width: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.submit {
+    border-radius: 50px;
+    background-color: blue;
+    color: white;
+    margin-left: 10px;
+    height: 30px;
+    width: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.bottom {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 25px;
+}
+
+.missing {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-bottom: 30px;
+}
+
+.missing-text {
+    color: red;
+    padding-right: 10px;
+}
+
+.remind {
+    background-color: #DD7800;
+    color: white;
+    width: 70px;
+    height: 30px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 @media (max-width: 900px) {
-
-    body {
-        margin: 1rem;
-        padding: 0px;
-    }
-
-    main {
-        margin: 0px;
-        padding: 0px;
-    }
-
-    
     .main {
-        padding: 0px;
+        padding: 10px;
     }
 
     .back {
