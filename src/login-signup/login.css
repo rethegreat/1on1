@@ -52,9 +52,15 @@
     flex-direction: column;
     justify-content: center;
     height: 5%;
-
 }
 
+#login-form {
+    height: 5%;
+}
+
+#signup-form {
+    height: 70%;
+}
 
 label {
     color: white;
@@ -69,12 +75,20 @@ input {
     padding: 8px;
     border: none;
     border-bottom: 1px solid white;
+    /* margin-top: 1.5rem; */
     margin-bottom: 1.5rem;
     outline: none;
     color: white;
     background-color: transparent;
 }
 
+#login-form input {
+    margin-top: 1.5rem;
+}
+
+#signup-form input {
+    margin-top: 0.8rem;
+}
 
 
 .buttons-row {
@@ -152,9 +166,9 @@ button {
     color: #0005DD;
 }
 
-#signup-form input[id="password-confirm"] {
+/* #signup-form input[id="password-confirm"] {
     margin: 0px 0px 0.1rem 0px;
-}
+} */
 
 #signup-form .buttons-row {
     margin-left: 40vw;
@@ -208,14 +222,36 @@ button {
     }
     
     .form-container {
-        margin-top: 17vh;
+        margin-top: 0vh;
+        grid-column-start: 1;
+        grid-template-rows: auto auto;
+        height: 5%;
+    }
+
+
+    #login-form label[for="email"] {
+        margin-top: 13vh;
+    }
+
+    #login-form {
         grid-column-start: 1;
         grid-template-rows: auto auto;
         height: 5%;
     }
 
     #signup-form {
-        height: 4%;
+        margin-top: 13vh;
+        height: 1%;
+    }
+
+    #login-form input{
+        padding-bottom: 0px;
+        padding-top: 0px;
+    }
+
+    #login-form label{
+        padding-bottom: 0px;
+        padding-top: 0px;
     }
 
     #signup-form input{
@@ -287,7 +323,7 @@ button {
     }
 
     #signup-form .buttons-row {
-        margin-top: 3rem;
+        margin-top: 1rem;
     }
 
 }
