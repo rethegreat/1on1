@@ -129,6 +129,9 @@ button {
     background-color: black;
     color: white;
     border: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 
@@ -143,6 +146,9 @@ button {
     background-color: white;
     color: #0005DD;
     border: 1px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 
@@ -153,12 +159,14 @@ button {
 }
 
 .login-button {
-
     margin-left: 20px;
 
     background-color: #0005DD;
     color: white;
     border: 1px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 

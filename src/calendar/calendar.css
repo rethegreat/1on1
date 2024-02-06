@@ -26,6 +26,10 @@ body {
     margin-bottom: 30px;
 }
 
+.back:hover {
+    color: rgb(202, 202, 202);
+}
+
 .header {
     border-radius: 30px;
     height: 200px;
@@ -48,6 +52,7 @@ body {
 .preference {
     display: flex;
     flex-direction: row;
+    padding-top: 20px;
     padding-bottom: 20px;
     align-items: center;
     font-weight: 100;
@@ -189,7 +194,8 @@ body {
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding-bottom: 30px;
+    padding-top: 10px;
+    padding-bottom: 20px;
 }
 
 .missing-text {
@@ -271,5 +277,14 @@ body {
 
     .label {
         margin-left: 2px;
+    }
+}
+
+@media (max-width: 900px) {
+    .bottom {
+        padding-top: 10px;
+        height: 80px;
+        flex-direction: column;
+        justify-content: space-between;
     }
 }

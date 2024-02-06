@@ -85,14 +85,13 @@ p.light {
 
 .back-button:hover {
     color: rgb(202, 202, 202);
-    cursor: wait;
 }
 
 .nav-back {
-    position: fixed;
+    padding-left: 50px;
     width: 100%;
-    left: 50px;
-    top: 50px;
+    display: flex;
+    justify-content: start;
 }
 
 .welcome-text {
