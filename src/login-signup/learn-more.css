@@ -102,3 +102,12 @@ p.light {
     padding: 20px;
 
 }
+
+@media screen and (max-width:900px) {
+
+    .nav-back {
+        top: calc(1rem + 10px);
+        left: calc(1rem + 10px);
+    }
+    
+}
