@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="home.css">
+
+        <!-- Include the Ubuntu fonts -->
+        <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Ubuntu:regular,bold&subset=Latin">        
+    </head>
+    <body>
+        <div class="main">
+
+            <header>
+                <a class="logo">1on1</a>
+                <nav>
+                    <a href="home.html" class="nav-link active">Home</a>
+                    <!-- <a href="settings.html" class="nav-link">Settings</a> -->
+                    <a href="login.html" class="nav-link">Logout</a>
+                </nav>
+            </header>
+
+
+            <div class="title personal">Personal</div>
+
+            <div class="calendar-gallery">
+                <div class="calendar-card cal1-card" onclick="window.location.href='calendar.html'">
+                    <div class="calendar-title">own availability</div>
+                    <img src="redirect-arrow.png" alt="Redirect Arrow" class="redirect-arrow">
+                </div>
+
+                <div class="calendar-card cal2-card" onclick="window.location.href='members.html'">
+                    <div class="calendar-title">manage members</div>
+                    <img src="redirect-arrow.png" alt="Redirect Arrow" class="redirect-arrow">
+                </div>
+
+                <div class="calendar-card cal3-card" onclick="openCalendar('cal3.html')">
+                    <div class="calendar-title">view calendar</div>
+                    <img src="redirect-arrow.png" alt="Redirect Arrow" class="redirect-arrow">
+                </div>
+        
+            </div>
+
+
+        </div>
+    </body>
+</html>
