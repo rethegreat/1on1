@@ -9,7 +9,8 @@
 }
 
 body {
-    margin: 8px;
+    margin: 0px;
+    padding: 0px;
 }
 
 main {
@@ -20,7 +21,7 @@ main {
 a{
     text-decoration: none;
     color: black;
-    font-size: 24px;
+    font-size: large;
     /* padding-left: 5rem; */
     /* padding-top: 2rem; */
     margin-bottom: 30px;
@@ -182,7 +183,6 @@ h1{
     font-style: normal;
     /* font-size: 8vw; */
     font-size: 128px;
-    padding-top: 20px;
 }
 
 
@@ -201,7 +201,8 @@ hr {
     padding-left: 50px;
 
     display:flex;
-    justify-content: space-between;
+    /* justify-content: space-between; */
+    align-items: center;
     background-color: blue;
     color: white;
     /* padding: 2rem; */
@@ -254,19 +255,18 @@ hr {
 
 
     .heading{
-        /* display:flex;
-        justify-content: space-between; */
-        padding: 2rem;
-        /* margin: 1rem 3rem 0rem 3rem; */
         border-radius: 30px;
-        height:fit-content;
+        height: 100px;
+        padding-left: 25px;
     }
 
 
     a{
         font-size: 18px;
         padding-left: 0rem;
+        margin-top: 10px;
         margin-bottom: 10px;
+
     }
 
     .circle{
@@ -310,12 +310,12 @@ hr {
     }
 
     .font{
-        font-size: 12px;
+        font-size: 17px;
         margin: 35px 0 0 20px;
     }
 
     #font{
-        font-size: 12px;
+        font-size: 17px;
         margin: 11px 0 0 20px;
     }
 

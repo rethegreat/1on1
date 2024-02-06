@@ -6,19 +6,24 @@
     font-style: normal;
 }
 
+body {
+    margin: 0px;
+    padding: 0px;
+}
+
 .main {
     display: flex;
     flex-direction: column;
     padding: 50px;
-
     letter-spacing: .5px;
 }
 
 .back {
-    font-size: 24px;
-    top: 40px;
+    font-size: large;
+    /* top: 40px;
     left: 60px;
-    position: fixed;
+    position: fixed; */
+    margin-bottom: 30px;
 }
 
 .header {
@@ -29,8 +34,6 @@
     font-weight: 900;
     display: flex;
     align-items: center;
-    margin-top: 50px;
-    margin-bottom: 50px;
     padding-left: 50px;
 }
 
@@ -206,16 +209,27 @@
 }
 
 @media (max-width: 900px) {
+
+
+    body {
+        margin: 1rem;
+        padding: 0px;
+    }
+
+    main {
+        margin: 0px;
+        padding: 0px;
+    }
+
     .main {
-        padding: 10px;
+        padding: 0px;
     }
 
     .back {
         font-size: 18px;
-    }
-
-    .back {
+        margin-top: 10px;
         margin-bottom: 10px;
+        margin-left: 0px;
     }
 
     .preference {
@@ -238,7 +252,7 @@
     .header {
         height: 100px;
         font-size: 50px;
-        padding-left: 10px;
+        padding-left: 25px;
     }
 
     .day {
