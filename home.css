@@ -4,8 +4,9 @@
     font-style: normal;
 }
 
+/* Margin and Padding */
 body {
-    margin: 0px 8px;
+    margin: 8px;
 }
 
 .main {
