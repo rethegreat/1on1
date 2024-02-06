@@ -18,7 +18,13 @@ main {
     letter-spacing: .5px;
 }
 
-a{
+input{
+    border: none;
+    border-bottom: 1px solid black;
+    outline: none;
+}
+
+.back{
     text-decoration: none;
     color: black;
     font-size: large;
@@ -46,13 +52,17 @@ main{
     padding-left: 1.5rem;
 }
 
+.text-stack{
+    margin-top: 10px;
+}
+
 .font{
-    margin-top: 20px;
+    /* margin-top: 20px; */
     font-size: 30px;
 }
 
 #font{
-    margin-top: 20px;
+    /* margin-top: 20px; */
     font-size: 30px;
 }
 
@@ -130,6 +140,12 @@ main{
     color: white;
 }
 
+.remind:hover{
+    background-color: #c46900;
+    border: 2px solid #c46900;
+    cursor: pointer;
+}
+
 .delete{
     display: flex;
     justify-content: center;
@@ -138,6 +154,16 @@ main{
     padding: 4px 0.5rem;
     margin-left: 0.5rem;
     border-radius: 30px;
+}
+
+.plus:hover{
+    background-color: #f2f2f2;
+    cursor: pointer;
+}
+
+.delete:hover{
+    background-color: #f2f2f2;
+    cursor: pointer;
 }
 
 .card{
@@ -219,7 +245,7 @@ hr {
 
 @media (max-width: 768px) {
     h1{
-        font-size: 60px;
+        font-size: 70px;
     }
 
     .filter {
@@ -311,12 +337,12 @@ hr {
 
     .font{
         font-size: 17px;
-        margin: 35px 0 0 20px;
+        margin: 0px 0 0 20px;
     }
 
     #font{
         font-size: 17px;
-        margin: 11px 0 0 20px;
+        margin: 0px 0 21px 20px;
     }
 
     #pending{
