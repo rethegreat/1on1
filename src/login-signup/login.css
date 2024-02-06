@@ -16,19 +16,11 @@
   
 }
 
-@media screen and (max-width: 900px) {
-
-    * {
-        max-width: 100vw;
-        font-size: 16px;
-    }
-
-    .page-container {
-        width: 100%;
-        padding: 2rem;
-        margin-right: 0;
-    }
+.failed {
+    width: 300px;
+    color: red;
 }
+
 
 .content-container {
     display: grid;
@@ -36,13 +28,6 @@
     gap: 20px;
   
     background-color: #0005DD;
-}
-
-@media screen and (max-width: 900px) {
-    .content-container {
-        grid-template-columns: repeat(3, 30px);
-        gap: 5px;
-    }
 }
 
 .title {
@@ -53,21 +38,13 @@
     font-size: 128px;
     font-family: 'Gothic A1';
     font-weight: bolder;
-
     margin-top: 138px;
-}
-
-@media screen and (max-width: 900px) {
-    .title {
-        grid-column-start: 1;
-        font-size: 64px;
-        margin-top: 138px;
-    }
 }
 
 
 .form-container {
-    width: 100%;
+    /* width: 100%; */
+    width: 42vw;
     grid-column-start: 3;
     text-align: left;
 
@@ -75,35 +52,58 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    height: 60%;
-
+    height: 5%;
 }
 
+#login-form {
+    height: 5%;
+}
+
+#signup-form {
+    height: 70%;
+}
 
 label {
     color: white;
     display: block;
     font-family: 'Roboto', sans-serif;
     margin-bottom: 4px;
+    white-space: nowrap;
 }
 
 input {
-    width: 592px;
+    /* width: 42vw; */
     padding: 8px;
     border: none;
     border-bottom: 1px solid white;
-    margin-bottom: 16px;
+    /* margin-top: 1.5rem; */
+    margin-bottom: 1.5rem;
     outline: none;
     color: white;
     background-color: transparent;
 }
 
+#login-form input {
+    margin-top: 1.5rem;
+}
+
+#signup-form input {
+    margin-top: 0.8rem;
+}
 
 
-.buttons-row {
-    margin-top: 2rem;
+/* .buttons-row {
+    margin-top: 1rem;
     display: flex;
     flex-direction: row;
+} */
+
+.buttons-row {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: auto auto auto; /* Three columns with auto widths */
+    justify-content: space-between; /* Align buttons to the start and end of the row */
+    align-items: center; /* Center align items vertically */
 }
 
 
@@ -129,6 +129,11 @@ button {
     background-color: black;
     color: white;
     border: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    grid-template-columns: 1;
+    justify-self: start;
 }
 
 
@@ -138,11 +143,17 @@ button {
 }
 
 .sign-up-button {
-    margin-left: 180px;
+    /* margin-left: 180px; */
 
     background-color: white;
     color: #0005DD;
     border: 1px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    grid-template-columns: 10;
+    justify-self: end;
+    margin-right: calc(155px - 20vw);
 }
 
 
@@ -153,12 +164,15 @@ button {
 }
 
 .login-button {
-
     margin-left: 20px;
 
     background-color: #0005DD;
     color: white;
     border: 1px solid white;
+    justify-self: end;
+    /* display: flex;
+    align-items: center;
+    justify-content: center; */
 }
 
 
@@ -167,25 +181,108 @@ button {
     color: #0005DD;
 }
 
+/* #signup-form input[id="password-confirm"] {
+    margin: 0px 0px 0.1rem 0px;
+} */
+
+#signup-form .buttons-row {
+    margin-left: 40vw;
+}
+
+
+
+/* Error Message */
+
+#login-error-msg {
+    width: fit-content;
+    height: fit-content;
+    margin: 0px 0px 20px 27vw;
+    font-size: 15px;
+    font-weight: bold;
+    color: #d77474;
+    opacity: 0;
+    white-space: nowrap;
+}
+
+.input-error {
+    border-bottom: 2px solid #d77474;
+    transition: border-bottom 0.3s;
+}
+
 
 
 
 @media screen and (max-width: 900px) {
+
+    * {
+        max-width: 100vw;
+        font-size: 16px;
+    }
+
+    .page-container {
+        width: 100%;
+        padding: 2rem;
+        margin-right: 0;
+    }
+    
+    .content-container {
+        grid-template-columns: repeat(14, 30px);
+        gap: 5px;
+    }
+    
+    .title {
+        grid-column-start: 1;
+        font-size: 64px;
+        margin-top: 138px;
+    }
     
     .form-container {
+        margin-top: 0vh;
         grid-column-start: 1;
         grid-template-rows: auto auto;
-        height: 50%;
+        height: 5%;
+    }
 
-        /* Adjusting the margin for the buttons */
-        margin-top: 18vh;
-        /* margin-bottom: 10vh; */
 
+    #login-form label[for="email"] {
+        margin-top: 13vh;
+    }
+
+    #login-form {
+        grid-column-start: 1;
+        grid-template-rows: auto auto;
+        height: 5%;
+    }
+
+    #signup-form {
+        margin-top: 13vh;
+        height: 1%;
+    }
+
+    #login-form input{
+        padding-bottom: 0px;
+        padding-top: 0px;
+    }
+
+    #login-form label{
+        padding-bottom: 0px;
+        padding-top: 0px;
+    }
+
+    #signup-form input{
+        padding-top: 1.3rem;
+    }
+
+    #login-error-msg {
+        margin: 0px 0px 20px 0px;
+    }
+
+    label {
+        margin-bottom: 1rem;
     }
 
     input {
         width: 250px;
-        padding-top: 20px;
         margin-bottom: 50px;
     }
 
@@ -203,7 +300,8 @@ button {
         gap: 10px;
         margin: 10px 0px;
         margin-top: 20px;
-        align-items: center;
+        margin-left: 1rem;
+        margin-right: 1rem;
     }
 
     button {
@@ -228,16 +326,29 @@ button {
         width: 95%;
         grid-column: 1 / span 2;
         grid-row: 2;
-        margin-left: 8px;
+        margin-left: 0px;
         margin-top: 20px;
+        align-self: center;
     }
 
+    .sign-up-button {
+        align-self: start;
+        margin-right: 0px;
+    }
+
+    .login-button {
+        margin-left: 0px;
+        align-self: end;
+    }
 
     .sign-up-button, .login-button {
         min-width: 112px;
         padding-left: 0px;
         padding-right: 0px;
-        margin-left: 4px;
+    }
+
+    #signup-form .buttons-row {
+        margin-top: 0rem;
     }
 
 }
