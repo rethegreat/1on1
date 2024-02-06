@@ -12,6 +12,9 @@
     <!-- Stylesheet -->
     <link rel="stylesheet" href="login.css">
 
+    <!-- JavaScript file -->
+    <script defer src="signup.js"></script>
+
 </head>
 <body>
 
@@ -27,20 +30,30 @@
 
             <!-- Sign In Form -->
             <div class="form-container">
-                <label for="name">name</label>
-                <input type="text" id="name">
-                <label for="email">email</label>
-                <input type="text" id="email">
-                <label for="password">password</label>
-                <input type="password" id="password">
-                <label for="password">confirm password</label>
-                <input type="password" id="password">
-              
-                <div class="buttons-row">
-                    <!-- <button class="learn-more-button" onclick="window.location.href='learn-more.html'">learn more</button> -->
-                    <!-- <button class="sign-up-button" onclick="window.location.href='signup.html'">Sign Up</button> -->
-                    <button class="login-button"  onclick="window.location.href='../home-personal/home-empty.html'">Sign Up</button>
-                </div>
+                <p id="login-error-msg"></p>
+                <form id="signup-form">
+
+                    <label for="name">name</label>
+                    <input type="text" id="name" name="name" required>
+
+                    <label for="email">email</label>
+                    <input type="text" id="email" name="email" required>
+
+                    <label for="password">password</label>
+                    <input type="password" id="password" name="password" required>
+                
+
+                    <label for="password">confirm password</label>
+                    <input type="password" id="password-confirm" name="password-confirm" required>
+                
+                    <div class="buttons-row">
+                        <!-- <button class="learn-more-button" onclick="window.location.href='learn-more.html'">learn more</button> -->
+                        <!-- <button class="sign-up-button" onclick="window.location.href='signup.html'">Sign Up</button> -->
+                        <!-- <button class="login-button"  onclick="window.location.href='../home-personal/home-empty.html'">Sign Up</button> -->
+                        <button type="submit" class="login-button" id="signup-button">Sign Up</button>
+                    </div>
+
+            </form>
 
             </div>
         </div>

@@ -12,6 +12,9 @@
     <!-- Stylesheet -->
     <link rel="stylesheet" href="login.css">
 
+    <!-- JavaScript file -->
+    <script defer src="login.js"></script>
+
 </head>
 <body>
 
@@ -25,20 +28,25 @@
             <!-- Sign Up Text -->
             <div class="title">1ON1</div>
 
+
             <!-- Sign In Form -->
             <div class="form-container">
+                <p id="login-error-msg"></p>
+                <form id="login-form">
                 
-                <label for="email">email</label>
-                <input type="text" id="email">
-                <label for="password">password</label>
-                <input type="password" id="password">
-              
-                <div class="buttons-row">
-                    <button class="learn-more-button" onclick="window.location.href='learn-more.html'">learn more</button>
-                    <button class="sign-up-button" onclick="window.location.href='signup.html'">Sign Up</button>
-                    <button class="login-button"  onclick="window.location.href='../home-personal/home-completed.html'">Login</button>
-                </div>
+                    <label for="email">email</label>
+                    <input type="email" id="email" name="email" required>
 
+                    <label for="password">password</label>
+                    <input type="password" id="password" name="password" required>
+                
+                    <div class="buttons-row">
+                        <button class="learn-more-button" onclick="window.location.href='learn-more.html'">learn more</button>
+                        <button class="sign-up-button" onclick="window.location.href='signup.html'">Sign Up</button>
+                        <button type="submit" class="login-button" id="login-button">Login</button>
+                    </div>
+
+                </form>
             </div>
         </div>
 
