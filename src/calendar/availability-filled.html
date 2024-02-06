@@ -10,18 +10,20 @@
     </head>
     <body>
         <div class="main">
-            <div class="back">&lt; back</div>
+            <div onclick="window.location.href='../home-personal/personal-empty.html'" class="back">&lt; back</div>
 
-            <div class="header pink">availability</div>
+            <div class="header blue">availability</div>
 
-            <div class="missing">
-                <div class="missing-text">
-                    3 users have not submitted their schedules
+            <div class="preference">
+                <div class="p-item">
+                    <div class="green circle"></div><div>high preference</div> 
                 </div>
-                <div class="remind">
-                    remind
+                <div class="p-item">
+                    <div class="orange circle"></div><div>low preference</div>
                 </div>
-                
+                <div class="p-item more">
+                    more info
+                </div>
             </div>
 
             <div class="calendar">
@@ -157,15 +159,11 @@
                     </div>
                 </div>
             </div>
-            <div class="bottom">
-                <div style="width: 150px"></div>
-                <div class="page">&lt; 1/5 &gt;</div>
-                <div class="bottom-button">
-                    <div class="cancel">cancel</div>
-                    <div class="submit">submit</div>
-                </div>
+
+            <div class="bottom-button" style="padding-top: 25px;">
+                <div class="cancel">cancel</div>
+                <div class="submit">submit</div>
             </div>
-            
         </div>
     </body>
 </html>
