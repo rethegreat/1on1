@@ -207,6 +207,10 @@ header {
         padding: 0px;
     }
 
+    .main {
+        padding: 0px;
+    }
+
     header {
         margin-top: 10px;
         margin-bottom: 10px;
