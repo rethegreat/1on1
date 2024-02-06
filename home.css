@@ -1,5 +1,7 @@
 * {
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-family: "Roboto", sans-serif;
+    font-weight: 300;
+    font-style: normal;
 }
 
 body {
@@ -76,6 +78,7 @@ header {
     /* margin: auto; */
     padding-top: 20px;
     overflow-x: auto;
+    /* overflow-x: hidden; */
 }
 
 .calendar-card {
@@ -89,7 +92,7 @@ header {
     position: relative;
     background-color: white;
     padding: 2rem;
-    font-family: 'Verdana', Geneva, Tahoma, sans-serif;
+    /* font-family: 'Verdana', Geneva, Tahoma, sans-serif; */
 
 }
 
@@ -126,7 +129,7 @@ header {
 
     white-space: pre-wrap;
     max-width: 100px;
-    font-family: 'Verdana';
+    /* font-family: 'Verdana'; */
 }
 
 

@@ -1,0 +1,43 @@
+/* 
+
+FONT STYLINGS
+
+** make sure to add this into <head>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gothic+A1&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+
+
+*/
+
+* {
+    font-family: "Gothic A1", sans-serif;
+}
+
+
+h1 {
+    font-family: "Gothic A1", sans-serif;
+    font-weight: 900;
+    font-style: normal;
+}
+
+h1.black {
+    font-family: "Roboto", sans-serif;
+    font-weight: 900;
+    font-style: normal;
+}
+
+p {
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+
+    font-size: 2vw;
+}
+
+p.light {
+    font-family: "Roboto", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+}
