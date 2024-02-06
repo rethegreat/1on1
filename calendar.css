@@ -122,8 +122,20 @@
 }
 
 @media (max-width: 900px) {
+
+    body {
+        margin: 1rem;
+        padding: 0px;
+    }
+
+    main {
+        margin: 0px;
+        padding: 0px;
+    }
+
+    
     .main {
-        padding: 10px;
+        padding: 0px;
     }
 
     .back {
