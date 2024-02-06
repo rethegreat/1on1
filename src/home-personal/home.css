@@ -5,8 +5,10 @@
 }
 
 /* Margin and Padding */
+
 body {
-    margin: 8px;
+    margin: 0px;
+    padding: 0px;
 }
 
 .main {
@@ -28,7 +30,7 @@ header {
 }
 
     .logo {
-        font-size: 24px;
+        font-size: x-large;
         font-weight: bold;
         text-decoration: none;
         color: black;
@@ -39,7 +41,7 @@ header {
     }
 
     .nav-link {
-        font-size: 18px;
+        font-size: large;
         margin-left: 20px;
         text-decoration: none;
         color: black;

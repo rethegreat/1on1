@@ -7,7 +7,8 @@
 }
 
 body {
-    margin: 8px;
+    margin: 0px;
+    padding: 0px;
 }
 
 .main {
@@ -18,11 +19,10 @@ body {
 }
 
 .back {
-    font-size: 24px;
+    font-size: large;
     /* top: 40px;
     left: 60px;
     position: fixed; */
-    margin-left: 10px;
     margin-bottom: 30px;
 }
 
