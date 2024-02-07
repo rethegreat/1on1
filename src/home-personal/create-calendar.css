@@ -112,7 +112,7 @@ input {
 
     height: 50px;
     align-items: center;
-    margin-bottom: 250px;
+    margin-bottom: 150px;
 }
 
 .calendar-color {
@@ -159,6 +159,7 @@ input {
         font-size: 70px;
         height: 100px;
     }
+
 }
 
 
@@ -182,7 +183,6 @@ input {
         height: 280px;
         width: 280px;
     }
-
 
     header {
         margin-top: 10px;
@@ -209,6 +209,6 @@ input {
       }
 
       .pick-color {
-        margin-bottom: 150px;
+        margin-bottom: 50px;
     }
 }
