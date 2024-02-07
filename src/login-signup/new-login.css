@@ -7,12 +7,10 @@
     font-family: 'Roboto', sans-serif;
     font-size: 20px;
     color: white;
-}
 
-body, html, .page-container {
-    background-color: #0005DD;
     max-width: 100vw;
     max-height: 100vh;
+    background-color: #0005DD;
 }
 
 .page-container {
@@ -65,7 +63,6 @@ form {
     width: 80%;
 }
 
-
 input {
     padding: 8px;
     border: none;
@@ -77,14 +74,10 @@ input {
 
 #signup-button {
     align-self: flex-end;
-}
 
-#signup-form-buttons-row {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 20px;
+    /* Move up by 1rem */
+    margin-top: -1.5rem;
 }
-
 
 button {
     align-self: center;
@@ -103,12 +96,12 @@ button {
     flex-direction: column;
     align-items: flex-start;
 }
-/* 
+
 #login-form-buttons-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-} */
+}
 
 .learn-more-button {
     background-color: black;
@@ -204,6 +197,10 @@ button {
 
     label {
         font-size: 17px;
+    }
+
+    input {
+        padding: 0px;
     }
 
     #login-form-signup-button{
