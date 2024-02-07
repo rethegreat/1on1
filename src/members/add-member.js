@@ -30,7 +30,7 @@ submitButton.addEventListener("click", (e) => {
 
     // Check if the email follows a valid email pattern
     if (!validEmailPattern.test(email)) {
-        errorMsg.textContent = "Invalid email format. Please enter a valid email address.";
+        errorMsg.textContent = "Invalid email format."; // Please enter a valid email address.
         errorMsg.style.opacity = 1;
 
         // 2. Add red border to email input field
