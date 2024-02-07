@@ -1,6 +1,4 @@
 * {
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-
     font-family: "Roboto", sans-serif;
     font-weight: 300;
     font-style: normal;
@@ -100,7 +98,7 @@ body {
     background-color: #CCDD00;
 }
 
-.blue {
+.dark-blue {
     background-color: #183A48;
 }
 
