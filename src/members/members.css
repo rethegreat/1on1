@@ -191,11 +191,12 @@ input{
 
 .newcard{
     width: 100%;
+    height: 132px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     padding: 1rem 0rem 18px 2rem;
-    margin: 1rem 2rem 1rem 0rem;
+    margin: 1rem 1rem 1rem 0rem;
     border: 1px solid black;
     border-radius: 30px;
 }
@@ -283,6 +284,10 @@ hr {
 
 
 @media (max-width: 768px) {
+    .newcard{
+        height: 120px;
+    }
+
     h1{
         font-size: 70px;
     }
@@ -369,7 +374,7 @@ hr {
     }
 
     .newcard{
-        height: 91px;
+        height: 98px;
         padding: 13px 0 15px 20px;
         margin: 1rem 0.5rem 0rem 0rem;
     }
@@ -379,8 +384,8 @@ hr {
     }
 
     .plus{
-        height: 91px;
-        /* width: 99px; */
+        height: 98px;
+        width: 130px;
         margin-right: 0rem;
     }
 
@@ -411,5 +416,9 @@ hr {
 
     .delete{
         margin-top: 0.5rem;
+    }
+
+    #add-member-error-msg {
+        margin-top: 15px;
     }
 }
