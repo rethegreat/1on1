@@ -8,6 +8,10 @@
     font-size: 20px;
 }
 
+body {
+    background-color: #0005DD;
+}
+
 .page-container {
     margin-left: 65px solid #0005DD;
     margin-right: 65px solid #0005DD;
@@ -108,7 +112,7 @@ input {
 
 
 button {
-    width: 155px;
+    width: min(155px, 12vw);
     height: 41px;
     border-radius: 50px;
     padding-left: 30px;
@@ -208,7 +212,6 @@ button {
     border-bottom: 2px solid #d77474;
     transition: border-bottom 0.3s;
 }
-
 
 
 
