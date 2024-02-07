@@ -2,7 +2,7 @@
 
 const loginForm = document.getElementById("signup-form");
 const loginButton = document.getElementById("signup-button");
-const loginErrorMsg = document.getElementById("login-error-msg");
+const loginErrorMsg = document.getElementById("signup-error-msg");
 
 loginButton.addEventListener("click", (e) => {
     e.preventDefault();
