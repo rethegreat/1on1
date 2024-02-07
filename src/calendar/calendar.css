@@ -6,6 +6,13 @@
     font-style: normal;
 }
 
+button {
+    margin: 0;
+    padding: 0;
+    background-color: white;
+    border: none;
+}
+
 body {
     margin: 0px;
     padding: 0px;
@@ -138,6 +145,12 @@ body {
     flex-direction: column;
 }
 
+.name {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .small {
     height: 20%;
 }
@@ -212,6 +225,11 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.page {
+    display: flex;
+    flex-direction: row;
 }
 
 @media (max-width: 900px) {
