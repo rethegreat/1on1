@@ -106,15 +106,18 @@ p.light {
 @media screen and (max-width:900px) {
 
     .nav-back {
-        /* top: calc(1rem + 10px);
-        left: calc(1rem + 10px); */
-        margin-top: 10px;
-        margin-bottom: 10px;
-        margin-left: 0px;
-    }
+        /* padding-left: 50px; */
+        position: absolute;
+        left: 50px;
+        top: 25px;
+    }    
 
     .screen-card{
         padding: 1rem 1rem 1rem 1rem;
+    }
+
+    .screen-card-1 {
+        padding-top: 50px;
     }
     
 }
