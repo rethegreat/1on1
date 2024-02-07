@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto@400;700&display=swap">
 
     <!-- Stylesheet -->
-    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="new-login.css">
 
     <!-- JavaScript file -->
     <script defer src="login.js"></script>
@@ -30,9 +30,11 @@
 
 
             <!-- Sign In Form -->
-            <div class="form-container">
-                <p id="login-error-msg"></p>
+            <!-- <div class="form-container"> -->
+                
                 <form id="login-form">
+
+                    <p id="login-error-msg"></p>
                 
                     <label for="email">email</label>
                     <input type="email" id="email" name="email" required>
@@ -40,14 +42,13 @@
                     <label for="password">password</label>
                     <input type="password" id="password" name="password" required>
                 
-                    <div class="buttons-row">
+                    <div id="login-form-buttons-row">
                         <button class="learn-more-button" onclick="window.location.href='learn-more.html'">learn more</button>
-                        <button class="sign-up-button" onclick="window.location.href='signup.html'">Sign Up</button>
+                        <button class="signup-button" id="login-form-signup-button" onclick="window.location.href='signup.html'">Sign Up</button>
                         <button type="submit" class="login-button" id="login-button">Login</button>
                     </div>
-
                 </form>
-            </div>
+            <!-- </div> -->
         </div>
 
     </div>
