@@ -100,6 +100,14 @@ body {
     background-color: #CCDD00;
 }
 
+.blue {
+    background-color: #183A48;
+}
+
+.cyan {
+    background-color: #00AA96;
+}
+
 .calendar {
     outline: 1px solid black;
     border-radius: 30px;
@@ -149,6 +157,8 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    font-size: 16px;
+    color: white;
 }
 
 .small {
