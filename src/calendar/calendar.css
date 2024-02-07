@@ -183,8 +183,17 @@ body {
     justify-content: end;
 }
 
+.arrow {
+    color: black;
+    cursor: pointer;
+}
+
+.arrow:hover {
+    color: gray;
+}
+
 .cancel {
-    outline: 1px solid black;
+    outline: 1px solid rgb(149, 149, 149);
     border-radius: 50px;
     height: 30px;
     width: 70px;
@@ -193,9 +202,14 @@ body {
     align-items: center;
 }
 
+.cancel:hover {
+    background-color: black;
+    color: white;
+}
+
 .submit {
     border-radius: 50px;
-    background-color: blue;
+    background-color: #0005DD;
     color: white;
     margin-left: 10px;
     height: 30px;
@@ -203,6 +217,10 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.submit:hover {
+    background-color: #000159;
 }
 
 .bottom {
