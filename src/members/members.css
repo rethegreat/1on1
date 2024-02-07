@@ -96,6 +96,10 @@ input{
     margin: 1rem 0rem 1rem 0rem;
     border-radius: 30px;
 }
+.address{
+    display: flex; 
+    justify-content: space-between; 
+}
 
 .plus hr {
     position: absolute;
