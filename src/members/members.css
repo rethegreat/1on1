@@ -67,6 +67,12 @@ main{
     font-size: 30px;
 }
 
+form{
+    display: block; 
+    justify-content: space-between; 
+    align-items: center;
+}
+
 input{
     display: flex; 
     justify-content: space-between; 
