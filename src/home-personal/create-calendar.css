@@ -140,7 +140,16 @@ input {
     align-items: center;
 }
 
+.cancel:hover {
+    background-color: black;
+    color: white;
+    cursor: pointer;
+}
 
+.submit:hover {
+    background-color: #000159;
+    cursor: pointer;
+}
 
 .submit {
     border-radius: 50px;
