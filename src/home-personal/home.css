@@ -63,7 +63,7 @@ header {
 
     height: 200px;
     color: white;
-    font-size: 128px;
+    font-size: 118px;
     font-weight: 900;
     display: flex;
     align-items: center;
@@ -271,5 +271,63 @@ header {
 
     .add-icon {
         max-width: 130px;
+    }
+}
+
+/* For Smaller Screens */
+
+@media (max-width: 330px) {
+
+    .title {
+        padding-right: 25px;
+    }
+    .calendar-card {
+        width: 90%;
+    }
+}
+
+@media (max-width: 250px) {
+
+    .title {
+        font-size: min(40px, 20vw);
+    }
+
+    .calendar-card {
+        padding: 16px;
+        width: 90%;
+    }
+
+    .calendar-title {
+        font-size: 12vw;
+    }
+
+    .redirect-arrow {
+        width: 20vw;
+        height: 15vw;
+    }
+}
+
+@media (max-width: 215px) {
+    .title {
+        margin-left: -10px;
+        min-width: 98%;
+    }
+
+    .calendar-card {
+        padding: 16px;
+        width: 70%;
+    }
+
+    header {
+        margin-left: 5px;
+    }
+    
+    .logo {
+        font-size: 15px;
+    }
+
+    .nav-link {
+        font-size: min(13px, 7vw);
+        margin-left: 10px;
     }
 }

@@ -1,211 +1,54 @@
 * {
     width: 100%;
-    height: 100%;
+    height: fit-content;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: 'Roboto', sans-serif;
     font-size: 20px;
-}
+    color: white;
 
-body {
+    max-width: 100vw;
+    max-height: 100vh;
     background-color: #0005DD;
 }
 
 .page-container {
-    margin-left: 65px solid #0005DD;
-    margin-right: 65px solid #0005DD;
-
-    background-color: #0005DD;
-  
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
 }
-
-.failed {
-    width: 300px;
-    color: red;
-}
-
 
 .content-container {
-    display: grid;
-    grid-template-columns: repeat(14, 75px);
-    gap: 20px;
-  
-    background-color: #0005DD;
+    padding: 300vw 30vw 30vw 30vw;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    max-width: 100vh;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .title {
-    grid-column-start: 3;
-    text-align: left;
-
     color: white;
     font-size: 128px;
     font-family: 'Gothic A1';
     font-weight: bolder;
-    margin-top: 138px;
+    margin: 5vh 0px 5vh 0px;
 }
 
-
-.form-container {
-    /* width: 100%; */
-    width: 42vw;
-    grid-column-start: 3;
-    text-align: left;
-
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: 5%;
-}
-
-#login-form {
-    height: 5%;
-}
-
-#signup-form {
-    height: 70%;
-}
-
-label {
-    color: white;
-    display: block;
-    font-family: 'Roboto', sans-serif;
-    margin-bottom: 4px;
-    white-space: nowrap;
-}
-
-input {
-    /* width: 42vw; */
-    padding: 8px;
-    border: none;
-    border-bottom: 1px solid white;
-    /* margin-top: 1.5rem; */
-    margin-bottom: 1.5rem;
-    outline: none;
-    color: white;
-    background-color: transparent;
-}
-
-#login-form input {
-    margin-top: 1.5rem;
-}
-
-#signup-form input {
-    margin-top: 0.8rem;
-}
-
-
-/* .buttons-row {
-    margin-top: 1rem;
-    display: flex;
-    flex-direction: row;
-} */
-
-.buttons-row {
-    margin-top: 1rem;
-    display: grid;
-    grid-template-columns: auto auto auto; /* Three columns with auto widths */
-    justify-content: space-between; /* Align buttons to the start and end of the row */
-    align-items: center; /* Center align items vertically */
-}
-
-
-button {
-    width: min(155px, 12vw);
-    height: 41px;
-    border-radius: 50px;
-    padding-left: 30px;
-    padding-right: 30px;
-
-    cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
-    font-weight: bold;
-    white-space: nowrap;
-
-}
-
-
-
-/* Button details */
-
-.learn-more-button {
-    background-color: black;
-    color: white;
-    border: 1px solid black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    grid-template-columns: 1;
-    justify-self: start;
-}
-
-
-.learn-more-button:hover {
-    background-color: white;
-    color: black;
-}
-
-.sign-up-button {
-    /* margin-left: 180px; */
-
-    background-color: white;
-    color: #0005DD;
-    border: 1px solid white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    grid-template-columns: 10;
-    justify-self: end;
-    margin-right: calc(155px - 20vw);
-}
-
-
-.sign-up-button:hover {
-    background-color: #0005DD;
-    color: white;
-    border: 1px solid white;
-}
-
-.login-button {
-    margin-left: 20px;
-
-    background-color: #0005DD;
-    color: white;
-    border: 1px solid white;
-    justify-self: end;
-    /* display: flex;
-    align-items: center;
-    justify-content: center; */
-}
-
-
-.login-button:hover {
-    background-color: white;
-    color: #0005DD;
-}
-
-/* #signup-form input[id="password-confirm"] {
-    margin: 0px 0px 0.1rem 0px;
-} */
-
-#signup-form .buttons-row {
-    margin-left: 40vw;
-}
-
-
-
-/* Error Message */
-
-#login-error-msg {
+#login-error-msg,#signup-error-msg {
     width: fit-content;
     height: fit-content;
-    margin: 0px 0px 20px 27vw;
     font-size: 15px;
     font-weight: bold;
     color: #d77474;
     opacity: 0;
     white-space: nowrap;
+    align-self: center;
 }
 
 .input-error {
@@ -213,145 +56,228 @@ button {
     transition: border-bottom 0.3s;
 }
 
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: min(80vw, 500px);
+}
 
+input {
+    padding: 8px;
+    border: none;
+    border-bottom: 1px solid white;
+    outline: none;
+    color: white;
+    background-color: transparent;
+}
 
-@media screen and (max-width: 900px) {
+button {
+    align-self: center;
+    width: 135px;
+    padding: 10px 10px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 900;
+    white-space: nowrap;
+    align-items: center;
+}
 
-    * {
-        max-width: 100vw;
-        font-size: 16px;
-    }
+#login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
 
-    .page-container {
-        width: 100%;
-        padding: 2rem;
-        margin-right: 0;
-    }
-    
-    .content-container {
-        grid-template-columns: repeat(14, 30px);
-        gap: 5px;
-    }
-    
-    .title {
-        grid-column-start: 1;
-        font-size: 64px;
-        margin-top: 138px;
-    }
-    
-    .form-container {
-        margin-top: 0vh;
-        grid-column-start: 1;
-        grid-template-rows: auto auto;
-        height: 5%;
-    }
+#login-form-buttons-row {
+    display: flex;
+    justify-self: center;
+    align-items: flex-end;
 
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 20px;
+    margin-top: 0.5rem;
+}
 
-    #login-form label[for="email"] {
-        margin-top: 13vh;
-    }
+/* sign-up button on SIGN UP page = "#signup-button" */
+/* sign-up button on LOGIN page = "#login-form-signup-button" */
+/* Both have the same class = ".signup-button" */
 
-    #login-form {
-        grid-column-start: 1;
-        grid-template-rows: auto auto;
-        height: 5%;
-    }
+/* ===== Styling for buttons ===== */
 
-    #signup-form {
-        margin-top: 13vh;
-        height: 1%;
-    }
-
-    #login-form input{
-        padding-bottom: 0px;
-        padding-top: 0px;
-    }
-
-    #login-form label{
-        padding-bottom: 0px;
-        padding-top: 0px;
-    }
-
-    #signup-form input{
-        padding-top: 1.3rem;
-    }
-
-    #login-error-msg {
-        margin: 0px 0px 20px 0px;
-    }
-
-    label {
-        margin-bottom: 1rem;
-    }
-
-    input {
-        width: 250px;
-        margin-bottom: 50px;
-    }
-
-    .buttons-row {
-
-        /* Adjusting the margin for the buttons */
-        /* margin-top: 20vh; */
-
-        /* flex-direction: row;
-        justify-content: baseline;
-        align-items: center; */
-
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-        margin: 10px 0px;
-        margin-top: 20px;
-        margin-left: 1rem;
-        margin-right: 1rem;
-    }
-
-    button {
-        height: fit-content;
-        border-radius: 30px;
-        padding: 15px;
-        font-size: 16px;
-        white-space: nowrap;
-    }
-
-    .sign-up-button {
-        margin-left: -10px;
-        grid-column: 1;
+    .signup-button {
+        background-color: white;
+        color: #0005DD;
+        border: 1px solid white;
     }
 
     .login-button {
-        grid-column: 2;
+        background-color: #0005DD;
+        color: white;
+        border: 1px solid white;
     }
 
     .learn-more-button {
-        /* white-space: wrap; */
-        width: 95%;
-        grid-column: 1 / span 2;
-        grid-row: 2;
-        margin-left: 0px;
-        margin-top: 20px;
-        align-self: center;
+        background-color: black;
+        color: white;
+        border: 1px solid black;
     }
 
-    .sign-up-button {
-        align-self: start;
-        margin-right: 0px;
+
+/* ===== Button hover effects ===== */
+
+    .learn-more-button:hover {
+        background-color: white;
+        color: black;
+    }
+
+    .signup-button:hover {
+        background-color: #0005DD;
+        color: white;
+    }
+
+    .login-button:hover {
+        background-color: white;
+        color: #0005DD;
+    }
+
+
+/* ===== Button on SIGN-UP page ===== */
+/* sign-up button on SIGN UP page */
+#signup-button {
+    width: 150px;
+    align-self: flex-end;
+
+    /* Move up by 1.5rem */
+    margin-top: -1.5rem;
+}
+
+/* === Buttons on LOGIN page === */
+/* sign-up button on LOGIN page */
+#login-form-signup-button {
+    justify-self: flex-end;
+    align-self: flex-end;
+    margin-right: -0.5vw;
+
+    grid-column: 3 / span 1;
+}
+
+.learn-more-button {
+    margin-right: auto; /* Push the button to the left */
+    grid-column: 1 / span 1;
+}
+
+.login-button {
+    margin-left: auto; /* Push login button to the right */
+}
+
+
+
+@media screen and (max-width: 900px) {
+    .title {
+        align-self: center;
+        text-align: center;
+        font-size: 50px;
+
+    }   
+
+    form {
+        align-self: center;
+        width: 80%;
+    }
+
+    label {
+        font-size: 17px;
+    }
+
+    input {
+        padding: 0px;
+    }
+
+    /* Option 1 -- 120px width buttons, 17px font size for learn-more-button */
+
+        /* .learn-more-button {
+            font-size: 17px;
+        } 
+
+        button {
+            width: 120px;
+        } 
+         */
+       
+    
+
+    /* Option 2 -- 130px width buttons, 20px font size */
+    
+        button {
+            width: 130px;
+        }
+     
+}
+
+@media screen and (max-width: 680px) {
+
+    #login-form-buttons-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 20px;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    .learn-more-button {
+        grid-row: 2 / span 1;
+        grid-column: 1 / span 2;
+        width: 100%;
+        justify-self: center;
+    }
+
+    #login-form-signup-button {
+        grid-row: 1 / span 1;
+        grid-column: 1 / span 1;
+        margin: 0px;
+        justify-self: center;
     }
 
     .login-button {
-        margin-left: 0px;
-        align-self: end;
+        grid-row: 1 / span 1;
+        grid-column: 2 / span 1;
+        justify-self: center;
+    }
+}
+
+@media screen and (max-width: 370px) {
+
+    label {
+        font-size: 15px;
     }
 
-    .sign-up-button, .login-button {
-        min-width: 112px;
-        padding-left: 0px;
-        padding-right: 0px;
-    }
-
-    #signup-form .buttons-row {
+    #login-form-buttons-row {
+        gap: 5px;
         margin-top: 0rem;
+        grid-row-gap: 15px;
     }
 
+    button {
+        font-size: 15px;
+    }
+
+    #signup-button {
+        width: min(120px, 100%);
+        /* Move up by 2rem */
+        margin-top: -2rem;
+        
+    }
+    
+}
+
+@media screen and (max-width: 320px) {
+    #login-error-msg,#signup-error-msg {
+        font-size: clamp(12px, 2vw, 14px);
+    }
 }

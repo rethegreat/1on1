@@ -140,7 +140,16 @@ input {
     align-items: center;
 }
 
+.cancel:hover {
+    background-color: black;
+    color: white;
+    cursor: pointer;
+}
 
+.submit:hover {
+    background-color: #000159;
+    cursor: pointer;
+}
 
 .submit {
     border-radius: 50px;
@@ -210,5 +219,49 @@ input {
 
       .pick-color {
         margin-bottom: 50px;
+    }
+}
+
+/* For Smaller Screens */
+
+@media (max-width: 370px) {
+
+    .title {
+        font-size: min(40px, 15vw);
+    }
+    .create-container {
+        align-self: center;
+        width: 90%;
+        padding: 16px;
+    }
+
+    input[type="text"] {
+        white-space: wrap;
+        font-size: 8vw;
+    }
+}
+
+@media (max-width: 215px) {
+    .title {
+        margin-left: -10px;
+        min-width: 98%;
+    }
+
+    .calendar-card {
+        padding: 16px;
+        width: 70%;
+    }
+
+    header {
+        margin-left: 5px;
+    }
+    
+    .logo {
+        font-size: 15px;
+    }
+
+    .nav-link {
+        font-size: min(13px, 7vw);
+        margin-left: 10px;
     }
 }
