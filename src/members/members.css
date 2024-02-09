@@ -2,8 +2,8 @@
     margin:0;
     padding:0;
     box-sizing: border-box;
-    /* font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; */
-    font-family: "Roboto", sans-serif;
+    /* font-family: "Roboto", sans-serif; */
+    font-family: sans-serif;
     font-weight: 300;
     font-style: normal;
 }
@@ -32,7 +32,7 @@ input {
     /* padding-left: 5rem; */
     /* padding-top: 2rem; */
     margin-bottom: 30px;
-
+    width: 60px;
 }
 
 img{
@@ -133,6 +133,10 @@ input{
     border-radius: 50%;
 }
 
+.back:hover{
+    color: rgb(202, 202, 202);
+}
+
 .submitted{
     display: flex;
     align-items: center;
@@ -222,11 +226,12 @@ form {
 }
 
 h1{
-    font-family: "Gothic A1", sans-serif;
+    /* font-family: "Gothic A1", sans-serif; */
+    font-family: sans-serif;
     font-weight: 900;
     font-style: normal;
     /* font-size: 8vw; */
-    font-size: 128px;
+    font-size: 118px;
 }
 
 
@@ -283,13 +288,27 @@ hr {
 
 
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
+    body {
+        margin: 1rem;
+        padding: 0px;
+    }
+
+    main {
+        margin: 0px;
+        padding: 0px;
+    }
+
     .newcard{
         height: 120px;
     }
 
+    .back{
+        margin-top: 10px;
+    }
+
     h1{
-        font-size: 70px;
+        font-size: 95px;
     }
 
     .filter {
@@ -344,6 +363,10 @@ hr {
 
     }
 
+    .text-stack{
+        margin-top: 32px;
+    }
+
     .circle{
         margin: 13px 0 0 20px;
     }
@@ -396,26 +419,28 @@ hr {
 
     #font{
         font-size: 17px;
-        margin: 0px 0 21px 20px;
+        margin: 0px 0 15px 20px;
     }
 
     #pending{
-        font-size: 10px
+        font-size: 15px;
     }
 
     #submitted{
-        font-size: 10px
+        font-size: 15px
     }
 
     .buttons{
-        font-size: 10px;
+        font-size: 18px;
         flex-direction: column;
+        justify-content: flex-end;
         padding: 0 20px 0px 0px;
         margin-bottom: 15px;
     }
 
     .delete{
         margin-top: 0.5rem;
+        width: 78px;
     }
 
     #add-member-error-msg {
