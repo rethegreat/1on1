@@ -26,7 +26,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    max-width: 100vh; /* Adjust as needed */
+    max-width: 100vh;
     width: 100%;
     padding: 20px;
     box-sizing: border-box;
@@ -72,14 +72,6 @@ input {
     background-color: transparent;
 }
 
-#signup-button {
-    width: 150px;
-    align-self: flex-end;
-
-    /* Move up by 1rem */
-    margin-top: -1.5rem;
-}
-
 button {
     align-self: center;
     width: 135px;
@@ -109,31 +101,61 @@ button {
     margin-top: 0.5rem;
 }
 
-.learn-more-button {
-    background-color: black;
-    color: white;
-    border: 1px solid black;
+/* sign-up button on SIGN UP page = "#signup-button" */
+/* sign-up button on LOGIN page = "#login-form-signup-button" */
+/* Both have the same class = ".signup-button" */
 
-    margin-right: auto; /* Push the button to the left */
-    grid-column: 1 / span 1;
+/* ===== Styling for buttons ===== */
+
+    .signup-button {
+        background-color: white;
+        color: #0005DD;
+        border: 1px solid white;
+    }
+
+    .login-button {
+        background-color: #0005DD;
+        color: white;
+        border: 1px solid white;
+    }
+
+    .learn-more-button {
+        background-color: black;
+        color: white;
+        border: 1px solid black;
+    }
+
+
+/* ===== Button hover effects ===== */
+
+    .learn-more-button:hover {
+        background-color: white;
+        color: black;
+    }
+
+    .signup-button:hover {
+        background-color: #0005DD;
+        color: white;
+    }
+
+    .login-button:hover {
+        background-color: white;
+        color: #0005DD;
+    }
+
+
+/* ===== Button on SIGN-UP page ===== */
+/* sign-up button on SIGN UP page */
+#signup-button {
+    width: 150px;
+    align-self: flex-end;
+
+    /* Move up by 1.5rem */
+    margin-top: -1.5rem;
 }
 
-.signup-button {
-    background-color: white;
-    color: #0005DD;
-    border: 1px solid white;
-}
-
-#login-form {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.login-button {
-    margin-left: auto; /* Push login button to the right */
-}
-
+/* === Buttons on LOGIN page === */
+/* sign-up button on LOGIN page */
 #login-form-signup-button {
     justify-self: flex-end;
     align-self: flex-end;
@@ -142,28 +164,15 @@ button {
     grid-column: 3 / span 1;
 }
 
+.learn-more-button {
+    margin-right: auto; /* Push the button to the left */
+    grid-column: 1 / span 1;
+}
+
 .login-button {
-    background-color: #0005DD;
-    color: white;
-    border: 1px solid white;
+    margin-left: auto; /* Push login button to the right */
 }
 
-/* Button hover effects */
-
-.learn-more-button:hover {
-    background-color: white;
-    color: black;
-}
-
-.signup-button:hover {
-    background-color: #0005DD;
-    color: white;
-}
-
-.login-button:hover {
-    background-color: white;
-    color: #0005DD;
-}
 
 
 @media screen and (max-width: 900px) {
@@ -173,10 +182,6 @@ button {
         font-size: 50px;
 
     }   
-
-    .learn-more-button {
-        font-size: 17px;
-    }
 
     form {
         align-self: center;
@@ -191,12 +196,25 @@ button {
         padding: 0px;
     }
 
-    button {
-        width: 120px;
-    }
+    /* Option 1 -- 120px width buttons, 17px font size for learn-more-button */
 
+        /* .learn-more-button {
+            font-size: 17px;
+        } 
+
+        button {
+            width: 120px;
+        } 
+         */
+       
+    
+
+    /* Option 2 -- 130px width buttons, 20px font size */
+    
+        button {
+            width: 130px;
+        }
      
-
 }
 
 @media screen and (max-width: 680px) {
