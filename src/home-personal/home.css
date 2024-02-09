@@ -273,3 +273,22 @@ header {
         max-width: 130px;
     }
 }
+
+/* For Responsiveness */
+
+@media (max-width: 330px) {
+    .calendar-card {
+        width: 70%;
+    }
+}
+
+@media (max-width: 250px) {
+
+    .title {
+        font-size: 40px;
+    }
+
+    .calendar-card {
+        width: 60%;
+    }
+}
