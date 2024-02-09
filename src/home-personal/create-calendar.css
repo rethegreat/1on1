@@ -231,3 +231,28 @@ input {
         font-size: 8vw;
     }
 }
+
+@media (max-width: 215px) {
+    .title {
+        margin-left: -10px;
+        min-width: 98%;
+    }
+
+    .calendar-card {
+        padding: 16px;
+        width: 70%;
+    }
+
+    header {
+        margin-left: 5px;
+    }
+    
+    .logo {
+        font-size: 15px;
+    }
+
+    .nav-link {
+        font-size: min(13px, 7vw);
+        margin-left: 10px;
+    }
+}
