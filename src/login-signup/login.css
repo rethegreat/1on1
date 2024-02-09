@@ -172,6 +172,10 @@ button {
         text-align: center;
         font-size: 50px;
 
+    }   
+
+    .learn-more-button {
+        font-size: 17px;
     }
 
     form {
