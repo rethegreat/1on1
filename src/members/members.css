@@ -299,6 +299,12 @@ hr {
         padding: 0px;
     }
 
+    .heading{
+        border-radius: 30px;
+        height: 100px;
+        padding-left: 25px;
+    }
+
     .newcard{
         height: 120px;
     }
@@ -308,7 +314,7 @@ hr {
     }
 
     h1{
-        font-size: 95px;
+        font-size: 50px;
     }
 
     .filter {
@@ -344,14 +350,6 @@ hr {
     main {
         margin: 0px;
         padding: 0px;
-    }
-
-
-
-    .heading{
-        border-radius: 30px;
-        height: 100px;
-        padding-left: 25px;
     }
 
 
