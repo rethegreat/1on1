@@ -212,3 +212,22 @@ input {
         margin-bottom: 50px;
     }
 }
+
+/* For Smaller Screens */
+
+@media (max-width: 370px) {
+
+    .title {
+        font-size: min(40px, 15vw);
+    }
+    .create-container {
+        align-self: center;
+        width: 90%;
+        padding: 16px;
+    }
+
+    input[type="text"] {
+        white-space: wrap;
+        font-size: 8vw;
+    }
+}

@@ -274,7 +274,7 @@ header {
     }
 }
 
-/* For Responsiveness */
+/* For Smaller Screens */
 
 @media (max-width: 330px) {
     .calendar-card {
@@ -289,6 +289,23 @@ header {
     }
 
     .calendar-card {
-        width: 60%;
+        padding: 16px;
+        width: 90%;
+    }
+
+    .calendar-title {
+        font-size: 12vw;
+    }
+
+    .redirect-arrow {
+        width: 20vw;
+        height: 15vw;
+    }
+}
+
+@media (max-width: 215px) {
+    .calendar-card {
+        padding: 16px;
+        width: 70%;
     }
 }
