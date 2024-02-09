@@ -108,8 +108,11 @@ p.light {
     .nav-back {
         /* padding-left: 50px; */
         position: absolute;
-        left: 50px;
-        top: 25px;
+        /* Other pages have 1rem margin for body + 10px padding top and bottom for the back button */
+        /* left: 50px;
+        top: 25px; */
+        left: 1rem;
+        top: calc(1rem + 10px);
     }    
 
     .screen-card{
