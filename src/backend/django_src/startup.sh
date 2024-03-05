@@ -1,5 +1,7 @@
+#!/bin/bash
+
 # 1. Go to the directory you want
-cd OneOnOne
+# cd OneOnOne
 
 # 2. Create a virtual environment
 python -m venv venv
