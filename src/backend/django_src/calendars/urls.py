@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import calendars, members, owner_availability, member_availability
+from .views import calendars, members, owner_availability, member_availability, redirect
 
 urlpatterns = [
     path('list/', calendars.CalendarList.as_view(), name='calendar-list'),
@@ -11,4 +11,5 @@ urlpatterns = [
     path('<int:calendar_id>/availability/', owner_availability.OwnerAvailabilityView.as_view(), name='owner-availability'),
     path('<int:calendar_id>/members/<int:member_id>/availability/', member_availability.MemberAvailabilityView.as_view(), name='member-availability'),
 
+    path('<path:hash>', views.RedirectFromHashView.as_view(), name='redirect_from_hash'),
 ]
