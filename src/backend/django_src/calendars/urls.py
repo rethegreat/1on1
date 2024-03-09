@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import calendars, members, owner_availability, member_availability
+from .views import calendars, members, owner_availability, member_availability, schedules
 
 urlpatterns = [
     path('list/', calendars.CalendarList.as_view(), name='calendar-list'),
@@ -10,5 +10,8 @@ urlpatterns = [
 
     path('<int:calendar_id>/availability/', owner_availability.OwnerAvailabilityView.as_view(), name='owner-availability'),
     path('<int:calendar_id>/members/<int:member_id>/availability/', member_availability.MemberAvailabilityView.as_view(), name='member-availability'),
+
+    path('<int:calendar_id>/schedules/', schedules.ScheduleListView.as_view(), name='schedule-list'),
+    path('<int:calendar_id>/schedules/<int:schedule_id>/', schedules.ScheduleDetailView.as_view(), name='schedule-detail'),
 
 ]
