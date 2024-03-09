@@ -1,6 +1,6 @@
 from django.core.mail import send_mail
-from .models import Schedule, Member
-
+from .models.Calendar import Schedule
+from .models.Member import Member
     
 def send_invitation_email(user, calendar_id):
         

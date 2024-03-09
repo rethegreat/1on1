@@ -1,5 +1,6 @@
 from rest_framework.permissions import IsAuthenticated
-from ..models.Calendar import Calendar, Memebr
+from ..models.Calendar import Calendar
+from ..models.Member import Member
 from ..serializers import CalendarListSerializer, CalendarPUTSerializer
 from ..email_utils import send_invitation_email, send_email_to_participant
 from rest_framework.response import Response
