@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'calendars',
     'accounts',
-    'emails',
 ]
 
 REST_FRAMEWORK = {
