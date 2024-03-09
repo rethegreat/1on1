@@ -8,7 +8,11 @@ class ProfileUser(AbstractUser):
     profile_pic = models.ImageField(upload_to='profile_pics', null=True, blank=True)
     streak_count = models.IntegerField(default=0)
     analytics_data = models.JSONField(null=True, blank=True)
-    timezone = models.Timez
+
+    # Override to make these fields required
+    first_name = models.CharField(max_length=50, blank=False)
+    last_name = models.CharField(max_length=50, blank=False)
+    email = models.CharField(max_length=50, blank=False)
 
     # Contact related methods
     def add_contact(self, new_contact: 'ProfileUser') -> bool:
