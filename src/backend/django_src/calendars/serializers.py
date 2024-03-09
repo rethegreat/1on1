@@ -1,11 +1,12 @@
 # serializers.py
 from rest_framework import serializers
-from .models.Calendar import Calendar, Availability, OwnerAvailability, MemberAvailability, Schedule
+from .models.Calendar import Calendar, Schedule
 from .models.Member import Member
 from .models.Event import Event
+from .models.TimeSlot import OwnerTimeSlot, MemberTimeSlot
 
 # Calendar
-class CalendarSerializer(serializers.ModelSerializer):
+class CalendarListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Calendar
         fields = ['id',
@@ -23,52 +24,47 @@ class CalendarSerializer(serializers.ModelSerializer):
             'deadline': {'required': False, 'allow_null': True}
         }
 
-class CalendarDetailSerializer(CalendarSerializer):
-    class Meta(CalendarSerializer.Meta):
+# For the PUT request, we need to allow users to give only the fields they want to update
+class CalendarPUTSerializer(CalendarListSerializer):
+    class Meta(CalendarListSerializer.Meta):
         extra_kwargs = {
             'name': {'required': False}
         }
 
 
 # Member
-class MemberSerializer(serializers.Serializer):
+class MemberListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Member
-        fields = ['name', 
-                  'email']
+        fields = ['id', 'name', 'email', 'submitted']
+        read_only_fields = ['id']
+        extra_kwargs = {
+            'name': {'required': True, 'allow_null': False},
+            'email': {'required': True, 'allow_null': False},
+            'submitted': {'required': False}
+        }
+
+    def create(self, validated_data):
+        calendar_id = self.context['view'].kwargs.get('calendar_id')
+        validated_data['calendar_id'] = calendar_id
+        return super().create(validated_data)
 
 
 # Availability
-class AvailabilitySerializer(serializers.ModelSerializer):
+# Availability is a list of all the time slots submitted by the calendar or each member
+
+class OwnerTimeSlotSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Availability
-        fields = ['day', 'start_hour', 'start_minute']
-        # Note
-        # 1) the end_time field is not included here, as it is a calculated field
-        # 2) the calendar field is not included here, as it set by the URL
-    
-    def is_valid(self, raise_exception=False):
-        # The availability is invalid if:
-        # 1) the calendar is already finalized
-        # 2) within the owner's availability, but enforced in the view
-        if self.calendar.finalized:
-            return False
-        return True
+        model = OwnerTimeSlot
+        fields = ['start_time', 'preference']
+        extra_kwargs = {
+            'start_time': {'required': True, 'allow_null': False},
+            'preference': {'required': True}
+        }
 
-class OwnerAvailabilitySerializer(AvailabilitySerializer):
-    class Meta(AvailabilitySerializer.Meta):
-        model = OwnerAvailability
-        fields = AvailabilitySerializer.Meta.fields + ['preference']
-    
-class MemberAvailabilitySerializer(AvailabilitySerializer):
-    class Meta(AvailabilitySerializer.Meta):
-        model = MemberAvailability
-        fields = AvailabilitySerializer.Meta.fields
-        # Note
-        # 1) the member field is not included here, as it is set by the URL
-        # If a person clicks a unique link provided by the notification email, that person is validated as the member
-        # We will then use the member to set the member field
 
+class MemberTimeSlotSerializer(serializers.Serializer):
+    time_slot_id = serializers.IntegerField(required=True)
 
 # Schedule
 class ScheduleSerializer(serializers.Serializer):

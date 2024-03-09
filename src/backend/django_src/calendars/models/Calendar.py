@@ -59,18 +59,6 @@ class Calendar(models.Model):
 #
 # OwnerAvailability - OwnerTimeSlot (One to Many)
 # MemberAvailability - MemberTimeSlot (One to Many)
-class Availability(models.Model):
-    calendar = models.ForeignKey('Calendar', on_delete=models.CASCADE)
-
-class OwnerAvailability(Availability):
-    def __str__(self) -> str:
-        return "[Owner's Availability of " + self.calendar.name + "]"
-
-class MemberAvailability(Availability):
-    member = models.ForeignKey('Member', on_delete=models.CASCADE)
-
-    def __str__(self) -> str:
-        return "[Member" + self.member.name + "'s Availability of " + self.calendar.name + "]"
 
 # ========================================================
 # Schedule
