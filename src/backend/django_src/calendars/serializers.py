@@ -72,7 +72,6 @@ class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = '__all__'
-    
 
 # Schedule
 
@@ -82,3 +81,4 @@ class ScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Schedule
         fields = ['id', 'calendar', 'events']
+
