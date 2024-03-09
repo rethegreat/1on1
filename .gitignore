@@ -1,0 +1,5 @@
+/src/backend/django_src/venv/
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
