@@ -31,7 +31,7 @@ class Member(models.Model):
         subject = 'Reminder: Submit Your Availability'
         message = (
             f"Dear {self.name},\n\n"
-            "This is a friendly reminder to submit your availability to the calendar {self.calendar.name}.\n\n"
+            f"This is a friendly reminder to submit your availability to the calendar {self.calendar.name}.\n\n"
             "Thank you.\n"
         )
         from_email = settings.EMAIL_HOST_USER
