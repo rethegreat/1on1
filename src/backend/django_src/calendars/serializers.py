@@ -66,24 +66,19 @@ class OwnerTimeSlotSerializer(serializers.ModelSerializer):
 class MemberTimeSlotSerializer(serializers.Serializer):
     time_slot_id = serializers.IntegerField(required=True)
 
+# Event
+
+class EventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Event
+        fields = '__all__'
+    
+
 # Schedule
-class ScheduleSerializer(serializers.Serializer):
+
+class ScheduleSerializer(serializers.ModelSerializer):
+    events = EventSerializer(many=True, read_only=True)
+
     class Meta:
         model = Schedule
-    
-    def is_valid(self, raise_exception=False):
-        # The schedule is valid if all events are valid, i.e.,
-        # 1) Check if the event is within the owner's availability
-        # 2) Check if the event is within the member's availability
-        # 3) Check if the event does not conflict with other events
-
-        # We can check the validity of the newly created event only,
-        # assuming all the existing events are already valid
-        
-        # Get all events associated with this schedule
-        all_events = Event.objects.filter(schedule=self)
-        for event in all_events:
-            if not event.is_valid():
-                return False
-        return True
-    
+        fields = ['id', 'calendar', 'events']

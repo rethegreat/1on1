@@ -72,22 +72,39 @@ class MemberAvailabilityView(APIView):
 
         # Validate the request data
         serializer = MemberTimeSlotSerializer(data=data)
+
+        # Find the corresponding possible slot(OwnerTimeSlot with time_slot_id), if not found, return 400
+        # If the member already submitted the member time slot with that time_slot_id, if found, return 400
         if serializer.is_valid():
-            # Assuming 'start_time' is provided in the request data
             time_slot_id = serializer.validated_data.get('time_slot_id')
-
-            # Find the corresponding possible slot
-            chosen_slot = None
-            for slot in possible_slots:
-                if slot.id == time_slot_id:
-                    chosen_slot = slot
-                    break
-
-            if chosen_slot:
-                # Create the member's time slot
-                MemberTimeSlot.objects.create(member=member, time_slot=chosen_slot)
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            else:
+            chosen_slot = OwnerTimeSlot.objects.get(id=time_slot_id)
+            if not chosen_slot:
                 return Response({'error': 'Invalid time slot'}, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+            previously_submitted = MemberTimeSlot.objects.filter(member=member)
+            # if chosen_slot is one of the previously_submitted's time_slot, return 400
+            if chosen_slot in [slot.time_slot for slot in previously_submitted]:
+                # Member already submitted this time slot
+                return Response({'error': 'Member already submitted this time slot'}, status=status.HTTP_400_BAD_REQUEST)
+            # Create the member's time slot
+            MemberTimeSlot.objects.create(member=member, time_slot=chosen_slot)
+            # Set member.submitted=True
+            member.submitted = True
+            member.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def patch(self, request, member_id, calendar_id):
+        member_time_slot_id = request.data.get('member_time_slot_id', None)
+        if member_time_slot_id is None:
+            return Response({'error': 'Member time slot ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+        # Validate and retrieve the member based on the ID
+        member = get_object_or_404(Member, id=member_id)
+        # Delete the member's availability
+        MemberTimeSlot.objects.filter(id=member_time_slot_id).delete()
+        # If there is no timeslot submitted at all then set member.submitted=False
+        if not MemberTimeSlot.objects.filter(member=member).exists():
+            member.submitted = False
+            member.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)

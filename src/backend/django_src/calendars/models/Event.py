@@ -19,3 +19,6 @@ class Event(models.Model):
 
     # 3) member: the member that the event is suggested for; required
     member = models.ForeignKey('Member', on_delete=models.CASCADE, null=False, blank=False)
+
+    unique_together = ('suggested_schedule', 'time_slot')
+    unique_together = ('suggested_schedule', 'member')
