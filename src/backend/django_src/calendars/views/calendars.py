@@ -1,6 +1,7 @@
 from rest_framework.permissions import IsAuthenticated
-from ..models.Calendar import Calendar
+from ..models.Calendar import Calendar, Memebr
 from ..serializers import CalendarListSerializer, CalendarPUTSerializer
+from ..email_utils import send_invitation_email, send_email_to_participant
 from rest_framework.response import Response
 from rest_framework import status
 from django.urls import reverse
@@ -25,9 +26,16 @@ class CalendarList(APIView):
     
     def post(self, request):    
         serializer = CalendarListSerializer(data=request.data)
+        
         if serializer.is_valid():
-            serializer.save(owner=request.user)
+            created_calendar = serializer.save(owner=request.user)
+            email_response, email_status = send_invitation_email(created_calendar.id, request.user)
+            
+            if email_status != status.HTTP_200_OK:
+                return Response(email_response, status=email_status)
+            
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 # EndPoint: /calendars/<int:calendar_id>/
@@ -52,3 +60,19 @@ class CalendarDetail(APIView):
         calendar.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
+# EndPoint: /calendars/<int:calendar_id>/remindAll
+class CalendarRemind(APIView):
+    # permission_classes = [IsAuthenticated]
+    
+    def post(self, request, calendar_id):
+        calendar = get_object_or_404(Calendar, pk=calendar_id)
+        
+        members = Member.objects.filter(calendar=calendar)
+        owner_name = request.user.first_name
+        
+        for member in members:
+            if not member.submitted:
+                message = f"Hi {member.name},\n\nA reminder that you have been inivited by {owner_name} to set up a meeting with them. Please fill out your avalibility at your nearest convenience.\n\nBest regards.\n1on1 Team"
+                send_email_to_participant('Meeting scheduling reminder from 1on1',member.email, message)
+
+        return Response({'detail': 'Emails sent successfully'}, status=status.HTTP_200_OK)

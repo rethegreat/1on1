@@ -1,0 +1,44 @@
+from django.core.mail import send_mail
+from .models import Schedule, Member
+
+    
+def send_invitation_email(user, calendar_id):
+        
+    members = Member.objects.filter(calendar_id=calendar_id)
+    owner_name = user.first_name
+    
+    for member in members:
+        message = f"Hi {member.name},\n\nYou have been invited by {owner_name} to set up a meeting with them. Please fill out your availability at your nearest convenience.\n\nBest regards.\n1on1 Team"
+        send_email_to_participant('Meeting scheduling invitation from 1on1', member.email, message)
+    
+    return {'detail': 'Emails sent successfully'}, status.HTTP_200_OK
+    
+    
+def send_confirmation_email(user, schedule_id):
+    try:
+        schedule = get_object_or_404(Schedule, pk=schedule_id)
+        
+        events = Event.objects.filter(suggested_schedule=schedule_id)
+        owner_name = request.user.first_name
+
+        for event in events:
+            member = get_object_or_404(Member, pk=event.memeber)
+            time_slot = get_object_or_404(OwnerTimeSlot, pk=event.time_slot)
+            
+            message = f"Hi {memeber.name},\n\nYour meeting is scheduled for {time_slot.date} with {owner_name} from {time_slot.start_time} to {time_slot.end_time}.\n\nBest regards.\n1on1 Team"
+            send_email_to_participant('Meeting confirmation from 1on1', member.email, message)
+
+            return {'success': True, 'message': 'Emails sent successfully'}
+        
+    except Exception as e:
+        return {'success': False, 'message': str(e)}
+    
+    
+def send_email_to_participant(title, email, message):
+    send_mail(
+        title,
+        message,
+        settings.EMAIL_HOST_USER,  
+        [email],
+        fail_silently=False,
+    )
