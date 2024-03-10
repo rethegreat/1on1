@@ -77,7 +77,16 @@ class OwnerTimeSlotSerializer(serializers.ModelSerializer):
 
 
 class MemberTimeSlotSerializer(serializers.Serializer):
+    # time_slot_time = serializers.DateTimeField(required=True, input_formats=['%Y-%m-%dT%H:%M'])
     time_slot_id = serializers.IntegerField(required=True)
+    preference = serializers.CharField(required=True)
+
+    def create(self, validated_data):
+        try:
+            return super().create(validated_data)
+        except IntegrityError:
+            # If there's a conflict, raise a validation error with the same message
+            raise ValidationError("You have already submitted this time slot.")
 
 # Event
 

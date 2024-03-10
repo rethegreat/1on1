@@ -85,7 +85,7 @@ class MemberAvailabilityView(APIView):
         # If the member already submitted the member time slot with that time_slot_id, if found, return 400
         if serializer.is_valid():
             time_slot_id = serializer.validated_data.get('time_slot_id')
-            chosen_slot = OwnerTimeSlot.objects.get(id=time_slot_id)
+            chosen_slot = get_object_or_404(possible_slots, id=time_slot_id)
             if not chosen_slot:
                 return Response({'error': 'Invalid time slot'}, status=status.HTTP_400_BAD_REQUEST)
             
