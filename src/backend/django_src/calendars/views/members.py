@@ -18,29 +18,39 @@ from rest_framework.views import APIView
 
 # EndPoint: /calendars/<int:calendar_id>/members/list/
 class MemberListView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsCalendarOwner]
 
     def get(self, request, calendar_id):
-        # Get all members of the calendar
+        """View all members of the calendar"""
         calendar = get_object_or_404(Calendar, id=calendar_id)
+        self.check_object_permissions(request, calendar)
+
         members = Member.objects.filter(calendar=calendar)
         serializer = MemberListSerializer(members, many=True)
         return Response(serializer.data)
 
     def post(self, request, calendar_id):
+        """Add(invite) a new member to the calendar"""
+        calendar = get_object_or_404(Calendar, id=calendar_id)
+        self.check_object_permissions(request, calendar)
+
         data = request.data.copy()
-        data['calendar'] = calendar_id  # Set the calendar field
+        data['calendar'] = calendar  # Set the calendar field
         data['submitted'] = False  # Set the submitted field
-        serializer = MemberListSerializer(data=data, context={'view': self})
+        serializer = MemberListSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class MemberDetailView(APIView):
-    # permission_classes = [IsAuthenticated, IsCalendarOwner]
+    permission_classes = [IsAuthenticated, IsCalendarOwner]
 
     def get(self, request, calendar_id, member_id):
+        """View a member's details"""
+        calendar = get_object_or_404(Calendar, id=calendar_id)
+        self.check_object_permissions(request, calendar)
+
         try:
             member = Member.objects.get(id=member_id, calendar_id=calendar_id)
         except Member.DoesNotExist:
@@ -49,6 +59,10 @@ class MemberDetailView(APIView):
         return Response(serializer.data)
 
     def delete(self, request, calendar_id, member_id):
+        """Remove a member from the calendar"""
+        calendar = get_object_or_404(Calendar, id=calendar_id)
+        self.check_object_permissions(request, calendar)
+
         try:
             member = Member.objects.get(id=member_id, calendar_id=calendar_id)
         except Member.DoesNotExist:
@@ -57,6 +71,10 @@ class MemberDetailView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def patch(self, request, calendar_id, member_id):
+        """Edit a member's details or remind them to submit their availability"""
+        calendar = get_object_or_404(Calendar, id=calendar_id)
+        self.check_object_permissions(request, calendar)
+
         # Get the member instance
         try:
             member = Member.objects.get(id=member_id, calendar_id=calendar_id)

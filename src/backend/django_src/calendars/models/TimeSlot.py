@@ -3,6 +3,9 @@ from .Calendar import Calendar
 from .Member import Member
 from django.core.exceptions import ValidationError
 from .validators import validate_datetime_format
+from django.db.models import Value
+from django.db import IntegrityError
+import datetime
 
 # TimeSlot
 # This model is used to store the time slot information
@@ -29,8 +32,8 @@ class OwnerTimeSlot(models.Model):
     # 1) start_time = the start time of the time slot; required
     start_time = models.DateTimeField(null=False, blank=False, validators=[validate_datetime_format])
 
-    # 2) end_time = the end time of the time slot; default is `meeting_duration` minutes after `start_time`
-    # end_time = models.DateTimeField(null=False, blank=False)
+    # 2) end_time = the end time of the time slot which should be autoset as `self.calendar.meeting_duration`mins + `self.start_time`
+    # end_time = models.DateTimeField(null=False, blank=False, validators=[validate_datetime_format])
 
     # 3) preference = the preference of the time slot; default is NO_PREF
     PREF_CHOICES = [
@@ -39,20 +42,26 @@ class OwnerTimeSlot(models.Model):
         ('LOW', 'Low')
     ]
     preference = models.CharField(max_length=7, choices=PREF_CHOICES, default='NO_PREF')
-    class Meta:
-            # Ensure that there is at most one OwnerTimeSlot with a specific start_time per OwnerAvailability
-            unique_together = ['calendar', 'start_time']
 
-    def clean(self):
-        """
-        Custom model clean method to ensure uniqueness of OwnerTimeSlot by start_time.
-        """
-        # Check if there is already an OwnerTimeSlot with the same start_time
-        existing_slots = OwnerTimeSlot.objects.filter(availability=self.availability, start_time=self.start_time)
-        if self.pk:  # If updating an existing instance, exclude itself from the query
-            existing_slots = existing_slots.exclude(pk=self.pk)
-        if existing_slots.exists():
-            raise ValidationError(('An OwnerTimeSlot with the same start time already exists.'))
+    class Meta:
+        unique_together = ('calendar', 'start_time')
+
+    def save(self, *args, **kwargs):
+        
+        # Validate that the time slot doesn't conflict with existing slots
+        existing_slots = OwnerTimeSlot.objects.filter(
+            calendar=self.calendar
+        ).exclude(pk=self.pk if self.pk else Value(None))
+
+        for slot in existing_slots:
+            slot_end_time = slot.start_time + datetime.timedelta(minutes=self.calendar.meeting_duration)
+            self_end_time = self.start_time + datetime.timedelta(minutes=self.calendar.meeting_duration)
+            if (slot.start_time < self_end_time < slot_end_time) or (slot.start_time < self_end_time < slot_end_time):
+                raise IntegrityError("Time slot conflicts with existing slot.")
+
+        # Call the parent save method to actually save the object
+        super().save(*args, **kwargs)
+
 
 # ========================================================
 # MemberTimeSlot

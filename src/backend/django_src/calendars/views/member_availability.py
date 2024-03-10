@@ -33,6 +33,15 @@ class MemberAvailabilityView(APIView):
         # Serialize the data
         # Manually serialize the data
         data = {
+            'calendar': {
+                'id': calendar.id,
+                'name': calendar.name,
+                'description': calendar.description,
+                'owner': calendar.owner.first_name + ' ' + calendar.owner.last_name,
+                'owner_email': calendar.owner.email,
+                'meeting_duration': calendar.meeting_duration,
+            },
+
             'member': {
                 'id': member.id,
                 'name': member.name
@@ -52,7 +61,6 @@ class MemberAvailabilityView(APIView):
                 for slot in possible_slots
             ]
         }
-
 
         return Response(data, status=status.HTTP_200_OK)
     
