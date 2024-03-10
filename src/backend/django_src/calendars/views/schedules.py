@@ -9,6 +9,7 @@ from ..models.Member import Member
 from ..models.Event import Event
 from ..models.TimeSlot import OwnerTimeSlot, MemberTimeSlot
 from ..serializers import ScheduleSerializer
+from ..email_utils import send_confirmation_email
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 from ..models.Event import Event
@@ -90,8 +91,13 @@ class ScheduleDetailView(APIView):
         calendar.finalized = True
         calendar.finalized_schedule = schedule
         calendar.save()
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        
+        result = send_confirmation_email(request.user, schedule_id)
+        
+        if result['success']:
+            return Response({'detail': result['message']}, status=status.HTTP_200_OK)
+        else:
+            return Response({'detail': result['message']}, status=status.HTTP_403_FORBIDDEN if result['message'] == 'Forbidden' else status.HTTP_400_BAD_REQUEST)
     
 
     def put(self, request, calendar_id, schedule_id):

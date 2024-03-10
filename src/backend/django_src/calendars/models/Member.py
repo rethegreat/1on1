@@ -34,6 +34,6 @@ class Member(models.Model):
             f"This is a friendly reminder to submit your availability to the calendar {self.calendar.name}.\n\n"
             "Thank you.\n"
         )
-        from_email = '1on1.utoronto@gmail.com'
+        from_email = settings.EMAIL_HOST_USER
         to_email = self.email
         send_mail(subject, message, from_email, [to_email])
