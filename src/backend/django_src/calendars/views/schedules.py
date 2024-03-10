@@ -92,7 +92,7 @@ class ScheduleDetailView(APIView):
         calendar.finalized_schedule = schedule
         calendar.save()
         
-        result = send_confirmation_email_helper(request.user, schedule_id)
+        result = send_confirmation_email(request.user, schedule_id)
         
         if result['success']:
             return Response({'detail': result['message']}, status=status.HTTP_200_OK)
