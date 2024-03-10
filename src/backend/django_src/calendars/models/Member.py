@@ -1,6 +1,7 @@
 from django.db import models
 from .Calendar import Calendar
 from django.core.mail import send_mail
+from django.conf import settings
 
 # Member
 # This model is used to store the member information
