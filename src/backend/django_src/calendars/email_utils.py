@@ -9,20 +9,20 @@ from django.conf import settings
 import base64
 
     
-def send_invitation_email(user, calendar_id):
-    members = Member.objects.filter(calendar=calendar_id)
-    owner_name = user.first_name
+# def send_invitation_email(user, calendar_id):
+#     members = Member.objects.filter(calendar=calendar_id)
+#     owner_name = user.first_name
     
-    for member in members:
+#     for member in members:
 
-        url_path = f'{calendar_id}/members/{member.id}/availability'
+#         url_path = f'{calendar_id}/members/{member.id}/availability'
     
-        url_hash = base64.urlsafe_b64encode(url_path.encode()).decode()
+#         url_hash = base64.urlsafe_b64encode(url_path.encode()).decode()
     
-        message = f"Hi {member.name},\n\nYou have been invited by {owner_name} to set up a meeting with them. Please fill out your availability with this link at your nearest convenience.\n{url_hash}\n\nBest regards.\n1on1 Team"
-        send_email_to_participant('Meeting scheduling invitation from 1on1', member.email, message)
+#         message = f"Hi {member.name},\n\nYou have been invited by {owner_name} to set up a meeting with them. Please fill out your availability with this link at your nearest convenience.\n{url_hash}\n\nBest regards.\n1on1 Team"
+#         send_email_to_participant('Meeting scheduling invitation from 1on1', member.email, message)
     
-    return {'detail': 'Emails sent successfully'}, status.HTTP_200_OK
+#     return {'detail': 'Emails sent successfully'}, status.HTTP_200_OK
     
     
 def send_confirmation_email(user, schedule_id):

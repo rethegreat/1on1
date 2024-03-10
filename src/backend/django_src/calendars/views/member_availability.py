@@ -19,10 +19,14 @@ from django.shortcuts import get_object_or_404
 # The provided link will redirect to this page, where the member can view, edit, and submit their availability
 # EndPoint: /calendars/<calendar-id>/members/<member_id>/availability
 class MemberAvailabilityView(APIView):
+    
+    def get_member_by_hash(self, hash, calendar_id):
+        # Attempt to retrieve the Member using the provided hash and calendar_id for extra validation
+        return get_object_or_404(Member, member_hash=hash, calendar_id=calendar_id)
 
     # Get all of this member's availability(Get all the non-busy time slots this member submitted)
     def get(self, request, calendar_id, member_id):        # Validate and retrieve the member based on the ID
-        member = get_object_or_404(Member, id=member_id)
+        member = self.get_member_by_hash(hash, calendar_id)
 
         # Get all the non-busy time slots this member submitted
         previously_submitted = MemberTimeSlot.objects.filter(member=member)
@@ -67,7 +71,7 @@ class MemberAvailabilityView(APIView):
     def post(self, request, member_id, calendar_id):
         # Extract member ID from the URL parameters or token in the request
         # Validate and retrieve the member based on the ID
-        member = get_object_or_404(Member, id=member_id)
+        member = self.get_member_by_hash(hash, calendar_id)
 
         calendar = get_object_or_404(Calendar, id=calendar_id)
         # 'possible_slots' is a list of owner-available time slots
@@ -108,7 +112,7 @@ class MemberAvailabilityView(APIView):
         if member_time_slot_id is None:
             return Response({'error': 'Member time slot ID is required'}, status=status.HTTP_400_BAD_REQUEST)
         # Validate and retrieve the member based on the ID
-        member = get_object_or_404(Member, id=member_id)
+        member = self.get_member_by_hash(hash, calendar_id)
         # Delete the member's availability
         MemberTimeSlot.objects.filter(id=member_time_slot_id).delete()
         # If there is no timeslot submitted at all then set member.submitted=False

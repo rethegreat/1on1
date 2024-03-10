@@ -2,6 +2,8 @@ from django.db import models
 from .Calendar import Calendar
 from django.core.mail import send_mail
 from django.conf import settings
+import hashlib
+import uuid
 
 # Member
 # This model is used to store the member information
@@ -21,6 +23,8 @@ class Member(models.Model):
 
     # 4) submitted: whether the member submitted their availability or not
     submitted = models.BooleanField(default=False)
+    
+    member_hash = models.CharField(max_length=64, unique=True, blank=True)
 
     # No duplicate email within one calendar
     class Meta:
@@ -29,14 +33,39 @@ class Member(models.Model):
     def __str__(self):
         return "[Member of " + self.calendar.name + "] " + self.name
     
+    def save(self, *args, **kwargs):
+        if not self.member_hash:
+            # Generate a unique hash for the member
+            raw_string = f"{self.name}{self.email}{uuid.uuid4()}"
+            self.member_hash = hashlib.sha256(raw_string.encode()).hexdigest()
+        super(Member, self).save(*args, **kwargs)
+    
     def remind(self):
         """
         Sends a reminder email to the given member to submit their availability.
         """
         subject = 'Reminder: Submit Your Availability'
+        unique_link = f"http://127.0.0.1:8000/calendars/{self.calendar.id}/availability/{self.member_hash}/"
         message = (
             f"Dear {self.name},\n\n"
             f"This is a friendly reminder to submit your availability to the calendar {self.calendar.name}.\n\n"
+            f"{unique_link}\n\n"
+            "Thank you.\n"
+        )
+        from_email = settings.EMAIL_HOST_USER
+        to_email = self.email
+        send_mail(subject, message, from_email, [to_email])
+        
+    def invite(self):
+        """
+        Sends a inivtation email to the given member to submit their availability.
+        """
+        subject = 'Invitation to calendar: Submit Your Availability'
+        unique_link = f"http://127.0.0.1:8000/calendars/{self.calendar.id}/availability/{self.member_hash}/"
+        message = (
+            f"Dear {self.name},\n\n"
+            f"You haven been invited to submit your availability to the calendar {self.calendar.name}.\n\n"
+            f"{unique_link}\n\n"
             "Thank you.\n"
         )
         from_email = settings.EMAIL_HOST_USER

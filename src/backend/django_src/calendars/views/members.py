@@ -39,7 +39,8 @@ class MemberListView(APIView):
         data['submitted'] = False  # Set the submitted field
         serializer = MemberListSerializer(data=data)
         if serializer.is_valid():
-            serializer.save()
+            new_member = serializer.save()
+            new_member.invite()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

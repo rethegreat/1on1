@@ -86,7 +86,5 @@ class CalendarRemind(APIView):
         
         for member in members:
             if not member.submitted:
-                message = f"Hi {member.name},\n\nA reminder that you have been inivited by {owner_name} to set up a meeting with them. Please fill out your avalibility at your nearest convenience.\n\nBest regards.\n1on1 Team"
-                send_email_to_participant('Meeting scheduling reminder from 1on1',member.email, message)
-
+                member.remind()
         return Response({'detail': 'Emails sent successfully'}, status=status.HTTP_200_OK)
