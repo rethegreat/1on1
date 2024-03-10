@@ -10,7 +10,6 @@ import base64
 
     
 def send_invitation_email(user, calendar_id):
-    calendar = Calendar.objects.get(id=calendar_id)
     members = Member.objects.filter(calendar=calendar_id)
     owner_name = user.first_name
     
@@ -29,8 +28,7 @@ def send_invitation_email(user, calendar_id):
 def send_confirmation_email(user, schedule_id):
     try:
         schedule = get_object_or_404(Schedule, pk=schedule_id)
-        
-        events = Event.objects.filter(suggested_schedule=schedule_id)
+        events = Event.objects.filter(suggested_schedule=schedule)
         owner_name = user.first_name
 
         for event in events:
