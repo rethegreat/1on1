@@ -37,7 +37,7 @@ class MemberListView(APIView):
         data = request.data.copy()
         data['calendar'] = calendar  # Set the calendar field
         data['submitted'] = False  # Set the submitted field
-        serializer = MemberListSerializer(data=data, context={'view': self})
+        serializer = MemberListSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
