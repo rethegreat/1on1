@@ -30,7 +30,7 @@ class CalendarList(APIView):
         
         if serializer.is_valid():
             created_calendar = serializer.save(owner=request.user)
-            email_response, email_status = send_invitation_email(created_calendar.id, request.user)
+            email_response, email_status = send_invitation_email(request.user, created_calendar.id)
             
             if email_status != status.HTTP_200_OK:
                 return Response(email_response, status=email_status)
