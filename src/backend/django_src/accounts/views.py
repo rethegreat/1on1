@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import ProfileUserSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.authtoken.models import Token
 
 
 class RegisterView(APIView):
@@ -12,7 +13,8 @@ class RegisterView(APIView):
         serializer = ProfileUserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            return Response({"message": "User created successfully"}, status=201)
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({"message": "User created successfully", "token": token.key}, status=201)
         return Response(serializer.errors, status=400)
 
 
@@ -24,8 +26,9 @@ class LoginView(APIView):
         password = request.data.get('password')
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            login(request, user)
-            return Response({"message": "Login successful", "user": username}, status=200)
+            # login(request, user)
+            token, _ = Token.objects.get_or_create(user=user)
+            return Response({"message": "Login successful", "user": username, "token": token.key}, status=200)
         else:
             return Response({"message": "Invalid credentials"}, status=401)
 
@@ -34,6 +37,7 @@ class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        request.user.auth_token.delete()
         logout(request)
         return Response({"message": "Logged out."}, status=200)
 
