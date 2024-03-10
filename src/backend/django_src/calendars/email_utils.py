@@ -1,14 +1,22 @@
 from django.core.mail import send_mail
-from .models.Calendar import Schedule
+from .models.Calendar import Calendar, Schedule
 from .models.Member import Member
+from .models.Event import Event
+from .models.TimeSlot import OwnerTimeSlot
+from django.shortcuts import get_object_or_404
+from rest_framework import status
+from django.conf import settings
+import base64
+
     
 def send_invitation_email(user, calendar_id):
-        
-    members = Member.objects.filter(calendar_id=calendar_id)
+    calendar = Calendar.objects.get(id=calendar_id)
+    members = Member.objects.filter(calendar=calendar_id)
     owner_name = user.first_name
     
     for member in members:
-        url_path = f'{calendar_id}/members/{member_id}/availability'
+
+        url_path = f'{calendar_id}/members/{member.id}/availability'
     
         url_hash = base64.urlsafe_b64encode(url_path.encode()).decode()
     
@@ -23,13 +31,13 @@ def send_confirmation_email(user, schedule_id):
         schedule = get_object_or_404(Schedule, pk=schedule_id)
         
         events = Event.objects.filter(suggested_schedule=schedule_id)
-        owner_name = request.user.first_name
+        owner_name = user.first_name
 
         for event in events:
             member = get_object_or_404(Member, pk=event.memeber)
             time_slot = get_object_or_404(OwnerTimeSlot, pk=event.time_slot)
             
-            message = f"Hi {memeber.name},\n\nYour meeting is scheduled for {time_slot.date} with {owner_name} from {time_slot.start_time} to {time_slot.end_time}.\n\nBest regards.\n1on1 Team"
+            message = f"Hi {member.name},\n\nYour meeting is scheduled for {time_slot.date} with {owner_name} from {time_slot.start_time} to {time_slot.end_time}.\n\nBest regards.\n1on1 Team"
             send_email_to_participant('Meeting confirmation from 1on1', member.email, message)
 
             return {'success': True, 'message': 'Emails sent successfully'}
