@@ -4,6 +4,9 @@ from .models.Calendar import Calendar, Schedule
 from .models.Member import Member
 from .models.Event import Event
 from .models.TimeSlot import OwnerTimeSlot, MemberTimeSlot
+from django.db import IntegrityError
+from rest_framework.exceptions import ValidationError
+import datetime
 
 # Calendar
 class CalendarListSerializer(serializers.ModelSerializer):
@@ -45,9 +48,10 @@ class MemberListSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        calendar_id = self.context['view'].kwargs.get('calendar_id')
-        validated_data['calendar_id'] = calendar_id
-        return super().create(validated_data)
+        try:
+            return super().create(validated_data)
+        except IntegrityError:
+            raise ValidationError("A member with this email already exists in the calendar.")
 
 
 # Availability
@@ -61,6 +65,15 @@ class OwnerTimeSlotSerializer(serializers.ModelSerializer):
             'start_time': {'required': True, 'allow_null': False},
             'preference': {'required': True}
         }
+    
+    def create(self, validated_data):
+        # Time Slot should have a unique start time for each calendar
+        # Check if the time slot already exists with this time
+        try:
+            return super().create(validated_data)
+        except IntegrityError:
+            # If there's a conflict, raise a validation error with the same message
+            raise ValidationError("Time slot conflicts with existing slot.")
 
 
 class MemberTimeSlotSerializer(serializers.Serializer):
