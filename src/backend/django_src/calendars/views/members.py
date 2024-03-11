@@ -8,6 +8,7 @@ from rest_framework import status
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
+from accounts.models import Contact
 
 # Members
 # - User should be able to ...
@@ -58,15 +59,15 @@ class MemberSelectionView(APIView):
         self.check_object_permissions(request, calendar)
 
         # Get the owner's contacts
-        contacts = request.user.contacts.all()
+        contacts = Contact.objects.filter(owner=request.user)
         # Serialize the data
         data = [
             {
                 'id': contact.id,
-                'name': contact.name,
-                'email': contact.email,
+                'name': contact.contact.first_name + " " + contact.contact.last_name,
+                'email': contact.contact.email,
                 # Check if the contact is already in the calendar
-                'in_calendar': Member.objects.filter(calendar=calendar, email=contact.email).exists()
+                'in_calendar': Member.objects.filter(calendar=calendar, email=contact.contact.email).exists()
             }
             for contact in contacts
         ]
@@ -82,27 +83,31 @@ class MemberSelectionView(APIView):
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
         data = request.data
-        contact_id = data.get('id', None)
-        if contact_id is None:
+        username = data.get('username', None)
+        if username is None:
             return Response({'error': 'Please select at least one contact'}, status=status.HTTP_400_BAD_REQUEST)
         
-        # Check if the email is in the owner's contacts
-        contact = request.user.contacts.filter(id=contact_id).first()
-        if contact is None:
+        # Check if the username is in the owner's contacts
+        found = False
+        for contact in Contact.objects.filter(owner=request.user):
+            if contact.contact.username == username:
+                found = True
+                break
+        if not found:
             return Response({'error': 'Contact not found'}, status=status.HTTP_404_NOT_FOUND)
         
+        adding_member = contact.contact
         # Check if the contact is already in the calendar
-        if Member.objects.filter(calendar=calendar, email=contact.email).exists():
+        if Member.objects.filter(calendar=calendar, email=adding_member.email).exists():
             return Response({'error': 'Contact already in the calendar'}, status=status.HTTP_400_BAD_REQUEST)
         
         # Add the contact to the calendar
-        member = Member.objects.create(
-            name=contact.name,
-            email=contact.email,
-            calendar=calendar,
-            submitted=False
-        )
-        serializer = MemberListSerializer(member)
+        data = {'calendar': calendar, 'email': adding_member.email, 'name': adding_member.first_name + " " + adding_member.last_name, 'submitted': False}
+        serializer = MemberListSerializer(data=data)
+        if serializer.is_valid():
+            new_member = serializer.save(calendar=calendar)
+            new_member.invite()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 # EndPoint: /calendars/<int:calendar_id>/members/<int:member_id>/
