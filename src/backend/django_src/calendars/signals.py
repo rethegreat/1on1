@@ -1,8 +1,7 @@
 from django.dispatch import receiver
 from django.db.models.signals import pre_save
 from django.utils import timezone
-from .models import Calendar, Member
-from .models.Calendar import Schedule
+from .models.Calendar import Calendar, Schedule
 from .views.schedules import ScheduleDetailView
 
 @receiver(pre_save, sender=Calendar)
