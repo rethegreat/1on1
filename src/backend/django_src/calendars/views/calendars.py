@@ -28,6 +28,8 @@ class CalendarList(APIView):
     
     def post(self, request):
         """Create a new calendar"""
+        data = request.data.copy()
+        data['owner'] = request.user.id
         serializer = CalendarListSerializer(data=request.data)
         
         if serializer.is_valid():
