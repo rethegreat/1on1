@@ -8,7 +8,7 @@ from ..models.TimeSlot import OwnerTimeSlot, MemberTimeSlot
 from ..serializers import OwnerTimeSlotSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
-from ..permissions import IsCalendarOwner
+from ..permissions import IsCalendarOwner, IsCalendarNotFinalized
 
 # Owner Availability
 # - User should be able to ...
@@ -44,6 +44,13 @@ class OwnerAvailabilityView(APIView):
         # Get the calendar
         calendar = get_object_or_404(Calendar, id=calendar_id)
         self.check_object_permissions(request, calendar)
+
+        # Check additional permission
+        permission_checker = IsCalendarNotFinalized()
+        if not permission_checker.has_permission(request, self):
+            # Handle permission denial
+            return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
+
         # Create the time slot
         serializer = OwnerTimeSlotSerializer(data=request.data)
         if serializer.is_valid():
@@ -57,6 +64,13 @@ class OwnerAvailabilityView(APIView):
         # Get the calendar
         calendar = get_object_or_404(Calendar, id=calendar_id)
         self.check_object_permissions(request, calendar)
+
+        # Check additional permission
+        permission_checker = IsCalendarNotFinalized()
+        if not permission_checker.has_permission(request, self):
+            # Handle permission denial
+            return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
+
         # Get the time slot
         time_slot = get_object_or_404(OwnerTimeSlot, calendar=calendar, start_time=time_slot_time)
         if action == 'edit':

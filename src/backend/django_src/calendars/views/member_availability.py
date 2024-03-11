@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from ..permissions import IsCalendarNotFinalized
 from ..models.Calendar import Calendar
 from ..models.Member import Member
 from ..models.TimeSlot import OwnerTimeSlot, MemberTimeSlot
@@ -70,6 +71,13 @@ class MemberAvailabilityView(APIView):
         # Validate and retrieve the member based on the ID
         member = get_object_or_404(Member, id=member_id)
         calendar = get_object_or_404(Calendar, id=calendar_id)
+
+        # Check additional permission
+        permission_checker = IsCalendarNotFinalized()
+        if not permission_checker.has_permission(request, self):
+            # Handle permission denial
+            return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
+
         # 'possible_slots' is a list of owner-available time slots
         possible_slots = OwnerTimeSlot.objects.filter(calendar=calendar)
 
@@ -105,6 +113,15 @@ class MemberAvailabilityView(APIView):
 
 
     def patch(self, request, member_id, calendar_id):
+        """Delete a specific member's non-busy time slot"""
+        calendar = get_object_or_404(Calendar, id=calendar_id)
+
+        # Check additional permission
+        permission_checker = IsCalendarNotFinalized()
+        if not permission_checker.has_permission(request, self):
+            # Handle permission denial
+            return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
+
         member_time_slot_id = request.data.get('member_time_slot_id', None)
         if member_time_slot_id is None:
             return Response({'error': 'Member time slot ID is required'}, status=status.HTTP_400_BAD_REQUEST)

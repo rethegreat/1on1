@@ -1,5 +1,5 @@
 from rest_framework.permissions import IsAuthenticated
-from ..permissions import IsCalendarOwner
+from ..permissions import IsCalendarOwner, IsCalendarNotFinalized
 from ..models.Calendar import Calendar
 from ..models.Member import Member
 from ..serializers import CalendarListSerializer, CalendarPUTSerializer
@@ -60,6 +60,12 @@ class CalendarDetail(APIView):
         calendar = get_object_or_404(Calendar, id=calendar_id)
         self.check_object_permissions(request, calendar)
 
+        # Check additional permission
+        permission_checker = IsCalendarNotFinalized()
+        if not permission_checker.has_permission(request, self):
+            # Handle permission denial
+            return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
+
         serializer = CalendarPUTSerializer(calendar, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -80,9 +86,15 @@ class CalendarRemind(APIView):
     
     def post(self, request, calendar_id):
         """Remind all members of the calendar to submit their availability"""
-        calendar = get_object_or_404(Calendar, pk=calendar_id)
+        calendar = get_object_or_404(Calendar, id=calendar_id)
         self.check_object_permissions(request, calendar)
-        
+
+        # Check additional permission
+        permission_checker = IsCalendarNotFinalized()
+        if not permission_checker.has_permission(request, self):
+            # Handle permission denial
+            return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
+
         members = Member.objects.filter(calendar=calendar)
         owner_name = request.user.first_name
         
