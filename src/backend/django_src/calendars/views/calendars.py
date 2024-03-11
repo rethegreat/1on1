@@ -3,7 +3,7 @@ from ..permissions import IsCalendarOwner
 from ..models.Calendar import Calendar
 from ..models.Member import Member
 from ..serializers import CalendarListSerializer, CalendarPUTSerializer
-from ..email_utils import send_invitation_email, send_email_to_participant
+from ..email_utils import send_email_to_participant
 from rest_framework.response import Response
 from rest_framework import status
 from django.urls import reverse
@@ -32,10 +32,6 @@ class CalendarList(APIView):
         
         if serializer.is_valid():
             created_calendar = serializer.save(owner=request.user)
-            email_response, email_status = send_invitation_email(request.user, created_calendar.id)
-            
-            if email_status != status.HTTP_200_OK:
-                return Response(email_response, status=email_status)
             
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 

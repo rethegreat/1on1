@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import calendars, members, owner_availability, member_availability, redirect, schedules
+from .views import calendars, members, owner_availability, member_availability, schedules
 
 
 urlpatterns = [

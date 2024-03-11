@@ -39,8 +39,8 @@ class CalendarPUTSerializer(CalendarListSerializer):
 class MemberListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Member
-        fields = ['id', 'name', 'email', 'submitted']
-        read_only_fields = ['id']
+        fields = ['id', 'name', 'email', 'submitted', 'member_hash']
+        read_only_fields = ['id', 'member_hash']
         extra_kwargs = {
             'name': {'required': True, 'allow_null': False},
             'email': {'required': True, 'allow_null': False},
@@ -50,7 +50,8 @@ class MemberListSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         try:
             return super().create(validated_data)
-        except IntegrityError:
+        except IntegrityError as e:
+            print(e)
             raise ValidationError("A member with this email already exists in the calendar.")
 
 
