@@ -18,8 +18,9 @@ class CalendarListSerializer(serializers.ModelSerializer):
                   'description',
                   'meeting_duration',
                   'deadline',
-                  'frequency',]
-        read_only_fields = ['id']
+                  'frequency',
+                  'finalized',]
+        read_only_fields = ['id', 'finalized']
         extra_kwargs = {
             'name': {'required': True, 'allow_null': False},
             'color': {'required': False},
