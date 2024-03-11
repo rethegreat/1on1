@@ -49,6 +49,7 @@ class MemberListSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         try:
+            print(validated_data)
             return super().create(validated_data)
         except IntegrityError as e:
             print(e)
