@@ -25,7 +25,7 @@ class MemberAvailabilityView(APIView):
         return get_object_or_404(Member, member_hash=hash, calendar_id=calendar_id)
 
     # Get all of this member's availability(Get all the non-busy time slots this member submitted)
-    def get(self, request, calendar_id, member_id):        # Validate and retrieve the member based on the ID
+    def get(self, request, calendar_id, hash):        # Validate and retrieve the member based on the ID
         member = self.get_member_by_hash(hash, calendar_id)
 
         # Get all the non-busy time slots this member submitted
