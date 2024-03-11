@@ -9,7 +9,7 @@ from ..models.Calendar import Calendar, Schedule
 from ..models.Member import Member
 from ..models.Event import Event
 from ..models.TimeSlot import OwnerTimeSlot, MemberTimeSlot
-from ..serializers import ScheduleSerializer
+from ..serializers import ScheduleSerializer, EventSerializer
 from ..email_utils import send_confirmation_email
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
@@ -18,7 +18,7 @@ from datetime import datetime
 from rest_framework.pagination import PageNumberPagination
 
 # helper function to create a schedule given a calendar
-def _create_schedules(calendar: Calendar): 
+def _create_schedules(calendar: Calendar):
     # PREF_CHOICES: starttime
     owner_mapping = {"HIGH": [], "NO_PREF": [], "LOW": []}
     for slot in OwnerTimeSlot.objects.filter(calendar=calendar):
@@ -167,41 +167,38 @@ class ScheduleListView(APIView):
         calendar = get_object_or_404(Calendar, id=calendar_id)
         self.check_object_permissions(request, calendar)
 
-        # Get the list of schedules for the specified calendar
+        # Check if a schedule already exists for the calendar
+        schedule = Schedule.objects.filter(calendar_id=calendar_id).first()
+
+        # If no schedule exists, create a new one
+        if not schedule:
+            schedule = Schedule.objects.create(calendar=calendar)
+
+            #starttime: member
+            mapping = _create_schedules(calendar)
+            for each in mapping:
+                for time in each:
+                    # Try creating a new event
+                    new_event, err_msg = _add_event(schedule, time, mapping[time])
+                    if not new_event:
+                        return Response({'error': err_msg}, status=status.HTTP_400_BAD_REQUEST)
+
+            schedule.save()
+        # Get all schedules in this calendar
         schedules = Schedule.objects.filter(calendar_id=calendar_id)
-
-        # Paginate the queryset
-        paginator = self.pagination_class()
-        page = paginator.paginate_queryset(schedules, request)
-
-        # Serialize the schedules along with their corresponding events
-        serializer = ScheduleSerializer(page, many=True)
-
-        return paginator.get_paginated_response(serializer.data)
-    
-    def post(self, request, calendar_id):
-        calendar = get_object_or_404(Calendar, id=calendar_id)
-        self.check_object_permissions(request, calendar)
-
-        data = request.data.copy()
-        data['calendar'] = calendar_id
-        serializer = ScheduleSerializer(data=data)
-
-        if not serializer.is_valid():
-            return Response(serializer.errors)
+        # for each schedules, serialize id, schedule, events
+        data = {}
+        for schedule in schedules:
+            data[schedule.id] = {
+                'events': Event.objects.filter(suggested_schedule=schedule)
+            }
         
-        schedule = serializer.save(calendar=calendar)
-
-        #starttime: member
-        mapping = _create_schedules(Calendar)
-        for each in mapping:
-            for time in each:
-                # Try creating a new event
-                new_event, err_msg = _add_event(schedule, time, mapping[time])
-                if not new_event:
-                    return Response({'error': err_msg}, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        # Add pagination here
+        # For each page, show 1 data[schedule.id]
+        # e.g. /calendars/<int:calendar_id>/schedules/?page=1
+        return Response(data)
+        
+        
     
 # EndPoint: /calendars/<int:calendar_id>/schedules/<int:schedule_id>/
 class ScheduleDetailView(APIView):
