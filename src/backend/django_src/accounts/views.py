@@ -1,9 +1,13 @@
-from django.contrib.auth import authenticate, login, logout
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from .serializers import ProfileUserSerializer
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from django.contrib.auth import authenticate, logout, get_user_model
+from django.shortcuts import get_object_or_404
 from rest_framework.authtoken.models import Token
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from .serializers import ProfileUserSerializer
+
+user_model = get_user_model()
 
 
 class RegisterView(APIView):
@@ -48,3 +52,55 @@ class ProfileView(APIView):
     def get(self, request):
         serializer = ProfileUserSerializer(request.user)
         return Response(serializer.data)
+
+
+class ContactsListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        contacts = user.get_contacts()
+        user_all_contacts = [{"username": contact_instance.contact.username,
+                              "email": contact_instance.contact.email,
+                              "first_name": contact_instance.contact.first_name,
+                              "last_name": contact_instance.contact.last_name
+                              } for contact_instance in contacts]
+
+        if user_all_contacts:
+            return Response(user_all_contacts)
+        else:
+            return Response()
+
+
+class AddContactView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        username = request.data.get("username")
+        if not username:
+            return Response({"error": "Username of new contact required."}, status=400)
+
+        new_contact = get_object_or_404(user_model, username=username)
+        added = user.add_contact(new_contact)
+        if added:
+            return Response({"message": f"{username} was added as a contact."}, status=201)
+        else:
+            return Response({"error": "Could not add the contact."}, status=400)
+
+
+class RemoveContactView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        username = request.data.get("username")
+        if not username:
+            return Response({"error": "Username of to-be-removed contact required."}, status=400)
+
+        rem_contact = get_object_or_404(user_model, username=username)
+        removed = user.remove_contact(rem_contact)
+        if removed:
+            return Response({"message": f"{username} was removed as a contact."}, status=201)
+        else:
+            return Response({"error": "Could not remove the contact."}, status=400)
