@@ -17,6 +17,111 @@ from ..models.Event import Event
 from datetime import datetime
 from rest_framework.pagination import PageNumberPagination
 
+# helper function to create a schedule given a calendar
+def _create_schedules(calendar: Calendar): 
+    # PREF_CHOICES: starttime
+    owner_mapping = {"HIGH": [], "NO_PREF": [], "LOW": []}
+    for slot in OwnerTimeSlot.objects.filter(calendar=calendar):
+        owner_mapping[slot.preference].append(slot.start_time)
+
+    
+    # starttime: member
+    times_members = {}
+
+    # member: PREF_CHOICES: starttime
+    members_mapping = {}
+    for mem in Member.objects.filter(calendar=calendar):
+        for slot in MemberTimeSlot.objects.filter(member=mem):
+            members_mapping[mem].setdefault("HIGH", [])
+            members_mapping[mem].setdefault("NO_PREF", [])
+            members_mapping[mem].setdefault("LOW", [])
+            members_mapping[mem][slot.preference].append(slot.time_slot.start_time)
+
+            times_members.setdefault(slot.time_slot.start_time, []).append(mem)
+
+    #owner's times as a list
+    owner_times = owner_mapping['HIGH'] + owner_mapping['NO_PREF'] + owner_mapping['LOW']
+
+
+    #member: list[starttime]
+    members_times = {}
+    for mem in members_mapping:
+        members_times[mem] = members_mapping[mem]['HIGH'] + members_mapping[mem]['NO_PREF'] + members_mapping[mem]['LOW']
+
+        
+
+    #starttime: member
+    base_schedule = {}
+    for time in owner_times:
+        base_schedule[time] = -1
+
+
+    stack = sorted(list(members_times.keys()), key=lambda mem: len(members_times[mem]))
+    used = set()
+
+    while stack:
+        mem = stack.pop()
+        assigned = False
+
+        # attempt to assing
+        for time in members_times[mem]:
+            if time not in used:
+                used.add(time)
+                base_schedule[time] = mem
+                assigned = True
+                break
+        
+        # look to assign another member to another slot 
+        if not assigned:
+            for time in members_times[mem]:
+                for new_time in members_times[base_schedule[time]]:
+                    if new_time not in used:
+                        used.add(new_time)
+                        used.add(time)
+                        base_schedule[new_time] = base_schedule[time]
+                        base_schedule[time] = mem
+                        assigned = True
+                        break
+
+                if assigned:
+                    break
+                    
+        # no possible assignment arrangement
+        if not assigned:
+            return None
+        
+    # high_schedule = _create_another_schedule(base_schedule, owner_mapping['HIGH'])
+    # mid_schedule = _create_another_schedule(base_schedule, owner_mapping['NO_PREF'])
+    
+    return [base_schedule] #, high_schedule, mid_schedule]
+
+def _create_another_schedule(base_schedule, owner_times, times_members, used):
+    stack = owner_times[:]
+    new_schedule = base_schedule.copy()
+    visited = used.copy()
+    
+    #member: starttime in schedule
+    mem_time = {}
+    for time in new_schedule:
+        if new_schedule[time] != -1:
+            mem_time[new_schedule[time]] = time
+
+
+    while stack:
+        cur = stack.pop()
+        if cur not in visited:
+            visited.add(cur)
+            mem = times_members[cur][0]         
+            
+            new_schedule[mem_time[mem]] = -1
+            visited.remove(mem_time[mem])
+
+            new_schedule[cur] = mem
+            mem_time[mem] = cur
+
+
+    return new_schedule
+
 # Helper function to add an event to a schedule
 def _add_event(schedule: Schedule, start_time: datetime, member: Member) -> Event:
     # Get the OwnerTimeSlot object for the specified start time
@@ -73,6 +178,30 @@ class ScheduleListView(APIView):
         serializer = ScheduleSerializer(page, many=True)
 
         return paginator.get_paginated_response(serializer.data)
+    
+    def post(self, request, calendar_id):
+        calendar = get_object_or_404(Calendar, id=calendar_id)
+        self.check_object_permissions(request, calendar)
+
+        data = request.data.copy()
+        data['calendar'] = calendar_id
+        serializer = ScheduleSerializer(data=data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors)
+        
+        schedule = serializer.save(calendar=calendar)
+
+        #starttime: member
+        mapping = _create_schedules(Calendar)
+        for each in mapping:
+            for time in each:
+                # Try creating a new event
+                new_event, err_msg = _add_event(schedule, time, mapping[time])
+                if not new_event:
+                    return Response({'error': err_msg}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
     
 # EndPoint: /calendars/<int:calendar_id>/schedules/<int:schedule_id>/
 class ScheduleDetailView(APIView):
