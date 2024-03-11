@@ -16,6 +16,7 @@ from rest_framework.decorators import action
 from ..models.Event import Event
 from datetime import datetime
 from rest_framework.pagination import PageNumberPagination
+from django.core.paginator import Paginator
 
 # helper function to create a schedule given a calendar
 def _create_schedules(calendar: Calendar):
@@ -162,6 +163,7 @@ def _add_event(schedule: Schedule, start_time: datetime, member: Member) -> Even
 class ScheduleListView(APIView):
     pagination_class = PageNumberPagination
     permission_classes = [IsAuthenticated, IsCalendarOwner]
+    pagination_class.page_size = 1
 
     def get(self, request, calendar_id):
         calendar = get_object_or_404(Calendar, id=calendar_id)
@@ -184,20 +186,36 @@ class ScheduleListView(APIView):
                         return Response({'error': err_msg}, status=status.HTTP_400_BAD_REQUEST)
 
             schedule.save()
+        
         # Get all schedules in this calendar
         schedules = Schedule.objects.filter(calendar_id=calendar_id)
         # for each schedules, serialize id, schedule, events
-        data = {}
-        for schedule in schedules:
-            data[schedule.id] = {
+
+        # Paginate the queryset
+        # Paginate the queryset
+        paginator = Paginator(schedules, self.pagination_class.page_size)
+        page_number = request.query_params.get('page', 1)
+        page_obj = paginator.get_page(page_number)
+
+        # Serialize each schedule along with its events
+        results = []
+        for schedule in page_obj:
+            data = {
+                'id': schedule.id,
                 'events': Event.objects.filter(suggested_schedule=schedule)
             }
-        
-        # Add pagination here
-        # For each page, show 1 data[schedule.id]
-        # e.g. /calendars/<int:calendar_id>/schedules/?page=1
-        return Response(data)
-        
+            results.append(data)
+
+        # Construct custom paginated response
+        response_data = {
+            'count': paginator.count,
+            'next': page_obj.next_page_number() if page_obj.has_next() else None,
+            'previous': page_obj.previous_page_number() if page_obj.has_previous() else None,
+            'results': results  # Include paginated data
+        }
+
+        return Response(response_data)
+        return Response(response_data, status=status.HTTP_200_OK)
         
     
 # EndPoint: /calendars/<int:calendar_id>/schedules/<int:schedule_id>/
