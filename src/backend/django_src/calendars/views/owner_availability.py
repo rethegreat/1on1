@@ -44,6 +44,11 @@ class OwnerAvailabilityView(APIView):
         # Get the calendar
         calendar = get_object_or_404(Calendar, id=calendar_id)
         self.check_object_permissions(request, calendar)
+
+        # Check additional permission
+        if calendar.finalized:
+            return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
+
         # Create the time slot
         serializer = OwnerTimeSlotSerializer(data=request.data)
         if serializer.is_valid():
@@ -57,6 +62,11 @@ class OwnerAvailabilityView(APIView):
         # Get the calendar
         calendar = get_object_or_404(Calendar, id=calendar_id)
         self.check_object_permissions(request, calendar)
+
+        # Check additional permission
+        if calendar.finalized:
+            return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
+
         # Get the time slot
         time_slot = get_object_or_404(OwnerTimeSlot, calendar=calendar, start_time=time_slot_time)
         if action == 'edit':

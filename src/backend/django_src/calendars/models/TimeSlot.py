@@ -76,3 +76,14 @@ class MemberTimeSlot(models.Model):
 
     # 1) time_slot = the time slot of the member; required
     time_slot = models.ForeignKey('OwnerTimeSlot', on_delete=models.CASCADE, null=False, blank=False)
+
+    # 2) preference = the preference of the time slot; default is NO_PREF
+    PREF_CHOICES = [
+        ('HIGH', 'High'),
+        ('NO_PREF', 'No Preference'),
+        ('LOW', 'Low')
+    ]
+    preference = models.CharField(max_length=7, choices=PREF_CHOICES, default='NO_PREF')
+
+    class Meta:
+        unique_together = ('member', 'time_slot')
