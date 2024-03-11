@@ -33,13 +33,13 @@ class MemberListView(APIView):
         """Add(invite) a new member to the calendar"""
         calendar = get_object_or_404(Calendar, id=calendar_id)
         self.check_object_permissions(request, calendar)
-
         data = request.data.copy()
-        data['calendar'] = calendar  # Set the calendar field
+        data['calendar'] = calendar_id
         data['submitted'] = False  # Set the submitted field
         serializer = MemberListSerializer(data=data)
         if serializer.is_valid():
-            serializer.save()
+            # Create member model
+            serializer.save(calendar=calendar)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

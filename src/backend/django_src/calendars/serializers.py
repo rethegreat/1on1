@@ -6,7 +6,7 @@ from .models.Event import Event
 from .models.TimeSlot import OwnerTimeSlot, MemberTimeSlot
 from django.db import IntegrityError
 from rest_framework.exceptions import ValidationError
-import datetime
+from django.shortcuts import get_object_or_404
 
 # Calendar
 class CalendarListSerializer(serializers.ModelSerializer):
@@ -39,19 +39,22 @@ class CalendarPUTSerializer(CalendarListSerializer):
 class MemberListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Member
-        fields = ['id', 'name', 'email', 'submitted']
-        read_only_fields = ['id']
+        fields = ['id', 'name', 'email', 'submitted', 'calendar']
+        read_only_fields = ['id', 'submitted', 'calendar']
         extra_kwargs = {
             'name': {'required': True, 'allow_null': False},
             'email': {'required': True, 'allow_null': False},
-            'submitted': {'required': False}
+            'submitted': {'required': False},
+            'calendar': {'required': False}
         }
 
     def create(self, validated_data):
+        # add calendar to the validated data
         try:
             return super().create(validated_data)
-        except IntegrityError:
-            raise ValidationError("A member with this email already exists in the calendar.")
+        except IntegrityError as e:
+            error_message = str(e)
+            raise ValidationError("Member already exists in the calendar.")
 
 
 # Availability
