@@ -18,8 +18,9 @@ class CalendarListSerializer(serializers.ModelSerializer):
                   'description',
                   'meeting_duration',
                   'deadline',
-                  'frequency',]
-        read_only_fields = ['id']
+                  'frequency',
+                  'finalized',]
+        read_only_fields = ['id', 'finalized']
         extra_kwargs = {
             'name': {'required': True, 'allow_null': False},
             'color': {'required': False},
@@ -48,8 +49,8 @@ class CalendarPUTSerializer(CalendarListSerializer):
 class MemberListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Member
-        fields = ['id', 'name', 'email', 'submitted', 'calendar']
-        read_only_fields = ['id', 'submitted', 'calendar']
+        fields = ['id', 'name', 'email', 'submitted', 'calendar', 'member_hash']
+        read_only_fields = ['id', 'submitted', 'calendar', 'member_hash']
         extra_kwargs = {
             'name': {'required': True, 'allow_null': False},
             'email': {'required': True, 'allow_null': False},

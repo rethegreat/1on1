@@ -4,18 +4,124 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from ..permissions import IsCalendarOwner, IsCalendarNotFinalized
+from ..permissions import IsCalendarOwner
 from ..models.Calendar import Calendar, Schedule
 from ..models.Member import Member
 from ..models.Event import Event
 from ..models.TimeSlot import OwnerTimeSlot, MemberTimeSlot
-from ..serializers import ScheduleSerializer
+from ..serializers import ScheduleSerializer, EventSerializer
 from ..email_utils import send_confirmation_email
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 from ..models.Event import Event
 from datetime import datetime
 from rest_framework.pagination import PageNumberPagination
+from django.core.paginator import Paginator
+
+# helper function to create a schedule given a calendar
+def _create_schedules(calendar: Calendar):
+    # PREF_CHOICES: starttime
+    owner_mapping = {"HIGH": [], "NO_PREF": [], "LOW": []}
+    for slot in OwnerTimeSlot.objects.filter(calendar=calendar):
+        owner_mapping[slot.preference].append(slot.start_time)
+
+    
+    # starttime: member
+    times_members = {}
+
+    # member: PREF_CHOICES: starttime
+    members_mapping = {}
+    for mem in Member.objects.filter(calendar=calendar):
+        for slot in MemberTimeSlot.objects.filter(member=mem):
+            members_mapping[mem].setdefault("HIGH", [])
+            members_mapping[mem].setdefault("NO_PREF", [])
+            members_mapping[mem].setdefault("LOW", [])
+            members_mapping[mem][slot.preference].append(slot.time_slot.start_time)
+
+            times_members.setdefault(slot.time_slot.start_time, []).append(mem)
+
+    #owner's times as a list
+    owner_times = owner_mapping['HIGH'] + owner_mapping['NO_PREF'] + owner_mapping['LOW']
+
+
+    #member: list[starttime]
+    members_times = {}
+    for mem in members_mapping:
+        members_times[mem] = members_mapping[mem]['HIGH'] + members_mapping[mem]['NO_PREF'] + members_mapping[mem]['LOW']
+
+        
+
+    #starttime: member
+    base_schedule = {}
+    for time in owner_times:
+        base_schedule[time] = -1
+
+
+    stack = sorted(list(members_times.keys()), key=lambda mem: len(members_times[mem]))
+    used = set()
+
+    while stack:
+        mem = stack.pop()
+        assigned = False
+
+        # attempt to assing
+        for time in members_times[mem]:
+            if time not in used:
+                used.add(time)
+                base_schedule[time] = mem
+                assigned = True
+                break
+        
+        # look to assign another member to another slot 
+        if not assigned:
+            for time in members_times[mem]:
+                for new_time in members_times[base_schedule[time]]:
+                    if new_time not in used:
+                        used.add(new_time)
+                        used.add(time)
+                        base_schedule[new_time] = base_schedule[time]
+                        base_schedule[time] = mem
+                        assigned = True
+                        break
+
+                if assigned:
+                    break
+                    
+        # no possible assignment arrangement
+        if not assigned:
+            return None
+        
+    # high_schedule = _create_another_schedule(base_schedule, owner_mapping['HIGH'])
+    # mid_schedule = _create_another_schedule(base_schedule, owner_mapping['NO_PREF'])
+    
+    return [base_schedule] #, high_schedule, mid_schedule]
+
+def _create_another_schedule(base_schedule, owner_times, times_members, used):
+    stack = owner_times[:]
+    new_schedule = base_schedule.copy()
+    visited = used.copy()
+    
+    #member: starttime in schedule
+    mem_time = {}
+    for time in new_schedule:
+        if new_schedule[time] != -1:
+            mem_time[new_schedule[time]] = time
+
+
+    while stack:
+        cur = stack.pop()
+        if cur not in visited:
+            visited.add(cur)
+            mem = times_members[cur][0]         
+            
+            new_schedule[mem_time[mem]] = -1
+            visited.remove(mem_time[mem])
+
+            new_schedule[cur] = mem
+            mem_time[mem] = cur
+
+
+    return new_schedule
 
 # Helper function to add an event to a schedule
 def _add_event(schedule: Schedule, start_time: datetime, member: Member) -> Event:
@@ -57,22 +163,60 @@ def _add_event(schedule: Schedule, start_time: datetime, member: Member) -> Even
 class ScheduleListView(APIView):
     pagination_class = PageNumberPagination
     permission_classes = [IsAuthenticated, IsCalendarOwner]
+    pagination_class.page_size = 1
 
     def get(self, request, calendar_id):
         calendar = get_object_or_404(Calendar, id=calendar_id)
         self.check_object_permissions(request, calendar)
 
-        # Get the list of schedules for the specified calendar
+        # Check if a schedule already exists for the calendar
+        schedule = Schedule.objects.filter(calendar_id=calendar_id).first()
+
+        # If no schedule exists, create a new one
+        if not schedule:
+            schedule = Schedule.objects.create(calendar=calendar)
+
+            #starttime: member
+            mapping = _create_schedules(calendar)
+            for each in mapping:
+                for time in each:
+                    # Try creating a new event
+                    new_event, err_msg = _add_event(schedule, time, mapping[time])
+                    if not new_event:
+                        return Response({'error': err_msg}, status=status.HTTP_400_BAD_REQUEST)
+
+            schedule.save()
+        
+        # Get all schedules in this calendar
         schedules = Schedule.objects.filter(calendar_id=calendar_id)
+        # for each schedules, serialize id, schedule, events
 
         # Paginate the queryset
-        paginator = self.pagination_class()
-        page = paginator.paginate_queryset(schedules, request)
+        # Paginate the queryset
+        paginator = Paginator(schedules, self.pagination_class.page_size)
+        page_number = request.query_params.get('page', 1)
+        page_obj = paginator.get_page(page_number)
 
-        # Serialize the schedules along with their corresponding events
-        serializer = ScheduleSerializer(page, many=True)
+        # Serialize each schedule along with its events
+        results = []
+        for schedule in page_obj:
+            data = {
+                'id': schedule.id,
+                'events': Event.objects.filter(suggested_schedule=schedule)
+            }
+            results.append(data)
 
-        return paginator.get_paginated_response(serializer.data)
+        # Construct custom paginated response
+        response_data = {
+            'count': paginator.count,
+            'next': page_obj.next_page_number() if page_obj.has_next() else None,
+            'previous': page_obj.previous_page_number() if page_obj.has_previous() else None,
+            'results': results  # Include paginated data
+        }
+
+        return Response(response_data)
+        return Response(response_data, status=status.HTTP_200_OK)
+        
     
 # EndPoint: /calendars/<int:calendar_id>/schedules/<int:schedule_id>/
 class ScheduleDetailView(APIView):
@@ -96,9 +240,7 @@ class ScheduleDetailView(APIView):
         self.check_object_permissions(request, calendar)
 
         # Check additional permission
-        permission_checker = IsCalendarNotFinalized()
-        if not permission_checker.has_permission(request, self):
-            # Handle permission denial
+        if calendar.finalized:
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
         # Get the schedule
@@ -116,11 +258,9 @@ class ScheduleDetailView(APIView):
         calendar = get_object_or_404(Calendar, id=calendar_id)
         self.check_object_permissions(request, calendar)
 
-        # Check additional permission
-        permission_checker = IsCalendarNotFinalized()
-        if not permission_checker.has_permission(request, self):
-            # Handle permission denial
-            return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
+        if calendar.finalized:
+            # Already finalized
+            return Response({"detail": "Calendar is already finalized"}, status=status.HTTP_400_BAD_REQUEST)
         
         # Get the schedule
         schedule = get_object_or_404(Schedule, id=schedule_id, calendar_id=calendar_id)
@@ -145,9 +285,7 @@ class ScheduleDetailView(APIView):
         self.check_object_permissions(request, calendar)
 
         # Check additional permission
-        permission_checker = IsCalendarNotFinalized()
-        if not permission_checker.has_permission(request, self):
-            # Handle permission denial
+        if calendar.finalized:
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
         # Get the action from the request data

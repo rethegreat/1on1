@@ -1,5 +1,5 @@
 from rest_framework.permissions import IsAuthenticated
-from ..permissions import IsCalendarOwner, IsCalendarNotFinalized
+from ..permissions import IsCalendarOwner
 from ..models.Calendar import Calendar
 from ..models.Member import Member
 from ..serializers import MemberListSerializer
@@ -35,18 +35,16 @@ class MemberListView(APIView):
         self.check_object_permissions(request, calendar)
 
         # Check additional permission
-        permission_checker = IsCalendarNotFinalized()
-        if not permission_checker.has_permission(request, self):
-            # Handle permission denial
+        if calendar.finalized:
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
         data = request.data.copy()
-        data['calendar'] = calendar_id
+        data['calendar'] = calendar  # Set the calendar field
         data['submitted'] = False  # Set the submitted field
         serializer = MemberListSerializer(data=data)
         if serializer.is_valid():
-            # Create member model
-            serializer.save(calendar=calendar)
+            new_member = serializer.save(calendar=calendar)
+            new_member.invite()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -80,9 +78,7 @@ class MemberSelectionView(APIView):
         self.check_object_permissions(request, calendar)
 
         # Check additional permission
-        permission_checker = IsCalendarNotFinalized()
-        if not permission_checker.has_permission(request, self):
-            # Handle permission denial
+        if calendar.finalized:
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
         data = request.data
@@ -131,9 +127,7 @@ class MemberDetailView(APIView):
         self.check_object_permissions(request, calendar)
 
         # Check additional permission
-        permission_checker = IsCalendarNotFinalized()
-        if not permission_checker.has_permission(request, self):
-            # Handle permission denial
+        if calendar.finalized:
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
         try:
@@ -149,9 +143,7 @@ class MemberDetailView(APIView):
         self.check_object_permissions(request, calendar)
 
         # Check additional permission
-        permission_checker = IsCalendarNotFinalized()
-        if not permission_checker.has_permission(request, self):
-            # Handle permission denial
+        if calendar.finalized:
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
         # Get the member instance

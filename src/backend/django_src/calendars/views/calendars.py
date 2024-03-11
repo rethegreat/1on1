@@ -1,9 +1,9 @@
 from rest_framework.permissions import IsAuthenticated
-from ..permissions import IsCalendarOwner, IsCalendarNotFinalized
+from ..permissions import IsCalendarOwner
 from ..models.Calendar import Calendar
 from ..models.Member import Member
 from ..serializers import CalendarListSerializer, CalendarPUTSerializer
-from ..email_utils import send_invitation_email, send_email_to_participant
+from ..email_utils import send_email_to_participant
 from rest_framework.response import Response
 from rest_framework import status
 from django.urls import reverse
@@ -34,10 +34,6 @@ class CalendarList(APIView):
         
         if serializer.is_valid():
             created_calendar = serializer.save(owner=request.user)
-            email_response, email_status = send_invitation_email(request.user, created_calendar.id)
-            
-            if email_status != status.HTTP_200_OK:
-                return Response(email_response, status=email_status)
             
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -61,8 +57,7 @@ class CalendarDetail(APIView):
         self.check_object_permissions(request, calendar)
 
         # Check additional permission
-        permission_checker = IsCalendarNotFinalized()
-        if not permission_checker.has_permission(request, self):
+        if calendar.finalized:
             # Handle permission denial
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
@@ -90,8 +85,7 @@ class CalendarRemind(APIView):
         self.check_object_permissions(request, calendar)
 
         # Check additional permission
-        permission_checker = IsCalendarNotFinalized()
-        if not permission_checker.has_permission(request, self):
+        if calendar.finalized:
             # Handle permission denial
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
@@ -100,7 +94,5 @@ class CalendarRemind(APIView):
         
         for member in members:
             if not member.submitted:
-                message = f"Hi {member.name},\n\nA reminder that you have been inivited by {owner_name} to set up a meeting with them. Please fill out your avalibility at your nearest convenience.\n\nBest regards.\n1on1 Team"
-                send_email_to_participant('Meeting scheduling reminder from 1on1',member.email, message)
-
+                member.remind()
         return Response({'detail': 'Emails sent successfully'}, status=status.HTTP_200_OK)
