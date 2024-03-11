@@ -47,6 +47,15 @@ class Calendar(models.Model):
     # 9) finalized_schedule = the finalized schedule
     finalized_schedule = models.ForeignKey('Schedule', on_delete=models.SET_NULL, 
                                            blank=True, null=True, related_name='finalized_for_calendar')
+    
+    # 10) frequency = How often the meeting will occur (i.e., how often the schedule will be repeated)
+    FREQUENCY_CHOICES = [
+        ('DAILY', 'Daily'),
+        ('WEEKLY', 'Weekly'),
+        ('MONTHLY', 'Monthly'),
+        ('YEARLY', 'Yearly'),
+    ]
+    frequency = models.CharField(max_length=7, choices=FREQUENCY_CHOICES, default='WEEKLY')
 
 # ========================================================
 # Availability

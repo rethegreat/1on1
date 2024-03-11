@@ -1,6 +1,7 @@
 from django.db import models
 from .Calendar import Calendar
 from django.core.mail import send_mail
+from django.conf import settings
 
 # Member
 # This model is used to store the member information
@@ -21,6 +22,10 @@ class Member(models.Model):
     # 4) submitted: whether the member submitted their availability or not
     submitted = models.BooleanField(default=False)
 
+    # No duplicate email within one calendar
+    class Meta:
+        unique_together = ('email', 'calendar')
+
     def __str__(self):
         return "[Member of " + self.calendar.name + "] " + self.name
     
@@ -31,9 +36,9 @@ class Member(models.Model):
         subject = 'Reminder: Submit Your Availability'
         message = (
             f"Dear {self.name},\n\n"
-            "This is a friendly reminder to submit your availability to the calendar {self.calendar.name}.\n\n"
+            f"This is a friendly reminder to submit your availability to the calendar {self.calendar.name}.\n\n"
             "Thank you.\n"
         )
-        from_email = '1on1.utoronto@gmail.com'
+        from_email = settings.EMAIL_HOST_USER
         to_email = self.email
         send_mail(subject, message, from_email, [to_email])

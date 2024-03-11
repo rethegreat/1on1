@@ -3,11 +3,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from ..permissions import IsCalendarNotFinalized
 from ..models.Calendar import Calendar
 from ..models.Member import Member
 from ..models.TimeSlot import OwnerTimeSlot, MemberTimeSlot
 from ..serializers import MemberTimeSlotSerializer
 from django.shortcuts import get_object_or_404
+from django.db import IntegrityError
 
 # Member Availability
 # - Member(not authenticated, but by a unique link) should be able to ...
@@ -33,6 +35,15 @@ class MemberAvailabilityView(APIView):
         # Serialize the data
         # Manually serialize the data
         data = {
+            'calendar': {
+                'id': calendar.id,
+                'name': calendar.name,
+                'description': calendar.description,
+                'owner': calendar.owner.first_name + ' ' + calendar.owner.last_name,
+                'owner_email': calendar.owner.email,
+                'meeting_duration': calendar.meeting_duration,
+            },
+
             'member': {
                 'id': member.id,
                 'name': member.name
@@ -53,18 +64,22 @@ class MemberAvailabilityView(APIView):
             ]
         }
 
-
         return Response(data, status=status.HTTP_200_OK)
     
     def post(self, request, member_id, calendar_id):
         # Extract member ID from the URL parameters or token in the request
         # Validate and retrieve the member based on the ID
         member = get_object_or_404(Member, id=member_id)
-
         calendar = get_object_or_404(Calendar, id=calendar_id)
+
+        # Check additional permission
+        permission_checker = IsCalendarNotFinalized()
+        if not permission_checker.has_permission(request, self):
+            # Handle permission denial
+            return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
+
         # 'possible_slots' is a list of owner-available time slots
         possible_slots = OwnerTimeSlot.objects.filter(calendar=calendar)
-
 
         # Let the member choose from the possible_slots, determined by start_time
         # Then create the member's time slot with time_slot=possible_slots[start_time]
@@ -76,18 +91,20 @@ class MemberAvailabilityView(APIView):
         # Find the corresponding possible slot(OwnerTimeSlot with time_slot_id), if not found, return 400
         # If the member already submitted the member time slot with that time_slot_id, if found, return 400
         if serializer.is_valid():
-            time_slot_id = serializer.validated_data.get('time_slot_id')
-            chosen_slot = OwnerTimeSlot.objects.get(id=time_slot_id)
+            time_slot_time = serializer.validated_data.get('time_slot_time')
+            chosen_slot = get_object_or_404(possible_slots, start_time=time_slot_time)
             if not chosen_slot:
                 return Response({'error': 'Invalid time slot'}, status=status.HTTP_400_BAD_REQUEST)
             
             previously_submitted = MemberTimeSlot.objects.filter(member=member)
             # if chosen_slot is one of the previously_submitted's time_slot, return 400
-            if chosen_slot in [slot.time_slot for slot in previously_submitted]:
-                # Member already submitted this time slot
-                return Response({'error': 'Member already submitted this time slot'}, status=status.HTTP_400_BAD_REQUEST)
-            # Create the member's time slot
-            MemberTimeSlot.objects.create(member=member, time_slot=chosen_slot)
+            if chosen_slot in previously_submitted:
+                return Response({'error': 'Time slot already submitted'}, status=status.HTTP_400_BAD_REQUEST)
+            # Otherwise, create the member's time slot
+            try:
+                MemberTimeSlot.objects.create(member=member, time_slot=chosen_slot, preference=serializer.validated_data.get('preference'))
+            except IntegrityError:
+                return Response({'error': 'Time slot already submitted'}, status=status.HTTP_400_BAD_REQUEST)
             # Set member.submitted=True
             member.submitted = True
             member.save()
@@ -96,6 +113,15 @@ class MemberAvailabilityView(APIView):
 
 
     def patch(self, request, member_id, calendar_id):
+        """Delete a specific member's non-busy time slot"""
+        calendar = get_object_or_404(Calendar, id=calendar_id)
+
+        # Check additional permission
+        permission_checker = IsCalendarNotFinalized()
+        if not permission_checker.has_permission(request, self):
+            # Handle permission denial
+            return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
+
         member_time_slot_id = request.data.get('member_time_slot_id', None)
         if member_time_slot_id is None:
             return Response({'error': 'Member time slot ID is required'}, status=status.HTTP_400_BAD_REQUEST)

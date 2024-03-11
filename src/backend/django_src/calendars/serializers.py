@@ -4,6 +4,9 @@ from .models.Calendar import Calendar, Schedule
 from .models.Member import Member
 from .models.Event import Event
 from .models.TimeSlot import OwnerTimeSlot, MemberTimeSlot
+from django.db import IntegrityError
+from rest_framework.exceptions import ValidationError
+from .models.validators import validate_datetime_format
 
 # Calendar
 class CalendarListSerializer(serializers.ModelSerializer):
@@ -14,15 +17,24 @@ class CalendarListSerializer(serializers.ModelSerializer):
                   'color', 
                   'description',
                   'meeting_duration',
-                  'deadline']
+                  'deadline',
+                  'frequency',]
         read_only_fields = ['id']
         extra_kwargs = {
             'name': {'required': True, 'allow_null': False},
             'color': {'required': False},
             'description': {'required': False},
             'meeting_duration': {'required': False},
-            'deadline': {'required': False, 'allow_null': True}
+            'deadline': {'required': False, 'allow_null': True},
+            'frequency': {'required': False}
         }
+
+    def create(self, validated_data):
+        try:
+            return super().create(validated_data)
+        except IntegrityError as e:
+            error_message = str(e)
+            raise ValidationError(error_message)
 
 # For the PUT request, we need to allow users to give only the fields they want to update
 class CalendarPUTSerializer(CalendarListSerializer):
@@ -36,18 +48,22 @@ class CalendarPUTSerializer(CalendarListSerializer):
 class MemberListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Member
-        fields = ['id', 'name', 'email', 'submitted']
-        read_only_fields = ['id']
+        fields = ['id', 'name', 'email', 'submitted', 'calendar']
+        read_only_fields = ['id', 'submitted', 'calendar']
         extra_kwargs = {
             'name': {'required': True, 'allow_null': False},
             'email': {'required': True, 'allow_null': False},
-            'submitted': {'required': False}
+            'submitted': {'required': False},
+            'calendar': {'required': False}
         }
 
     def create(self, validated_data):
-        calendar_id = self.context['view'].kwargs.get('calendar_id')
-        validated_data['calendar_id'] = calendar_id
-        return super().create(validated_data)
+        # add calendar to the validated data
+        try:
+            return super().create(validated_data)
+        except IntegrityError as e:
+            error_message = str(e)
+            raise ValidationError("Member already exists in the calendar.")
 
 
 # Availability
@@ -61,10 +77,20 @@ class OwnerTimeSlotSerializer(serializers.ModelSerializer):
             'start_time': {'required': True, 'allow_null': False},
             'preference': {'required': True}
         }
+    
+    def create(self, validated_data):
+        # Time Slot should have a unique start time for each calendar
+        # Check if the time slot already exists with this time
+        try:
+            return super().create(validated_data)
+        except IntegrityError:
+            # If there's a conflict, raise a validation error with the same message
+            raise ValidationError("Time slot conflicts with existing slot.")
 
 
 class MemberTimeSlotSerializer(serializers.Serializer):
-    time_slot_id = serializers.IntegerField(required=True)
+    time_slot_time = serializers.DateTimeField(required=True, validators=[validate_datetime_format])
+    preference = serializers.ChoiceField(choices=MemberTimeSlot.PREF_CHOICES)
 
 # Event
 
@@ -72,7 +98,6 @@ class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = '__all__'
-    
 
 # Schedule
 
@@ -82,3 +107,4 @@ class ScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Schedule
         fields = ['id', 'calendar', 'events']
+

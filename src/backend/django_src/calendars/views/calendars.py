@@ -1,6 +1,9 @@
 from rest_framework.permissions import IsAuthenticated
+from ..permissions import IsCalendarOwner, IsCalendarNotFinalized
 from ..models.Calendar import Calendar
+from ..models.Member import Member
 from ..serializers import CalendarListSerializer, CalendarPUTSerializer
+from ..email_utils import send_invitation_email, send_email_to_participant
 from rest_framework.response import Response
 from rest_framework import status
 from django.urls import reverse
@@ -15,32 +18,54 @@ from rest_framework.views import APIView
 
 # EndPoint: /calendars/list/
 class CalendarList(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # Get all calendars that the user created(owner=user)
+        """View all calendars of the user"""
         calendars = Calendar.objects.filter(owner=request.user)
         serializer = CalendarListSerializer(calendars, many=True)
         return Response(serializer.data)
     
-    def post(self, request):    
+    def post(self, request):
+        """Create a new calendar"""
+        data = request.data.copy()
+        data['owner'] = request.user.id
         serializer = CalendarListSerializer(data=request.data)
+        
         if serializer.is_valid():
-            serializer.save(owner=request.user)
+            created_calendar = serializer.save(owner=request.user)
+            email_response, email_status = send_invitation_email(request.user, created_calendar.id)
+            
+            if email_status != status.HTTP_200_OK:
+                return Response(email_response, status=email_status)
+            
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 # EndPoint: /calendars/<int:calendar_id>/
 class CalendarDetail(APIView):
-    # permission_classes = [IsAuthenticated] # Only the owner can view, edit, and delete the calendar
+    permission_classes = [IsAuthenticated, IsCalendarOwner]
 
     def get(self, request, calendar_id):
+        """View a specific calendar's details"""
         calendar = get_object_or_404(Calendar, id=calendar_id)
+        self.check_object_permissions(request, calendar)
+
         serializer = CalendarListSerializer(calendar)
         return Response(serializer.data)
 
     def put(self, request, calendar_id):
+        """Edit a specific calendar's details"""
         calendar = get_object_or_404(Calendar, id=calendar_id)
+        self.check_object_permissions(request, calendar)
+
+        # Check additional permission
+        permission_checker = IsCalendarNotFinalized()
+        if not permission_checker.has_permission(request, self):
+            # Handle permission denial
+            return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
+
         serializer = CalendarPUTSerializer(calendar, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -48,7 +73,34 @@ class CalendarDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, calendar_id):
+        """Delete a specific calendar"""
         calendar = get_object_or_404(Calendar, id=calendar_id)
+        self.check_object_permissions(request, calendar)
+
         calendar.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
+# EndPoint: /calendars/<int:calendar_id>/remindAll
+class CalendarRemind(APIView):
+    permission_classes = [IsAuthenticated, IsCalendarOwner]
+    
+    def post(self, request, calendar_id):
+        """Remind all members of the calendar to submit their availability"""
+        calendar = get_object_or_404(Calendar, id=calendar_id)
+        self.check_object_permissions(request, calendar)
+
+        # Check additional permission
+        permission_checker = IsCalendarNotFinalized()
+        if not permission_checker.has_permission(request, self):
+            # Handle permission denial
+            return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
+
+        members = Member.objects.filter(calendar=calendar)
+        owner_name = request.user.first_name
+        
+        for member in members:
+            if not member.submitted:
+                message = f"Hi {member.name},\n\nA reminder that you have been inivited by {owner_name} to set up a meeting with them. Please fill out your avalibility at your nearest convenience.\n\nBest regards.\n1on1 Team"
+                send_email_to_participant('Meeting scheduling reminder from 1on1',member.email, message)
+
+        return Response({'detail': 'Emails sent successfully'}, status=status.HTTP_200_OK)
