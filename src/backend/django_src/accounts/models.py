@@ -12,7 +12,7 @@ class ProfileUser(AbstractUser):
     # Override to make these fields required
     first_name = models.CharField(max_length=50, blank=False)
     last_name = models.CharField(max_length=50, blank=False)
-    email = models.CharField(max_length=50, blank=False)
+    email = models.EmailField(max_length=50, blank=False)
 
     # Contact related methods
     def add_contact(self, new_contact: 'ProfileUser') -> bool:
