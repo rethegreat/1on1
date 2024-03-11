@@ -17,8 +17,5 @@ urlpatterns = [
 
     path('<int:calendar_id>/schedules/', schedules.ScheduleListView.as_view(), name='schedule-list'),
     path('<int:calendar_id>/schedules/<int:schedule_id>/', schedules.ScheduleDetailView.as_view(), name='schedule-detail'),
-    
-    path('<path:hash>', redirect.RedirectFromHashView.as_view(), name='redirect_from_hash'),
-
 
 ]

@@ -39,7 +39,7 @@ class MemberListView(APIView):
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
         data = request.data.copy()
-        data['calendar'] = calendar_id  # Set the calendar field
+        data['calendar'] = calendar  # Set the calendar field
         data['submitted'] = False  # Set the submitted field
         serializer = MemberListSerializer(data=data)
         if serializer.is_valid():
