@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from ..permissions import IsCalendarOwner, IsCalendarNotFinalized
 from ..models.Calendar import Calendar, Schedule
 from ..models.Member import Member
 from ..models.Event import Event
@@ -14,6 +15,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 from ..models.Event import Event
 from datetime import datetime
+from rest_framework.pagination import PageNumberPagination
 
 # Helper function to add an event to a schedule
 def _add_event(schedule: Schedule, start_time: datetime, member: Member) -> Event:
@@ -49,18 +51,37 @@ def _add_event(schedule: Schedule, start_time: datetime, member: Member) -> Even
 #       - move to the next suggested schedule(id+1)
 #       - finalize the calendar as a suggested schedule
 
+# EndPoint: /calendars/<int:calendar_id>/schedules/
+# e.g. /calendars/<int:calendar_id>/schedules/?page=1
+# e.g. /calendars/<int:calendar_id>/schedules/?page=2
 class ScheduleListView(APIView):
+    pagination_class = PageNumberPagination
+    permission_classes = [IsAuthenticated, IsCalendarOwner]
+
     def get(self, request, calendar_id):
+        calendar = get_object_or_404(Calendar, id=calendar_id)
+        self.check_object_permissions(request, calendar)
+
         # Get the list of schedules for the specified calendar
         schedules = Schedule.objects.filter(calendar_id=calendar_id)
 
-        # Serialize the schedules along with their corresponding events
-        serializer = ScheduleSerializer(schedules, many=True)
+        # Paginate the queryset
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(schedules, request)
 
-        return Response(serializer.data)
+        # Serialize the schedules along with their corresponding events
+        serializer = ScheduleSerializer(page, many=True)
+
+        return paginator.get_paginated_response(serializer.data)
     
+# EndPoint: /calendars/<int:calendar_id>/schedules/<int:schedule_id>/
 class ScheduleDetailView(APIView):
+    permission_classes = [IsAuthenticated, IsCalendarOwner]
+
     def get(self, request, calendar_id, schedule_id):
+        calendar = get_object_or_404(Calendar, id=calendar_id)
+        self.check_object_permissions(request, calendar)
+
         # Get the schedule
         schedule = get_object_or_404(Schedule, id=schedule_id, calendar_id=calendar_id)
 
@@ -71,6 +92,15 @@ class ScheduleDetailView(APIView):
 
     # Users should be able to edit a suggested schedule
     def patch(self, request, calendar_id, schedule_id):
+        calendar = get_object_or_404(Calendar, id=calendar_id)
+        self.check_object_permissions(request, calendar)
+
+        # Check additional permission
+        permission_checker = IsCalendarNotFinalized()
+        if not permission_checker.has_permission(request, self):
+            # Handle permission denial
+            return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
+
         # Get the schedule
         schedule = get_object_or_404(Schedule, id=schedule_id, calendar_id=calendar_id)
 
@@ -83,13 +113,23 @@ class ScheduleDetailView(APIView):
 
     @action(detail=True, methods=['post'])
     def finalize(self, request, calendar_id, schedule_id):
+        calendar = get_object_or_404(Calendar, id=calendar_id)
+        self.check_object_permissions(request, calendar)
+
+        # Check additional permission
+        permission_checker = IsCalendarNotFinalized()
+        if not permission_checker.has_permission(request, self):
+            # Handle permission denial
+            return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
+        
         # Get the schedule
         schedule = get_object_or_404(Schedule, id=schedule_id, calendar_id=calendar_id)
 
         # Finalize the calendar
-        calendar = get_object_or_404(Calendar, id=calendar_id)
         calendar.finalized = True
         calendar.finalized_schedule = schedule
+        # Delete all other schedules in the calendar
+        Schedule.objects.filter(calendar=calendar).exclude(id=schedule_id).delete()
         calendar.save()
         
         result = send_confirmation_email(request.user, schedule_id)
@@ -101,6 +141,15 @@ class ScheduleDetailView(APIView):
     
 
     def put(self, request, calendar_id, schedule_id):
+        calendar = get_object_or_404(Calendar, id=calendar_id)
+        self.check_object_permissions(request, calendar)
+
+        # Check additional permission
+        permission_checker = IsCalendarNotFinalized()
+        if not permission_checker.has_permission(request, self):
+            # Handle permission denial
+            return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
+
         # Get the action from the request data
         action = request.data.get('action')
         event_id = request.data.get('event_id')
@@ -116,6 +165,7 @@ class ScheduleDetailView(APIView):
             return Response({'error': 'Invalid action'}, status=status.HTTP_400_BAD_REQUEST)
 
     def move_event(self, request, schedule_id):
+
         # Extract the event ID and new time from the request data
         old_event_id = request.data.get('event_id')
         old_event = get_object_or_404(Event, id=old_event_id)
