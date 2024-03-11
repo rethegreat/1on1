@@ -69,7 +69,7 @@ class MemberAvailabilityView(APIView):
 
         return Response(data, status=status.HTTP_200_OK)
     
-    def post(self, request, member_id, calendar_id):
+    def post(self, request, calendar_id, hash):
         # Extract member ID from the URL parameters or token in the request
         # Validate and retrieve the member based on the ID
         member = self.get_member_by_hash(hash, calendar_id)
