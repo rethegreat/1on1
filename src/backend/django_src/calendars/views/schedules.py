@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from ..permissions import IsCalendarOwner, IsCalendarNotFinalized
+from ..permissions import IsCalendarOwner
 from ..models.Calendar import Calendar, Schedule
 from ..models.Member import Member
 from ..models.Event import Event
@@ -222,9 +222,7 @@ class ScheduleDetailView(APIView):
         self.check_object_permissions(request, calendar)
 
         # Check additional permission
-        permission_checker = IsCalendarNotFinalized()
-        if not permission_checker.has_permission(request, self):
-            # Handle permission denial
+        if calendar.finalized:
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
         # Get the schedule
@@ -242,11 +240,9 @@ class ScheduleDetailView(APIView):
         calendar = get_object_or_404(Calendar, id=calendar_id)
         self.check_object_permissions(request, calendar)
 
-        # Check additional permission
-        permission_checker = IsCalendarNotFinalized()
-        if not permission_checker.has_permission(request, self):
-            # Handle permission denial
-            return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
+        if calendar.finalized:
+            # Already finalized
+            return Response({"detail": "Calendar is already finalized"}, status=status.HTTP_400_BAD_REQUEST)
         
         # Get the schedule
         schedule = get_object_or_404(Schedule, id=schedule_id, calendar_id=calendar_id)
@@ -271,9 +267,7 @@ class ScheduleDetailView(APIView):
         self.check_object_permissions(request, calendar)
 
         # Check additional permission
-        permission_checker = IsCalendarNotFinalized()
-        if not permission_checker.has_permission(request, self):
-            # Handle permission denial
+        if calendar.finalized:
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
         # Get the action from the request data

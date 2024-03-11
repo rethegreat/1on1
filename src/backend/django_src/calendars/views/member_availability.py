@@ -3,7 +3,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from ..permissions import IsCalendarNotFinalized
 from ..models.Calendar import Calendar
 from ..models.Member import Member
 from ..models.TimeSlot import OwnerTimeSlot, MemberTimeSlot
@@ -73,8 +72,7 @@ class MemberAvailabilityView(APIView):
         calendar = get_object_or_404(Calendar, id=calendar_id)
 
         # Check additional permission
-        permission_checker = IsCalendarNotFinalized()
-        if not permission_checker.has_permission(request, self):
+        if calendar.finalized:
             # Handle permission denial
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
@@ -117,8 +115,7 @@ class MemberAvailabilityView(APIView):
         calendar = get_object_or_404(Calendar, id=calendar_id)
 
         # Check additional permission
-        permission_checker = IsCalendarNotFinalized()
-        if not permission_checker.has_permission(request, self):
+        if calendar.finalized:
             # Handle permission denial
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
