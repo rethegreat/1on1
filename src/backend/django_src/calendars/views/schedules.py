@@ -269,8 +269,11 @@ class ScheduleDetailView(APIView):
             return Response({"detail": "Calendar is finalized automatically. Please edit the deadline to cancel."}, status=status.HTTP_403_FORBIDDEN)
         
         # Get the schedule
-        schedule = get_object_or_404(Schedule, id=schedule_id, calendar_id=calendar_id)
-
+        try:
+            schedule = Schedule.objects.get(id=schedule_id, calendar_id=calendar_id)
+        except Schedule.DoesNotExist:
+            return Response({'error': 'Schedule not found'}, status=status.HTTP_400_BAD_REQUEST)
+        
         # Finalize the calendar
         calendar.finalized = True
         calendar.finalized_schedule = schedule
@@ -295,7 +298,10 @@ class ScheduleDetailView(APIView):
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
         # Get objects
-        schedule = get_object_or_404(Schedule, id=schedule_id)
+        try:
+            schedule = Schedule.objects.get(id=schedule_id, calendar_id=calendar_id)
+        except Schedule.DoesNotExist:
+            return Response({'error': 'Schedule not found'}, status=status.HTTP_400_BAD_REQUEST)
         action = request.data.get('action')
         if not action:
             return Response({'error': '`action` is required'}, status=status.HTTP_400_BAD_REQUEST)
