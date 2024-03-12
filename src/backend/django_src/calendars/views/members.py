@@ -38,9 +38,9 @@ class MemberListView(APIView):
         not_submitted_count = total_members - submitted_count
         # Put that in the front of the response
         data.insert(0, {
-            'total_members': total_members,
-            'total_submitted': submitted_count,
-            'total_pending': not_submitted_count
+            'num_members': total_members,
+            'num_submitted': submitted_count,
+            'num_pending': not_submitted_count
         })
         return Response(data)
 
