@@ -11,7 +11,7 @@ def validate_datetime_format(value):
     
     try:
         # Attempt to parse the value using the specified format
-        string = str(value)
+        string = str(value)[:]
         # Get rid of seconds and timezone
         input_value = str(value).split('+')[0][:-9]
         datetime.strptime(input_value, datetime_format)
