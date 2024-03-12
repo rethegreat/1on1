@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from ..models.Calendar import Calendar
+from ..models.Calendar import Calendar, Schedule
 from ..models.Member import Member
 from ..models.TimeSlot import OwnerTimeSlot, MemberTimeSlot
 from ..serializers import OwnerTimeSlotSerializer
@@ -53,6 +53,12 @@ class OwnerAvailabilityView(APIView):
         serializer = OwnerTimeSlotSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(calendar=calendar)
+
+            #check if schedule exists if it does delete it so it can be regenerated
+            schedule = Schedule.objects.filter(calendar_id=calendar_id)
+            if schedule:
+                schedule.delete()
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
@@ -83,6 +89,12 @@ class OwnerAvailabilityView(APIView):
                 _update_member_submitted(time_slot)
                 time_slot.delete()
                 serializer.save()
+
+                #check if schedule exists if it does delete it so it can be regenerated
+                schedule = Schedule.objects.filter(calendar_id=calendar_id)
+                if schedule:
+                    schedule.delete()
+
                 return Response(serializer.data)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -92,6 +104,11 @@ class OwnerAvailabilityView(APIView):
             # If there is only one belongs to that member, set member.submitted=False
             _update_member_submitted(time_slot)
             time_slot.delete()
+            #check if schedule exists if it does delete it so it can be regenerated
+            schedule = Schedule.objects.filter(calendar_id=calendar_id)
+            if schedule:
+                schedule.delete()
+
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response({'error': 'Invalid action'}, status=status.HTTP_400_BAD_REQUEST)
 

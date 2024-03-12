@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from ..models.Calendar import Calendar
+from ..models.Calendar import Calendar, Schedule
 from ..models.Member import Member
 from ..models.TimeSlot import OwnerTimeSlot, MemberTimeSlot
 from ..serializers import MemberTimeSlotSerializer
@@ -111,6 +111,12 @@ class MemberAvailabilityView(APIView):
             # Set member.submitted=True
             member.submitted = True
             member.save()
+
+            #check if schedule exists if it does delete it so it can be regenerated
+            schedule = Schedule.objects.filter(calendar_id=calendar_id)
+            if schedule:
+                schedule.delete()
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -135,4 +141,10 @@ class MemberAvailabilityView(APIView):
         if not MemberTimeSlot.objects.filter(member=member).exists():
             member.submitted = False
             member.save()
+
+        #check if schedule exists if it does delete it so it can be regenerated
+        schedule = Schedule.objects.filter(calendar_id=calendar_id)
+        if schedule:
+            schedule.delete()
+            
         return Response(status=status.HTTP_204_NO_CONTENT)
