@@ -32,10 +32,12 @@ def _create_schedules(calendar: Calendar):
     # member: PREF_CHOICES: starttime
     members_mapping = {}
     for mem in Member.objects.filter(calendar=calendar):
+        if mem not in members_mapping:
+            members_mapping[mem] = {"HIGH": [], "NO_PREF": [], "LOW": []}
+        # members_mapping[mem].setdefault("HIGH", [])
+        # members_mapping[mem].setdefault("NO_PREF", [])
+        # members_mapping[mem].setdefault("LOW", [])
         for slot in MemberTimeSlot.objects.filter(member=mem):
-            members_mapping[mem].setdefault("HIGH", [])
-            members_mapping[mem].setdefault("NO_PREF", [])
-            members_mapping[mem].setdefault("LOW", [])
             members_mapping[mem][slot.preference].append(slot.time_slot.start_time)
 
             times_members.setdefault(slot.time_slot.start_time, []).append(mem)
@@ -48,9 +50,9 @@ def _create_schedules(calendar: Calendar):
     members_times = {}
     for mem in members_mapping:
         members_times[mem] = members_mapping[mem]['HIGH'] + members_mapping[mem]['NO_PREF'] + members_mapping[mem]['LOW']
-
+        if len(members_times[mem]) == 0:
+            members_times.pop(mem)
         
-
     #starttime: member
     base_schedule = {}
     for time in owner_times:
@@ -91,10 +93,10 @@ def _create_schedules(calendar: Calendar):
         if not assigned:
             return None
         
-    # high_schedule = _create_another_schedule(base_schedule, owner_mapping['HIGH'])
-    # mid_schedule = _create_another_schedule(base_schedule, owner_mapping['NO_PREF'])
+    high_schedule = _create_another_schedule(base_schedule, owner_mapping['HIGH'], times_members, used)
+    mid_schedule = _create_another_schedule(base_schedule, owner_mapping['NO_PREF'], times_members, used)
     
-    return [base_schedule] #, high_schedule, mid_schedule]
+    return [base_schedule, high_schedule, mid_schedule]
 
 def _create_another_schedule(base_schedule, owner_times, times_members, used):
     stack = owner_times[:]
@@ -141,14 +143,14 @@ def _add_event(schedule: Schedule, start_time: datetime, member: Member) -> Even
         return None, 'This time is not available by the member'
     
     # elif start_time is already taken by another event, then return error message that this time is already taken!
-    elif Event.objects.filter(time_slot__start_time=start_time, schedule=schedule):
+    elif Event.objects.filter(time_slot__start_time=start_time, suggested_schedule=schedule):
         return None, 'This time is already taken'
     
     # else, create the event
-    new_event = Event.objects.create(schedule=schedule, member=member, time_slot=new_time_slot)
+    new_event = Event.objects.create(suggested_schedule=schedule, member=member, time_slot=new_time_slot)
     # save it
     new_event.save()
-    return new_event
+    return new_event, ""
 
 # Suggested Schedules
 # - User should be able to
@@ -173,19 +175,28 @@ class ScheduleListView(APIView):
         schedule = Schedule.objects.filter(calendar_id=calendar_id).first()
 
         # If no schedule exists, create a new one
-        if not schedule:
-            schedule = Schedule.objects.create(calendar=calendar)
+        # if not schedule:
 
-            #starttime: member
-            mapping = _create_schedules(calendar)
-            for each in mapping:
-                for time in each:
-                    # Try creating a new event
-                    new_event, err_msg = _add_event(schedule, time, mapping[time])
+        # delete all schedules and events related to this calendar
+        Schedule.objects.filter(calendar_id=calendar_id).delete()
+        # Event.objects.filter()
+
+        schedule = Schedule.objects.create(calendar=calendar)
+
+        #starttime: member
+        mapping = _create_schedules(calendar)
+        if not mapping:
+            return Response({'error': "No possible mapping"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        for each in mapping:
+            for time in each:
+                # Try creating a new event
+                if each[time] != -1:
+                    new_event, err_msg = _add_event(schedule, time, each[time])
                     if not new_event:
                         return Response({'error': err_msg}, status=status.HTTP_400_BAD_REQUEST)
 
-            schedule.save()
+        schedule.save()
         
         # Get all schedules in this calendar
         schedules = Schedule.objects.filter(calendar_id=calendar_id)
@@ -202,7 +213,7 @@ class ScheduleListView(APIView):
         for schedule in page_obj:
             data = {
                 'id': schedule.id,
-                'events': Event.objects.filter(suggested_schedule=schedule)
+                'events': EventSerializer(Event.objects.filter(suggested_schedule=schedule), many=True).data
             }
             results.append(data)
 
