@@ -93,13 +93,15 @@ def _create_schedules(calendar: Calendar):
         if not assigned:
             return None
         
-    high_schedule = _create_another_schedule(base_schedule, owner_mapping['HIGH'], times_members, used)
-    mid_schedule = _create_another_schedule(base_schedule, owner_mapping['NO_PREF'], times_members, used)
-    
-    return [base_schedule, high_schedule, mid_schedule]
+    high1_schedule = _create_another_schedule(base_schedule, owner_mapping['HIGH'], times_members, used)
+    high2_schedule = _create_another_schedule(base_schedule, owner_mapping['HIGH'][::-1], times_members, used)
+    mid1_schedule = _create_another_schedule(base_schedule, owner_mapping['NO_PREF'], times_members, used)
+    mid2_schedule = _create_another_schedule(base_schedule, owner_mapping['NO_PREF'][::-1], times_members, used)
+
+    return [base_schedule, high1_schedule, high2_schedule, mid1_schedule, mid2_schedule]
 
 def _create_another_schedule(base_schedule, owner_times, times_members, used):
-    stack = owner_times[::-1]
+    stack = owner_times[:]
     new_schedule = base_schedule.copy()
     visited = used.copy()
     
@@ -122,6 +124,7 @@ def _create_another_schedule(base_schedule, owner_times, times_members, used):
 
                 new_schedule[cur] = mem
                 mem_time[mem] = cur
+                break
 
     if new_schedule != base_schedule:
         return new_schedule
@@ -174,13 +177,13 @@ class ScheduleListView(APIView):
         self.check_object_permissions(request, calendar)
 
         # Check if a schedule already exists for the calendar
+        # Schedule.objects.filter(calendar_id=calendar_id).delete()
         schedule = Schedule.objects.filter(calendar_id=calendar_id).first()
 
         # If no schedule exists, create a new one
         if not schedule:
 
         # delete all schedules and events related to this calendar
-        # Schedule.objects.filter(calendar_id=calendar_id).delete()
         # Event.objects.filter()
 
 
