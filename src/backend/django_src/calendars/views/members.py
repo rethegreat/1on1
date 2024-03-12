@@ -28,7 +28,21 @@ class MemberListView(APIView):
 
         members = Member.objects.filter(calendar=calendar)
         serializer = MemberListSerializer(members, many=True)
-        return Response(serializer.data)
+        # Additionally, add the following data to the response:
+        data = serializer.data
+        # 1) show how many members in total
+        total_members = members.count()
+        # 2) how many members have submitted their availability
+        submitted_count = members.filter(submitted=True).count()
+        # 3) how many members have not submitted their availability
+        not_submitted_count = total_members - submitted_count
+        # Put that in the front of the response
+        data.insert(0, {
+            'total_members': total_members,
+            'total_submitted': submitted_count,
+            'total_pending': not_submitted_count
+        })
+        return Response(data)
 
     def post(self, request, calendar_id):
         """Add(invite) a new member to the calendar"""
