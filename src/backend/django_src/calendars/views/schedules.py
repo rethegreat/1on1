@@ -59,7 +59,7 @@ def _create_schedules(calendar: Calendar):
         base_schedule[time] = -1
 
 
-    stack = sorted(list(members_times.keys()), key=lambda mem: len(members_times[mem]))
+    stack = sorted(list(members_times.keys()), key=lambda mem: len(members_times[mem]), reverse=True)
     used = set()
 
     while stack:
