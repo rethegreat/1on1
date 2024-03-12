@@ -2,7 +2,7 @@
 
 Assuming this is from a fresh install of Ubuntu 20.04.6 LTS onto VirtualBox.
 
-1. Ensure you have sudo access, open terminal and type what is below, then restart 
+1. Ensure you have sudo access, if not then open terminal and type what is below, then restart 
 ```
 su -
 usermod -aG sudo {your_username}
