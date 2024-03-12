@@ -252,25 +252,6 @@ class ScheduleDetailView(APIView):
 
         return Response(serializer.data)
 
-    # Users should be able to edit a suggested schedule
-    def patch(self, request, calendar_id, schedule_id):
-        calendar = get_object_or_404(Calendar, id=calendar_id)
-        self.check_object_permissions(request, calendar)
-
-        # Check additional permission
-        if is_calendar_finalized(calendar):
-            return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
-
-        # Get the schedule
-        schedule = get_object_or_404(Schedule, id=schedule_id, calendar_id=calendar_id)
-
-        # Update the schedule
-        serializer = ScheduleSerializer(schedule, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)    
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
     @action(detail=True, methods=['post'])
     def finalize(self, request, calendar_id, schedule_id):
         calendar = get_object_or_404(Calendar, id=calendar_id)
@@ -298,7 +279,7 @@ class ScheduleDetailView(APIView):
         else:
             return Response({'detail': result['message']}, status=status.HTTP_403_FORBIDDEN if result['message'] == 'Forbidden' else status.HTTP_400_BAD_REQUEST)
     
-
+    # Users should be able to edit a suggested schedule
     def put(self, request, calendar_id, schedule_id):
         calendar = get_object_or_404(Calendar, id=calendar_id)
         self.check_object_permissions(request, calendar)
