@@ -1,5 +1,5 @@
 from rest_framework.permissions import IsAuthenticated
-from ..permissions import IsCalendarOwner
+from ..permissions import IsCalendarOwner, is_calendar_finalized, is_calendar_finalized_manually
 from ..models.Calendar import Calendar
 from ..models.Member import Member
 from ..serializers import CalendarListSerializer, CalendarPUTSerializer
@@ -9,6 +9,7 @@ from rest_framework import status
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
+from django.utils import timezone
 
 # Calendars
 # - User should be able to ...
@@ -24,6 +25,9 @@ class CalendarList(APIView):
         """View all calendars of the user"""
         calendars = Calendar.objects.filter(owner=request.user)
         serializer = CalendarListSerializer(calendars, many=True)
+        # Update the finalized field of each calendar
+        for calendar in calendars:
+            is_calendar_finalized(calendar)
         return Response(serializer.data)
     
     def post(self, request):
@@ -34,6 +38,7 @@ class CalendarList(APIView):
         
         if serializer.is_valid():
             created_calendar = serializer.save(owner=request.user)
+            is_calendar_finalized(created_calendar)
             
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -47,6 +52,7 @@ class CalendarDetail(APIView):
         """View a specific calendar's details"""
         calendar = get_object_or_404(Calendar, id=calendar_id)
         self.check_object_permissions(request, calendar)
+        is_calendar_finalized(calendar)
 
         serializer = CalendarListSerializer(calendar)
         return Response(serializer.data)
@@ -56,11 +62,25 @@ class CalendarDetail(APIView):
         calendar = get_object_or_404(Calendar, id=calendar_id)
         self.check_object_permissions(request, calendar)
 
-        # Check additional permission
-        if calendar.finalized:
-            # Handle permission denial
+        # Manually finalized calendar is not modifiable
+        if is_calendar_finalized_manually(calendar):
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
+        # If automaitcally finalized, you can modify the deadline to later date and finalized status
+        if is_calendar_finalized(calendar):
+            if 'deadline' in request.data:
+                calendar.deadline = request.data['deadline']
+                if not (calendar.deadline):
+                    calendar.deadline = None
+                    calendar.finalized = False
+                    calendar.save()
+                elif timezone.now() > calendar.deadline:
+                    calendar.finalized = False
+                    calendar.save()
+                else:
+                    return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
+            else:
+                return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
         serializer = CalendarPUTSerializer(calendar, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -85,8 +105,7 @@ class CalendarRemind(APIView):
         self.check_object_permissions(request, calendar)
 
         # Check additional permission
-        if calendar.finalized:
-            # Handle permission denial
+        if is_calendar_finalized(calendar):
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
         members = Member.objects.filter(calendar=calendar)

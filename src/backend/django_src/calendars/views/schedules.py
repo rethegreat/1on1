@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from ..permissions import IsCalendarOwner
+from ..permissions import IsCalendarOwner, is_calendar_finalized, is_calendar_finalized_manually
 from ..models.Calendar import Calendar, Schedule
 from ..models.Member import Member
 from ..models.Event import Event
@@ -258,7 +258,7 @@ class ScheduleDetailView(APIView):
         self.check_object_permissions(request, calendar)
 
         # Check additional permission
-        if calendar.finalized:
+        if is_calendar_finalized(calendar):
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
         # Get the schedule
@@ -276,9 +276,10 @@ class ScheduleDetailView(APIView):
         calendar = get_object_or_404(Calendar, id=calendar_id)
         self.check_object_permissions(request, calendar)
 
-        if calendar.finalized:
-            # Already finalized
+        if is_calendar_finalized_manually(calendar):
             return Response({"detail": "Calendar is already finalized"}, status=status.HTTP_400_BAD_REQUEST)
+        if is_calendar_finalized(calendar):
+            return Response({"detail": "Calendar is finalized automatically. Please edit the deadline to cancel."}, status=status.HTTP_403_FORBIDDEN)
         
         # Get the schedule
         schedule = get_object_or_404(Schedule, id=schedule_id, calendar_id=calendar_id)
@@ -303,7 +304,7 @@ class ScheduleDetailView(APIView):
         self.check_object_permissions(request, calendar)
 
         # Check additional permission
-        if calendar.finalized:
+        if is_calendar_finalized(calendar):
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
         # Get the action from the request data
