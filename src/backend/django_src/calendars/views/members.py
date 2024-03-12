@@ -71,7 +71,8 @@ class MemberSelectionView(APIView):
             }
             for contact in contacts
         ]
-        return Response(data)
+        serializer = MemberListSerializer(data, many=True)
+        return Response(serializer.data)
     
     def post(self, request, calendar_id):
         """Add a contact to the calendar"""
