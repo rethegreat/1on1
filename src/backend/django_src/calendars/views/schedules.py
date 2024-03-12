@@ -140,7 +140,7 @@ def _add_event(schedule: Schedule, new_time: datetime, member: Member) -> Event:
     # if start_time is not one of OwnerTimeSlot.start_time, 
     # then return error message that this time is marked not available!
     try:
-        new_time_slot = OwnerTimeSlot.objects.get(start_time=new_time)
+        new_time_slot = OwnerTimeSlot.objects.get(start_time=new_time, calendar=schedule.calendar)
     except OwnerTimeSlot.DoesNotExist:
         return None, 'You are not available at this time'
     # Case 2 :: 
