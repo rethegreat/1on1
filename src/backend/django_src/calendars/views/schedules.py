@@ -99,7 +99,7 @@ def _create_schedules(calendar: Calendar):
     return [base_schedule, high_schedule, mid_schedule]
 
 def _create_another_schedule(base_schedule, owner_times, times_members, used):
-    stack = owner_times[:]
+    stack = owner_times[::-1]
     new_schedule = base_schedule.copy()
     visited = used.copy()
     
@@ -114,16 +114,18 @@ def _create_another_schedule(base_schedule, owner_times, times_members, used):
         cur = stack.pop()
         if cur not in visited:
             visited.add(cur)
-            mem = times_members[cur][0]         
-            
-            new_schedule[mem_time[mem]] = -1
-            visited.remove(mem_time[mem])
+            if cur in times_members:
+                mem = times_members[cur][0]         
+                
+                new_schedule[mem_time[mem]] = -1
+                visited.remove(mem_time[mem])
 
-            new_schedule[cur] = mem
-            mem_time[mem] = cur
+                new_schedule[cur] = mem
+                mem_time[mem] = cur
 
-
-    return new_schedule
+    if new_schedule != base_schedule:
+        return new_schedule
+    return {}
 
 # Helper function to add an event to a schedule
 def _add_event(schedule: Schedule, start_time: datetime, member: Member) -> Event:
@@ -175,28 +177,30 @@ class ScheduleListView(APIView):
         schedule = Schedule.objects.filter(calendar_id=calendar_id).first()
 
         # If no schedule exists, create a new one
-        # if not schedule:
+        if not schedule:
 
         # delete all schedules and events related to this calendar
-        Schedule.objects.filter(calendar_id=calendar_id).delete()
+        # Schedule.objects.filter(calendar_id=calendar_id).delete()
         # Event.objects.filter()
 
-        schedule = Schedule.objects.create(calendar=calendar)
 
         #starttime: member
-        mapping = _create_schedules(calendar)
-        if not mapping:
-            return Response({'error': "No possible mapping"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        for each in mapping:
-            for time in each:
-                # Try creating a new event
-                if each[time] != -1:
-                    new_event, err_msg = _add_event(schedule, time, each[time])
-                    if not new_event:
-                        return Response({'error': err_msg}, status=status.HTTP_400_BAD_REQUEST)
+            mapping = _create_schedules(calendar)
+            if not mapping:
+                return Response({'error': "No possible mapping"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            for each in mapping:
+                if not each:
+                    continue
+                schedule = Schedule.objects.create(calendar=calendar)
+                for time in each:
+                    # Try creating a new event
+                    if each[time] != -1:
+                        new_event, err_msg = _add_event(schedule, time, each[time])
+                        if not new_event:
+                            return Response({'error': err_msg}, status=status.HTTP_400_BAD_REQUEST)
 
-        schedule.save()
+            schedule.save()
         
         # Get all schedules in this calendar
         schedules = Schedule.objects.filter(calendar_id=calendar_id)
