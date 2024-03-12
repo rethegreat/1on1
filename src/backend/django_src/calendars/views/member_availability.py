@@ -9,6 +9,7 @@ from ..models.TimeSlot import OwnerTimeSlot, MemberTimeSlot
 from ..serializers import MemberTimeSlotSerializer
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
+from ..permissions import is_calendar_finalized
 
 # Member Availability
 # - Member(not authenticated, but by a unique link) should be able to ...
@@ -77,7 +78,7 @@ class MemberAvailabilityView(APIView):
         calendar = get_object_or_404(Calendar, id=calendar_id)
 
         # Check additional permission
-        if calendar.finalized:
+        if is_calendar_finalized(calendar):
             # Handle permission denial
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
@@ -126,7 +127,7 @@ class MemberAvailabilityView(APIView):
         calendar = get_object_or_404(Calendar, id=calendar_id)
 
         # Check additional permission
-        if calendar.finalized:
+        if is_calendar_finalized(calendar):
             # Handle permission denial
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 

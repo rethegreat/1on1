@@ -1,5 +1,5 @@
 from rest_framework.permissions import IsAuthenticated
-from ..permissions import IsCalendarOwner
+from ..permissions import IsCalendarOwner, is_calendar_finalized
 from ..models.Calendar import Calendar
 from ..models.Member import Member
 from ..serializers import MemberListSerializer
@@ -36,7 +36,7 @@ class MemberListView(APIView):
         self.check_object_permissions(request, calendar)
 
         # Check additional permission
-        if calendar.finalized:
+        if is_calendar_finalized(calendar):
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
         data = request.data.copy()
@@ -79,7 +79,7 @@ class MemberSelectionView(APIView):
         self.check_object_permissions(request, calendar)
 
         # Check additional permission
-        if calendar.finalized:
+        if is_calendar_finalized(calendar):
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
         data = request.data
@@ -132,7 +132,7 @@ class MemberDetailView(APIView):
         self.check_object_permissions(request, calendar)
 
         # Check additional permission
-        if calendar.finalized:
+        if is_calendar_finalized(calendar):
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
         try:
@@ -147,8 +147,7 @@ class MemberDetailView(APIView):
         calendar = get_object_or_404(Calendar, id=calendar_id)
         self.check_object_permissions(request, calendar)
 
-        # Check additional permission
-        if calendar.finalized:
+        if is_calendar_finalized(calendar):
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
         # Get the member instance
