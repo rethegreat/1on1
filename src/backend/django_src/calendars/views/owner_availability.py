@@ -2,13 +2,13 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from ..models.Calendar import Calendar
+from ..models.Calendar import Calendar, Schedule
 from ..models.Member import Member
 from ..models.TimeSlot import OwnerTimeSlot, MemberTimeSlot
 from ..serializers import OwnerTimeSlotSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
-from ..permissions import IsCalendarOwner
+from ..permissions import IsCalendarOwner, is_calendar_finalized
 
 # Owner Availability
 # - User should be able to ...
@@ -45,14 +45,19 @@ class OwnerAvailabilityView(APIView):
         calendar = get_object_or_404(Calendar, id=calendar_id)
         self.check_object_permissions(request, calendar)
 
-        # Check additional permission
-        if calendar.finalized:
+        if is_calendar_finalized(calendar):
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
         # Create the time slot
         serializer = OwnerTimeSlotSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(calendar=calendar)
+
+            #check if schedule exists if it does delete it so it can be regenerated
+            schedule = Schedule.objects.filter(calendar_id=calendar_id)
+            if schedule:
+                schedule.delete()
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
@@ -64,7 +69,7 @@ class OwnerAvailabilityView(APIView):
         self.check_object_permissions(request, calendar)
 
         # Check additional permission
-        if calendar.finalized:
+        if is_calendar_finalized(calendar):
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
         # Get the time slot
@@ -83,6 +88,12 @@ class OwnerAvailabilityView(APIView):
                 _update_member_submitted(time_slot)
                 time_slot.delete()
                 serializer.save()
+
+                #check if schedule exists if it does delete it so it can be regenerated
+                schedule = Schedule.objects.filter(calendar_id=calendar_id)
+                if schedule:
+                    schedule.delete()
+
                 return Response(serializer.data)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -92,6 +103,11 @@ class OwnerAvailabilityView(APIView):
             # If there is only one belongs to that member, set member.submitted=False
             _update_member_submitted(time_slot)
             time_slot.delete()
+            #check if schedule exists if it does delete it so it can be regenerated
+            schedule = Schedule.objects.filter(calendar_id=calendar_id)
+            if schedule:
+                schedule.delete()
+
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response({'error': 'Invalid action'}, status=status.HTTP_400_BAD_REQUEST)
 

@@ -1,20 +1,39 @@
 # How to set up
 
-1. Set up your venv
+Assuming this is from a fresh install of Ubuntu 20.04.6 LTS onto VirtualBox.
+
+1. Ensure you have sudo access, if not then open terminal and type what is below, then restart 
+```
+su -
+usermod -aG sudo {your_username}
+exit
+``` 
+
+2. Run the startup script
+```
+source startup.sh
+```
+
+3. Run the server 
+```
+./run.sh
+```
+
+<!-- 1. Set up your venv
 ```bash
 $ python3 -m venv venv
 $ source ./venv/bin/activate
-```
+``` -->
 
-2. Install the required packages
+<!-- 2. Install the required packages
 ```bash
 $ pip3 install -r requirements.txt
-```
+``` -->
 
-OPTIONAL. **If you install new packages, regenerate the requirements.txt**
+<!-- OPTIONAL. **If you install new packages, regenerate the requirements.txt**
 ```bash
 $ pip3 freeze > requirements.txt
-```
+``` -->
 
 Your directory should then look something like this:
 ```

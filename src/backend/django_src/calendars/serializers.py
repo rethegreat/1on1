@@ -94,18 +94,14 @@ class MemberTimeSlotSerializer(serializers.Serializer):
     preference = serializers.ChoiceField(choices=MemberTimeSlot.PREF_CHOICES)
 
 # Event
-
+# Show event.id as event_id, time_slot as when, and member as who
 class EventSerializer(serializers.ModelSerializer):
+    event_id = serializers.IntegerField(source='id')
+    start_time = serializers.DateTimeField(source='time_slot.start_time')
+    member_id = serializers.IntegerField(source='member.id')
+    member_name = serializers.CharField(source='member.name')
+    member_email = serializers.CharField(source='member.email')
+
     class Meta:
         model = Event
-        fields = '__all__'
-
-# Schedule
-
-class ScheduleSerializer(serializers.ModelSerializer):
-    events = EventSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Schedule
-        fields = ['id', 'calendar', 'events']
-
+        fields = ['event_id', 'start_time', 'member_id', 'member_name', 'member_email']

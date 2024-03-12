@@ -2,18 +2,21 @@
 
 # 1. Go to the directory you want
 # cd OneOnOne
+sudo apt install python3.8-venv -y
 
 # 2. Create a virtual environment
-python -m venv venv
+python3 -m venv venv
 
 # 3. Activate the virtual environment
 source venv/bin/activate
 
-# 4. Install Django
-python -m pip install Django
+pip install django pillow djangorestframework djangorestframework-simplejwt django-environ
 
-# 5. Install all required packages
-pip install django pillow djangorestframework djangorestframework-simplejwt
+# # 4. Install Django
+# python3 -m pip install Django
+
+# # 5. Install all required packages
 
 # 6. Run all migrations
-python manage.py migrate
+python3 manage.py makemigrations
+python3 manage.py migrate

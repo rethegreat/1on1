@@ -4,12 +4,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from ..permissions import IsCalendarOwner
+from ..permissions import IsCalendarOwner, is_calendar_finalized, is_calendar_finalized_manually
 from ..models.Calendar import Calendar, Schedule
 from ..models.Member import Member
 from ..models.Event import Event
 from ..models.TimeSlot import OwnerTimeSlot, MemberTimeSlot
-from ..serializers import ScheduleSerializer, EventSerializer
+from ..serializers import EventSerializer
 from ..email_utils import send_confirmation_email
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
@@ -32,10 +32,12 @@ def _create_schedules(calendar: Calendar):
     # member: PREF_CHOICES: starttime
     members_mapping = {}
     for mem in Member.objects.filter(calendar=calendar):
+        if mem not in members_mapping:
+            members_mapping[mem] = {"HIGH": [], "NO_PREF": [], "LOW": []}
+        # members_mapping[mem].setdefault("HIGH", [])
+        # members_mapping[mem].setdefault("NO_PREF", [])
+        # members_mapping[mem].setdefault("LOW", [])
         for slot in MemberTimeSlot.objects.filter(member=mem):
-            members_mapping[mem].setdefault("HIGH", [])
-            members_mapping[mem].setdefault("NO_PREF", [])
-            members_mapping[mem].setdefault("LOW", [])
             members_mapping[mem][slot.preference].append(slot.time_slot.start_time)
 
             times_members.setdefault(slot.time_slot.start_time, []).append(mem)
@@ -48,16 +50,16 @@ def _create_schedules(calendar: Calendar):
     members_times = {}
     for mem in members_mapping:
         members_times[mem] = members_mapping[mem]['HIGH'] + members_mapping[mem]['NO_PREF'] + members_mapping[mem]['LOW']
-
+        if len(members_times[mem]) == 0:
+            members_times.pop(mem)
         
-
     #starttime: member
     base_schedule = {}
     for time in owner_times:
         base_schedule[time] = -1
 
 
-    stack = sorted(list(members_times.keys()), key=lambda mem: len(members_times[mem]))
+    stack = sorted(list(members_times.keys()), key=lambda mem: len(members_times[mem]), reverse=True)
     used = set()
 
     while stack:
@@ -91,10 +93,12 @@ def _create_schedules(calendar: Calendar):
         if not assigned:
             return None
         
-    # high_schedule = _create_another_schedule(base_schedule, owner_mapping['HIGH'])
-    # mid_schedule = _create_another_schedule(base_schedule, owner_mapping['NO_PREF'])
-    
-    return [base_schedule] #, high_schedule, mid_schedule]
+    high1_schedule = _create_another_schedule(base_schedule, owner_mapping['HIGH'], times_members, used)
+    high2_schedule = _create_another_schedule(base_schedule, owner_mapping['HIGH'][::-1], times_members, used)
+    mid1_schedule = _create_another_schedule(base_schedule, owner_mapping['NO_PREF'], times_members, used)
+    mid2_schedule = _create_another_schedule(base_schedule, owner_mapping['NO_PREF'][::-1], times_members, used)
+
+    return [base_schedule, high1_schedule, high2_schedule, mid1_schedule, mid2_schedule]
 
 def _create_another_schedule(base_schedule, owner_times, times_members, used):
     stack = owner_times[:]
@@ -112,43 +116,48 @@ def _create_another_schedule(base_schedule, owner_times, times_members, used):
         cur = stack.pop()
         if cur not in visited:
             visited.add(cur)
-            mem = times_members[cur][0]         
-            
-            new_schedule[mem_time[mem]] = -1
-            visited.remove(mem_time[mem])
+            if cur in times_members:
+                mem = times_members[cur][0]         
+                
+                new_schedule[mem_time[mem]] = -1
+                visited.remove(mem_time[mem])
 
-            new_schedule[cur] = mem
-            mem_time[mem] = cur
+                new_schedule[cur] = mem
+                mem_time[mem] = cur
+                break
 
+    if new_schedule != base_schedule:
+        return new_schedule
+    return {}
 
-    return new_schedule
+# ========================================================
 
 # Helper function to add an event to a schedule
-def _add_event(schedule: Schedule, start_time: datetime, member: Member) -> Event:
+def _add_event(schedule: Schedule, new_time: datetime, member: Member) -> Event:
     # Get the OwnerTimeSlot object for the specified start time
 
     # Case 1 ::
     # if start_time is not one of OwnerTimeSlot.start_time, 
     # then return error message that this time is marked not available!
     try:
-        new_time_slot = OwnerTimeSlot.objects.get(start_time=start_time)
+        new_time_slot = OwnerTimeSlot.objects.get(start_time=new_time)
     except OwnerTimeSlot.DoesNotExist:
-        return None, 'This time is not available'
+        return None, 'You are not available at this time'
     # Case 2 :: 
     # elif start_time is not one of OwnerTimeSlot.start_time that the member chosen said he/she is available(i.e., MemberTimeSlot.time_slot is not there),
     #  then return error message that this time is not available by {member.name}!
-    if not MemberTimeSlot.objects.filter(time_slot__start_time=start_time, member=member):
-        return None, 'This time is not available by the member'
+    if not MemberTimeSlot.objects.filter(time_slot__start_time=new_time, member=member):
+        return None, f'This time is not available by the {member.name}'
     
     # elif start_time is already taken by another event, then return error message that this time is already taken!
-    elif Event.objects.filter(time_slot__start_time=start_time, schedule=schedule):
+    elif Event.objects.filter(time_slot__start_time=new_time, suggested_schedule=schedule):
         return None, 'This time is already taken'
     
     # else, create the event
-    new_event = Event.objects.create(schedule=schedule, member=member, time_slot=new_time_slot)
+    new_event = Event.objects.create(suggested_schedule=schedule, member=member, time_slot=new_time_slot)
     # save it
     new_event.save()
-    return new_event
+    return new_event, ""
 
 # Suggested Schedules
 # - User should be able to
@@ -170,20 +179,31 @@ class ScheduleListView(APIView):
         self.check_object_permissions(request, calendar)
 
         # Check if a schedule already exists for the calendar
+        # Schedule.objects.filter(calendar_id=calendar_id).delete()
         schedule = Schedule.objects.filter(calendar_id=calendar_id).first()
 
         # If no schedule exists, create a new one
         if not schedule:
-            schedule = Schedule.objects.create(calendar=calendar)
 
-            #starttime: member
+        # delete all schedules and events related to this calendar
+        # Event.objects.filter()
+
+
+        #starttime: member
             mapping = _create_schedules(calendar)
+            if not mapping:
+                return Response({'error': "No possible mapping"}, status=status.HTTP_400_BAD_REQUEST)
+            
             for each in mapping:
+                if not each:
+                    continue
+                schedule = Schedule.objects.create(calendar=calendar)
                 for time in each:
                     # Try creating a new event
-                    new_event, err_msg = _add_event(schedule, time, mapping[time])
-                    if not new_event:
-                        return Response({'error': err_msg}, status=status.HTTP_400_BAD_REQUEST)
+                    if each[time] != -1:
+                        new_event, err_msg = _add_event(schedule, time, each[time])
+                        if not new_event:
+                            return Response({'error': err_msg}, status=status.HTTP_400_BAD_REQUEST)
 
             schedule.save()
         
@@ -191,7 +211,6 @@ class ScheduleListView(APIView):
         schedules = Schedule.objects.filter(calendar_id=calendar_id)
         # for each schedules, serialize id, schedule, events
 
-        # Paginate the queryset
         # Paginate the queryset
         paginator = Paginator(schedules, self.pagination_class.page_size)
         page_number = request.query_params.get('page', 1)
@@ -202,7 +221,7 @@ class ScheduleListView(APIView):
         for schedule in page_obj:
             data = {
                 'id': schedule.id,
-                'events': Event.objects.filter(suggested_schedule=schedule)
+                'events': EventSerializer(Event.objects.filter(suggested_schedule=schedule), many=True).data
             }
             results.append(data)
 
@@ -214,7 +233,6 @@ class ScheduleListView(APIView):
             'results': results  # Include paginated data
         }
 
-        return Response(response_data)
         return Response(response_data, status=status.HTTP_200_OK)
         
     
@@ -230,41 +248,32 @@ class ScheduleDetailView(APIView):
         schedule = get_object_or_404(Schedule, id=schedule_id, calendar_id=calendar_id)
 
         # Serialize the schedule along with its corresponding events
-        serializer = ScheduleSerializer(schedule)
+        events = EventSerializer(Event.objects.filter(suggested_schedule=schedule), many=True).data
+        data = {
+            'id': schedule.id,
+            'events': events
+        }
 
-        return Response(serializer.data)
+        return Response(data, status=status.HTTP_200_OK)
 
-    # Users should be able to edit a suggested schedule
-    def patch(self, request, calendar_id, schedule_id):
+    def post(self, request, calendar_id, schedule_id):
+        """
+        Finalize the calendar with the specified schedule.
+        """
         calendar = get_object_or_404(Calendar, id=calendar_id)
         self.check_object_permissions(request, calendar)
 
-        # Check additional permission
-        if calendar.finalized:
-            return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
-
-        # Get the schedule
-        schedule = get_object_or_404(Schedule, id=schedule_id, calendar_id=calendar_id)
-
-        # Update the schedule
-        serializer = ScheduleSerializer(schedule, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)    
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=True, methods=['post'])
-    def finalize(self, request, calendar_id, schedule_id):
-        calendar = get_object_or_404(Calendar, id=calendar_id)
-        self.check_object_permissions(request, calendar)
-
-        if calendar.finalized:
-            # Already finalized
+        if is_calendar_finalized_manually(calendar):
             return Response({"detail": "Calendar is already finalized"}, status=status.HTTP_400_BAD_REQUEST)
+        if is_calendar_finalized(calendar):
+            return Response({"detail": "Calendar is finalized automatically. Please edit the deadline to cancel."}, status=status.HTTP_403_FORBIDDEN)
         
         # Get the schedule
-        schedule = get_object_or_404(Schedule, id=schedule_id, calendar_id=calendar_id)
-
+        try:
+            schedule = Schedule.objects.get(id=schedule_id, calendar_id=calendar_id)
+        except Schedule.DoesNotExist:
+            return Response({'error': 'Schedule not found'}, status=status.HTTP_400_BAD_REQUEST)
+        
         # Finalize the calendar
         calendar.finalized = True
         calendar.finalized_schedule = schedule
@@ -279,53 +288,109 @@ class ScheduleDetailView(APIView):
         else:
             return Response({'detail': result['message']}, status=status.HTTP_403_FORBIDDEN if result['message'] == 'Forbidden' else status.HTTP_400_BAD_REQUEST)
     
-
+    # Users should be able to edit a suggested schedule
     def put(self, request, calendar_id, schedule_id):
         calendar = get_object_or_404(Calendar, id=calendar_id)
         self.check_object_permissions(request, calendar)
 
         # Check additional permission
-        if calendar.finalized:
+        if is_calendar_finalized(calendar):
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
-        # Get the action from the request data
+        # Get objects
+        try:
+            schedule = Schedule.objects.get(id=schedule_id, calendar_id=calendar_id)
+        except Schedule.DoesNotExist:
+            return Response({'error': 'Schedule not found'}, status=status.HTTP_400_BAD_REQUEST)
         action = request.data.get('action')
-        event_id = request.data.get('event_id')
-
-        # Check the action and perform the corresponding operation
+        if not action:
+            return Response({'error': '`action` is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Perform action
         if action == 'move':
-            time = request.data.get('time')
-            return self.move_event(request, schedule_id)
-        elif action == 'update':
-            time = request.data.get('time')
-            return self.update_schedule(request, schedule_id)
+            new_time = request.data.get('new_time')
+            if not new_time:
+                return Response({'error': '`new_time` is required'}, status=status.HTTP_400_BAD_REQUEST)
+            event_id = request.data.get('event_id')
+            if not event_id:
+                return Response({'error': '`event_id` is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                event = Event.objects.get(id=event_id, suggested_schedule=schedule_id)
+            except Event.DoesNotExist:
+                return Response({'error': 'Event not found'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            return move_event(schedule, event, new_time)
+        
+        elif action == 'add':
+            new_time = request.data.get('new_time')
+            if not new_time:
+                return Response({'error': '`new_time` is required'}, status=status.HTTP_400_BAD_REQUEST)
+            member_id = request.data.get('member_id')
+            if not member_id:
+                return Response({'error': '`member_id` is required'}, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                member = Member.objects.get(id=member_id, calendar_id=calendar_id)
+            except Member.DoesNotExist:
+                return Response({'error': 'Member not found'}, status=status.HTTP_400_BAD_REQUEST)
+            return add_event(schedule, new_time, member)
+        
+        elif action == 'delete':
+            event_id = request.data.get('event_id')
+            if not event_id:
+                return Response({'error': '`event_id` is required'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            try:
+                event = Event.objects.get(id=event_id, suggested_schedule=schedule_id)
+            except Event.DoesNotExist:
+                return Response({'error': 'Event not found'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            return delete_event(event)
+        
         else:
             return Response({'error': 'Invalid action'}, status=status.HTTP_400_BAD_REQUEST)
 
-    def move_event(self, request, schedule_id):
 
-        # Extract the event ID and new time from the request data
-        old_event_id = request.data.get('event_id')
-        old_event = get_object_or_404(Event, id=old_event_id)
-        new_time = request.data.get('new_time')
-        schedule = get_object_or_404(Schedule, id=schedule_id)
-        member = old_event.member
-        
-        # Try creating a new event
-        new_event, err_msg = _add_event(schedule, new_time, member)
-        if not new_event:
-            return Response({'error': err_msg}, status=status.HTTP_400_BAD_REQUEST)
-        # Delete the old event
-        old_event.delete()
-        return Response({'message': 'Event moved successfully'}, status=status.HTTP_200_OK)
+# ========================================================
+# Helper functions to move, add, and delete events in ScheduleDetailView
+# ========================================================
 
-    def add_event(self, request, schedule_id):
-        # Extract the event data from the request
-        new_start_time = request.data.get('new_start_time')
-        member_id = request.data.get('member_id')
-        schedule = get_object_or_404(Schedule, id=schedule_id)
-        member = get_object_or_404(Member, id=member_id)
-        new_event, err_msg = _add_event(schedule, new_start_time, member)
-        if not new_event:
-            return Response({'error': err_msg}, status=status.HTTP_400_BAD_REQUEST)
-        return Response({'message': 'Event added successfully'}, status=status.HTTP_201_CREATED)
+def move_event(schedule, old_event, new_time):
+    """
+    Move an event to a new time in the schedule.
+    """
+    # Moving event is the same as deleting the old event and adding a new event
+    # We will try adding a new event and then delete the old event
+
+    # Get objects
+    member = old_event.member
+
+    # Case 1:: old_event.time_slot.start_time == new_time
+    if old_event.time_slot.start_time == new_time:
+        return Response({'error': 'The new time is the same as the old time'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Case 2:: Otherwise,
+    # 2-1) Try creating a new event
+    new_event, err_msg = _add_event(schedule, new_time, member)
+    if not new_event:
+        return Response({'error': err_msg}, status=status.HTTP_400_BAD_REQUEST)
+    # 2-2) Delete the old event
+    old_event.delete()
+    return Response({'message': 'Event moved successfully'}, status=status.HTTP_200_OK)
+
+def add_event(schedule, new_time, member):
+    """Add event to the schedule.
+    Note this function calls _add_event"""
+    new_event, err_msg = _add_event(schedule, new_time, member)
+    if not new_event:
+        return Response({'error': err_msg}, status=status.HTTP_400_BAD_REQUEST)
+    return Response({'message': 'Event added successfully'}, status=status.HTTP_201_CREATED)
+
+def delete_event(event):
+    """
+    Delete an event from the schedule.
+    """
+    event.delete()
+    return Response({'message': 'Event deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
+#  ========================================================
