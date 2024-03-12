@@ -9,7 +9,7 @@ from ..models.Calendar import Calendar, Schedule
 from ..models.Member import Member
 from ..models.Event import Event
 from ..models.TimeSlot import OwnerTimeSlot, MemberTimeSlot
-from ..serializers import ScheduleSerializer, EventSerializer
+from ..serializers import EventSerializer
 from ..email_utils import send_confirmation_email
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
@@ -130,25 +130,27 @@ def _create_another_schedule(base_schedule, owner_times, times_members, used):
         return new_schedule
     return {}
 
+# ========================================================
+
 # Helper function to add an event to a schedule
-def _add_event(schedule: Schedule, start_time: datetime, member: Member) -> Event:
+def _add_event(schedule: Schedule, new_time: datetime, member: Member) -> Event:
     # Get the OwnerTimeSlot object for the specified start time
 
     # Case 1 ::
     # if start_time is not one of OwnerTimeSlot.start_time, 
     # then return error message that this time is marked not available!
     try:
-        new_time_slot = OwnerTimeSlot.objects.get(start_time=start_time)
+        new_time_slot = OwnerTimeSlot.objects.get(start_time=new_time)
     except OwnerTimeSlot.DoesNotExist:
-        return None, 'This time is not available'
+        return None, 'You are not available at this time'
     # Case 2 :: 
     # elif start_time is not one of OwnerTimeSlot.start_time that the member chosen said he/she is available(i.e., MemberTimeSlot.time_slot is not there),
     #  then return error message that this time is not available by {member.name}!
-    if not MemberTimeSlot.objects.filter(time_slot__start_time=start_time, member=member):
-        return None, 'This time is not available by the member'
+    if not MemberTimeSlot.objects.filter(time_slot__start_time=new_time, member=member):
+        return None, f'This time is not available by the {member.name}'
     
     # elif start_time is already taken by another event, then return error message that this time is already taken!
-    elif Event.objects.filter(time_slot__start_time=start_time, suggested_schedule=schedule):
+    elif Event.objects.filter(time_slot__start_time=new_time, suggested_schedule=schedule):
         return None, 'This time is already taken'
     
     # else, create the event
@@ -210,7 +212,6 @@ class ScheduleListView(APIView):
         # for each schedules, serialize id, schedule, events
 
         # Paginate the queryset
-        # Paginate the queryset
         paginator = Paginator(schedules, self.pagination_class.page_size)
         page_number = request.query_params.get('page', 1)
         page_obj = paginator.get_page(page_number)
@@ -232,7 +233,6 @@ class ScheduleListView(APIView):
             'results': results  # Include paginated data
         }
 
-        return Response(response_data)
         return Response(response_data, status=status.HTTP_200_OK)
         
     
@@ -248,12 +248,18 @@ class ScheduleDetailView(APIView):
         schedule = get_object_or_404(Schedule, id=schedule_id, calendar_id=calendar_id)
 
         # Serialize the schedule along with its corresponding events
-        serializer = ScheduleSerializer(schedule)
+        events = EventSerializer(Event.objects.filter(suggested_schedule=schedule), many=True).data
+        data = {
+            'id': schedule.id,
+            'events': events
+        }
 
-        return Response(serializer.data)
+        return Response(data, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=['post'])
-    def finalize(self, request, calendar_id, schedule_id):
+    def post(self, request, calendar_id, schedule_id):
+        """
+        Finalize the calendar with the specified schedule.
+        """
         calendar = get_object_or_404(Calendar, id=calendar_id)
         self.check_object_permissions(request, calendar)
 
@@ -288,44 +294,97 @@ class ScheduleDetailView(APIView):
         if is_calendar_finalized(calendar):
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
-        # Get the action from the request data
+        # Get objects
+        schedule = get_object_or_404(Schedule, id=schedule_id)
         action = request.data.get('action')
-        event_id = request.data.get('event_id')
-
-        # Check the action and perform the corresponding operation
+        if not action:
+            return Response({'error': '`action` is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Perform action
         if action == 'move':
-            time = request.data.get('time')
-            return self.move_event(request, schedule_id)
-        elif action == 'update':
-            time = request.data.get('time')
-            return self.update_schedule(request, schedule_id)
+            new_time = request.data.get('new_time')
+            if not new_time:
+                return Response({'error': '`new_time` is required'}, status=status.HTTP_400_BAD_REQUEST)
+            event_id = request.data.get('event_id')
+            if not event_id:
+                return Response({'error': '`event_id` is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                event = Event.objects.get(id=event_id, suggested_schedule=schedule_id)
+            except Event.DoesNotExist:
+                return Response({'error': 'Event not found'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            return move_event(schedule, event, new_time)
+        
+        elif action == 'add':
+            new_time = request.data.get('new_time')
+            if not new_time:
+                return Response({'error': '`new_time` is required'}, status=status.HTTP_400_BAD_REQUEST)
+            member_id = request.data.get('member_id')
+            if not member_id:
+                return Response({'error': '`member_id` is required'}, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                member = Member.objects.get(id=member_id, calendar_id=calendar_id)
+            except Member.DoesNotExist:
+                return Response({'error': 'Member not found'}, status=status.HTTP_400_BAD_REQUEST)
+            return add_event(schedule, new_time, member)
+        
+        elif action == 'delete':
+            event_id = request.data.get('event_id')
+            if not event_id:
+                return Response({'error': '`event_id` is required'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            try:
+                event = Event.objects.get(id=event_id, suggested_schedule=schedule_id)
+            except Event.DoesNotExist:
+                return Response({'error': 'Event not found'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            return delete_event(event)
+        
         else:
             return Response({'error': 'Invalid action'}, status=status.HTTP_400_BAD_REQUEST)
 
-    def move_event(self, request, schedule_id):
 
-        # Extract the event ID and new time from the request data
-        old_event_id = request.data.get('event_id')
-        old_event = get_object_or_404(Event, id=old_event_id)
-        new_time = request.data.get('new_time')
-        schedule = get_object_or_404(Schedule, id=schedule_id)
-        member = old_event.member
-        
-        # Try creating a new event
-        new_event, err_msg = _add_event(schedule, new_time, member)
-        if not new_event:
-            return Response({'error': err_msg}, status=status.HTTP_400_BAD_REQUEST)
-        # Delete the old event
-        old_event.delete()
-        return Response({'message': 'Event moved successfully'}, status=status.HTTP_200_OK)
+# ========================================================
+# Helper functions to move, add, and delete events in ScheduleDetailView
+# ========================================================
 
-    def add_event(self, request, schedule_id):
-        # Extract the event data from the request
-        new_start_time = request.data.get('new_start_time')
-        member_id = request.data.get('member_id')
-        schedule = get_object_or_404(Schedule, id=schedule_id)
-        member = get_object_or_404(Member, id=member_id)
-        new_event, err_msg = _add_event(schedule, new_start_time, member)
-        if not new_event:
-            return Response({'error': err_msg}, status=status.HTTP_400_BAD_REQUEST)
-        return Response({'message': 'Event added successfully'}, status=status.HTTP_201_CREATED)
+def move_event(schedule, old_event, new_time):
+    """
+    Move an event to a new time in the schedule.
+    """
+    # Moving event is the same as deleting the old event and adding a new event
+    # We will try adding a new event and then delete the old event
+
+    # Get objects
+    member = old_event.member
+
+    # Case 1:: old_event.time_slot.start_time == new_time
+    if old_event.time_slot.start_time == new_time:
+        return Response({'error': 'The new time is the same as the old time'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Case 2:: Otherwise,
+    # 2-1) Try creating a new event
+    new_event, err_msg = _add_event(schedule, new_time, member)
+    if not new_event:
+        return Response({'error': err_msg}, status=status.HTTP_400_BAD_REQUEST)
+    # 2-2) Delete the old event
+    old_event.delete()
+    return Response({'message': 'Event moved successfully'}, status=status.HTTP_200_OK)
+
+def add_event(schedule, new_time, member):
+    """Add event to the schedule.
+    Note this function calls _add_event"""
+    new_event, err_msg = _add_event(schedule, new_time, member)
+    if not new_event:
+        return Response({'error': err_msg}, status=status.HTTP_400_BAD_REQUEST)
+    return Response({'message': 'Event added successfully'}, status=status.HTTP_201_CREATED)
+
+def delete_event(event):
+    """
+    Delete an event from the schedule.
+    """
+    event.delete()
+    return Response({'message': 'Event deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
+#  ========================================================
