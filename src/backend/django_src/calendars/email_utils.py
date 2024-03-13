@@ -6,6 +6,7 @@ from .models.TimeSlot import OwnerTimeSlot
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from django.conf import settings
+from datetime import timedelta
 import base64
 
 
@@ -20,9 +21,9 @@ def send_confirmation_email(user, schedule_id):
             member = event.member
             time_slot = event.time_slot
             start_time = time_slot.start_time
-            end_time = start_time + time_slot.calendar.meeting_duration
+            end_time = start_time + timedelta(minutes=time_slot.calendar.meeting_duration)
             
-            message = f"Hi {member.name},\n\nYour meeting is scheduled for {time_slot.date} with {owner_name} from {start_time} to {end_time}.\n\nBest regards.\n1on1 Team"
+            message = f"Hi {member.name},\n\nYour meeting is scheduled for {start_time.date()} with {owner_name} from {start_time.time()} to {end_time.time()}.\n\nBest regards.\n1on1 Team"
             send_email_to_participant('Meeting confirmation from 1on1', member.email, message)
 
         return {'success': True, 'message': 'Emails sent successfully'}
