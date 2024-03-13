@@ -25,9 +25,12 @@ class ProfileUserSerializer(serializers.ModelSerializer):
     
     def update(self, instance, validated_data):
         # Password update is handled separately
+        validated_data.pop('analytics_data', None)
+        validated_data.pop('streak_count', None)
+        
+        instance = super(ProfileUserSerializer, self).update(instance, validated_data)
+        
         password = validated_data.pop('password', None)
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
 
         if password:
             instance.set_password(password)
