@@ -52,6 +52,13 @@ class ProfileView(APIView):
     def get(self, request):
         serializer = ProfileUserSerializer(request.user)
         return Response(serializer.data)
+    
+    def put(self, request):
+        serializer = ProfileUserSerializer(request.user, data=request.data, partial=True)  # partial=True allows for partial updates
+        if serializer.is_valid():
+            serializer.save()  # Save the updated user info
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ContactsListView(APIView):
