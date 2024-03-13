@@ -21,4 +21,3 @@ class Event(models.Model):
     member = models.ForeignKey('Member', on_delete=models.CASCADE, null=False, blank=False)
 
     unique_together = ('suggested_schedule', 'time_slot')
-    unique_together = ('suggested_schedule', 'member')
