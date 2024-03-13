@@ -110,6 +110,11 @@ class CalendarRemind(APIView):
 
         members = Member.objects.filter(calendar=calendar)
         owner_name = request.user.first_name
+
+        # If `pending_only` option is set, only remind those who haven't submitted!
+        pending_only = request.data.get('pending_only')
+        if pending_only:
+            members = members.filter(submitted=False)
         
         for member in members:
             if not member.submitted:
