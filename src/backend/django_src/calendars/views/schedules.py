@@ -133,7 +133,7 @@ def _create_another_schedule(base_schedule, owner_times, times_members, used):
 # ========================================================
 
 # Helper function to add an event to a schedule
-def _add_event(schedule: Schedule, new_time: datetime, member: Member) -> Event:
+def _add_event(schedule: Schedule, new_time: datetime, member: Member):
     # Get the OwnerTimeSlot object for the specified start time
 
     # Case 1 ::
