@@ -205,7 +205,7 @@ class ScheduleListView(APIView):
                         if not new_event:
                             return Response({'error': err_msg}, status=status.HTTP_400_BAD_REQUEST)
 
-            schedule.save()
+                schedule.save()
         
         # Get all schedules in this calendar
         schedules = Schedule.objects.filter(calendar_id=calendar_id)
