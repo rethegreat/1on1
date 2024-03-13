@@ -9,7 +9,8 @@ class ProfileUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = user_model
-        fields = ('username', 'email', 'first_name', 'last_name', 'password')
+        fields = ('username', 'email', 'first_name', 'last_name', 
+                  'password', 'streak_count', 'analytics_data',)
 
     def create(self, validated_data):
         user_instance = user_model.objects.create_user(
@@ -21,3 +22,17 @@ class ProfileUserSerializer(serializers.ModelSerializer):
         user_instance.set_password(validated_data['password'])
         user_instance.save()
         return user_instance
+    
+    def update(self, instance, validated_data):
+        # Password update is handled separately
+        validated_data.pop('analytics_data', None)
+        validated_data.pop('streak_count', None)
+        
+        instance = super(ProfileUserSerializer, self).update(instance, validated_data)
+        
+        password = validated_data.pop('password', None)
+
+        if password:
+            instance.set_password(password)
+        instance.save()
+        return instance
