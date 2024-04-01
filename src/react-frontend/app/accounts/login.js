@@ -18,34 +18,25 @@ export default function Login() {
           rel="stylesheet"
         />
       </Head>
-      <div class="page-container">
-        <div class="content-container">
-          <div class="title">1ON1</div>
+      <div className="page-container">
+        <div className="content-container">
+          <div className="title">1ON1</div>
 
           <form id="login-form">
             <p id="login-error-msg"></p>
 
-            <label for="email">email</label>
+            <label htmlFor="email">email</label>
             <input type="email" id="email" name="email" required />
 
-            <label for="password">password</label>
+            <label htmlFor="password">password</label>
             <input type="password" id="password" name="password" required />
 
             <div id="login-form-buttons-row">
-              <button
-                class="learn-more-button"
-                onclick="window.location.href='learn-more.html'"
-              >
-                learn more
-              </button>
-              <button
-                class="signup-button"
-                id="login-form-signup-button"
-                onclick="window.location.href='signup.html'"
-              >
+              <button className="learn-more-button">learn more</button>
+              <button className="signup-button" id="login-form-signup-button">
                 Sign Up
               </button>
-              <button type="submit" class="login-button" id="login-button">
+              <button type="submit" className="login-button" id="login-button">
                 Login
               </button>
             </div>

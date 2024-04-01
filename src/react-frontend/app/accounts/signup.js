@@ -18,23 +18,24 @@ export default function Signup() {
           rel="stylesheet"
         />
       </Head>
-      <div class="page-container">
-        <div class="content-container">
-          <div class="title">1ON1</div>
+      <div className="account-container">
+      <div className="page-container">
+        <div className="content-container">
+          <div className="title">1ON1</div>
 
           <form id="signup-form">
             <p id="signup-error-msg"></p>
 
-            <label for="name">name</label>
+            <label htmlFor="name">name</label>
             <input type="text" id="name" name="name" required />
 
-            <label for="email">email</label>
+            <label htmlFor="email">email</label>
             <input type="text" id="email" name="email" required />
 
-            <label for="password">password</label>
+            <label htmlFor="password">password</label>
             <input type="password" id="password" name="password" required />
 
-            <label for="password-confirm">confirm password</label>
+            <label htmlFor="password-confirm">confirm password</label>
             <input
               type="password"
               id="password-confirm"
@@ -42,12 +43,14 @@ export default function Signup() {
               required
             />
 
-            <button type="submit" class="signup-button" id="signup-button">
+            <button type="submit" className="signup-button" id="signup-button">
               Sign Up
             </button>
           </form>
         </div>
       </div>
+      </div>
+      
     </>
   );
 }

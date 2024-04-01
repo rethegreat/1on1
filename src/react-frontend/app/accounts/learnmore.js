@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Image from "next/image";
 import "./learnmore.css";
 
 export default function LearnMore() {
@@ -18,21 +19,19 @@ export default function LearnMore() {
           rel="stylesheet"
         />
       </Head>
-      <div>
-        <div class="nav-back">
-          <button
-            onclick="window.location.href='login.html'"
-            class="back-button"
-          >
-            &lt; back
-          </button>
+      <div className="container">
+        <div className="nav-back">
+          <button className="back-button">&lt; back</button>
         </div>
 
-        <div class="screen-card screen-card-1">
-          {/* <img class="value-prop" src="vp1.png" alt=""> */}
-          <div class="welcome-text">
+        <div className="screen-card screen-card-1">
+          <div className="value-prop">
+            <Image src="/vp1.png" width={850} height={600} alt="" />
+          </div>
+
+          <div className="welcome-text">
             <h1>Effortless Meet-ups</h1>
-            <div class="p-container">
+            <div className="p-container">
               <p>
                 Ditch the calendar Tetris! Our app takes the headache out of
                 scheduling one-on-one meetings. Just pick your preferred time,
@@ -42,11 +41,14 @@ export default function LearnMore() {
             </div>
           </div>
         </div>
-        <div class="screen-card screen-card-2">
-          {/* <img style="max-height: 50vw; width: auto;" class="value-prop" src="vp2.png" alt=""> */}
-          <div class="welcome-text">
+        <div className="screen-card screen-card-2">
+          <div className="bot-image">
+            <Image width={600} height={800} src="/vp2.png" alt="" />
+          </div>
+
+          <div className="welcome-text">
             <h1>Time-Savvy Scheduler</h1>
-            <div class="p-container">
+            <div className="p-container">
               <p>
                 Tired of wasted hours coordinating schedules? Our app is your
                 time-savvy ally. It not only books your meetings but ensures
@@ -56,11 +58,14 @@ export default function LearnMore() {
             </div>
           </div>
         </div>
-        <div class="screen-card screen-card-3">
-          {/* <img class="value-prop" style="max-height: 50vw; width: auto;" src="vp3.png" alt=""> */}
-          <div class="welcome-text">
+        <div className="screen-card screen-card-3">
+          <div className="bot-image">
+            <Image width={600} height={600} src="/vp3.png" alt="" />
+          </div>
+
+          <div className="welcome-text">
             <h1>Networking Sidekick</h1>
-            <div class="p-container">
+            <div className="p-container">
               <p>
                 Hate small talk? Let our app be your networking wingman.
                 Automatically send out meeting invites. Say goodbye to awkward

@@ -1,4 +1,4 @@
-* {
+.page-container {
     width: 100%;
     height: fit-content;
     margin: 0;
@@ -8,12 +8,8 @@
     font-size: 20px;
     color: white;
 
-    max-width: 100vw;
-    max-height: 100vh;
     background-color: #0005DD;
-}
 
-.page-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -64,6 +60,7 @@ form {
 
 input {
     padding: 8px;
+    width: 500px;
     border: none;
     border-bottom: 1px solid white;
     outline: none;
@@ -216,7 +213,7 @@ button {
      
 }
 
-@media screen and (max-width: 680px) {
+@media screen and (max-width: 600px) {
 
     #login-form-buttons-row {
         display: grid;
@@ -234,6 +231,10 @@ button {
         grid-column: 1 / span 2;
         width: 100%;
         justify-self: center;
+    }
+
+    input {
+        width: 180px;
     }
 
     #login-form-signup-button {
