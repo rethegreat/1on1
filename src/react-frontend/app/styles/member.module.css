@@ -5,10 +5,11 @@
 }
 
 .input {
+    font-size: 24px;
     border: none;
     border-bottom: 1px solid black;
     outline: none;
-    width: max(100%, 50px);
+    width: max(70%, 50px);
 }
 
 .back{
@@ -54,7 +55,8 @@
 }
 
 #add-member-form {
-    display: block; 
+    height: 100%;
+    display: flex; 
     justify-content: space-between; 
     align-items: center;
 }

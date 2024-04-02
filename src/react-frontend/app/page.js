@@ -1,18 +1,15 @@
-import Login from "./accounts/login";
-import Signup from "./accounts/signup";
-import LearnMore from "./accounts/learnmore";
-import HomePage from "./home/home";
-import CreateCalendar from "./home/create-calendar";
-import PersonalPage from "./home/personal";
-import MemberPage from "./members/member";
-import Schedule from "./calendar/schedule";
-import Availability from "./calendar/availability";
+import Login from "./login/login";
+import Signup from "./signup/page";
+import HomePage from "./home/page";
+import CreateCalendar from "./create-calendar/create-calendar";
+import PersonalPage from "./personal/page";
+import MemberPage from "./member/page";
+import Schedule from "./schedule/page";
+import Availability from "./availability/page";
 import "./globals.css";
 
 export default function App() {
   return (
-    <div>
-      <Availability />
-    </div>
+    <Login />
   );
 }

@@ -1,7 +1,16 @@
+'use client'
 import Head from "next/head";
-import "./calendar.css";
+import { useRouter } from "next/navigation";
+import "./schedule.css";
 
-export default function Availability() {
+export default function Schedule() {
+
+  const router = useRouter()
+
+  const backClick = () => {
+    router.push('/personal')
+  }
+
   return (
     <>
       <Head>
@@ -20,20 +29,15 @@ export default function Availability() {
       </Head>
       <div className="calendar-body">
         <div className="calendar-main">
-          <div className="back">&lt; back</div>
+          <div className="back" onClick={backClick}>&lt; back</div>
 
-          <div className="header blue">availability</div>
+          <div className="header pink">schedule</div>
 
-          <div className="preference">
-            <div className="p-item">
-              <div className="green circle"></div>
-              <div>high preference</div>
+          <div className="missing">
+            <div className="missing-text">
+              2 users have not submitted their schedules
             </div>
-            <div className="p-item">
-              <div className="orange circle"></div>
-              <div>low preference</div>
-            </div>
-            <div></div>
+            <div className="remind">remind</div>
           </div>
 
           <div className="calendar">
@@ -61,55 +65,51 @@ export default function Availability() {
               <div className="day">
                 <div className="label">Mon</div>
 
-                <div className="column">
-                  <div className="column large green"></div>
-                </div>
+                <div className="column"></div>
               </div>
 
               <div className="day">
                 <div className="label">Tue</div>
                 <div className="column">
                   <div className="column-spacer"></div>
-                  <div className="column small orange"></div>
+                  <div className="column small orange name">Irene</div>
                 </div>
               </div>
               <div className="day">
                 <div className="label">Wed</div>
-                <div className="column green"></div>
+                <div className="column"></div>
               </div>
               <div className="day">
                 <div className="label">Thu</div>
-                <div className="column">
-                  <div className="column-spacer"></div>
-                  <div className="column-spacer"></div>
-                  <div className="column-spacer"></div>
-                  <div className="column large orange"></div>
-                </div>
+                <div className="column"></div>
               </div>
               <div className="day">
                 <div className="label">Fri</div>
-                <div className="column">
-                  <div className="column-spacer"></div>
-                  <div className="column-spacer"></div>
-                  <div className="column medium green"></div>
-                </div>
+                <div className="column"></div>
               </div>
               <div className="day">
                 <div className="label">Sat</div>
-                <div className="column orange"></div>
+                <div className="column"></div>
               </div>
               <div className="day">
                 <div className="label">Sun</div>
                 <div className="column">
-                  <div className="column large orange"></div>
+                  <div className="column large cyan name">Kurtis</div>
                 </div>
               </div>
             </div>
           </div>
-
-          <div className="bottom-button" style={{ "padding-top": "25px" }}>
-            <div className="cancel">cancel</div>
-            <div className="submit">submit</div>
+          <div className="bottom">
+            <div style={{ width: "150px" }}></div>
+            <div className="page">
+              <div className="arrow">&lt;</div>
+              <div>1/3</div>
+              <div className="arrow">&gt;</div>
+            </div>
+            <div className="bottom-button">
+              <div className="cancel" onClick={backClick}>cancel</div>
+              <div className="submit">submit</div>
+            </div>
           </div>
         </div>
       </div>

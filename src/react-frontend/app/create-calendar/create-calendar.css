@@ -166,7 +166,7 @@ input {
 
 @media (max-width: 660px) {
     body {
-        margin: 1rem;
+        /* margin: 1rem; */
         padding: 0px;
     }
 

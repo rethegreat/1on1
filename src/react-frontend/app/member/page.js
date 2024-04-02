@@ -1,8 +1,12 @@
+'use client'
 import Head from "next/head";
 import Image from "next/image";
-import styles from "./member.module.css"; // Import the CSS module
+import styles from "../styles/member.module.css"; 
+import { useRouter } from "next/navigation";
 
 export default function MemberPage() {
+  const router = useRouter()
+
   return (
     <div>
       <Head>
@@ -22,7 +26,7 @@ export default function MemberPage() {
       <div className={styles.main}>
         <a
           className={styles.back}
-          href="../home-personal/personal-completed.html"
+          href="/personal"
         >
           {" "}
           &lt; back
@@ -57,14 +61,30 @@ export default function MemberPage() {
         <div className={styles.add}>
           <div className={styles.newcard}>
             <form id="add-member-form">
-              <label className={styles.label} htmlFor="name">name</label>
-              <input
-                className={styles.input}
-                type="text"
-                id="name"
-                name="name"
-                required
-              />
+              <div>
+                <label className={styles.label} htmlFor="name">
+                  name
+                </label>
+                <input
+                  className={styles.input}
+                  type="text"
+                  id="name"
+                  name="name"
+                  required
+                />
+              </div>
+              <div style={{ marginTop : "20px"}}>
+                <label className={styles.label} htmlFor="email">
+                  email
+                </label>
+                <input
+                  className={styles.input}
+                  type="text"
+                  id="email"
+                  name="email"
+                  required
+                />
+              </div>
             </form>
           </div>
           <div className={styles.plus} id="plus-button">

@@ -1,8 +1,21 @@
+'use client'
 import Head from "next/head";
 import Image from "next/image";
 import "./home.css";
+import { useRouter } from "next/navigation";
 
 export default function HomePage() {
+  const router = useRouter()
+
+  const logoutClick = () => {
+    console.log('logout')
+  };
+
+  const personalClick = () => {
+    console.log('personal')
+    router.push('/personal')
+  }
+
   return (
     <div>
       <Head>
@@ -25,7 +38,7 @@ export default function HomePage() {
           <nav>
             <a className="nav-link active">Home</a>
 
-            <a href="../login-signup/login.html" className="nav-link">
+            <a onClick={logoutClick} href="/" className="nav-link">
               Logout
             </a>
           </nav>
@@ -34,7 +47,7 @@ export default function HomePage() {
         <div className="title">HOME</div>
 
         <div className="calendar-gallery">
-          <div className="calendar-card cal1-card">
+          <div onClick={personalClick} className="calendar-card cal1-card">
             <div className="calendar-number cal1">cal 1</div>
             <div className="calendar-title">Work</div>
             <Image

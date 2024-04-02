@@ -1,0 +1,83 @@
+.main {
+    margin: 0px;
+}
+
+.signupContainer {
+    background-color: #0005DD;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+
+.title {
+    font-size: 128px;
+    color: white;
+
+    margin-left: 100px;
+}
+
+.form {
+    margin-left: 100px;
+}
+
+.label {
+    color: white;
+}
+
+.buttonContainer {
+    padding-top: 20px;
+    padding-left: 170px;
+    display: flex;
+    flex-direction: row;
+    width: 330px;
+    justify-content: space-between;
+}
+
+.whiteButton {
+    font-size: 20px;
+
+    width: 150px;
+    height: 40px;
+
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 900;
+    white-space: nowrap;
+    align-items: center;
+    color: #0005DD;
+}
+
+.blueButton {
+    font-size: 20px;
+
+    width: 150px;
+    height: 40px;
+
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 900;
+    white-space: nowrap;
+    align-items: center;
+    color: white;
+    background-color: #0005DD;
+    border: 1px solid white;
+}
+
+
+.formInput {
+    width: 500px;
+    font-size: 16px;
+    height: 40px;
+    margin-top: 0px;
+    margin-bottom: 20px;
+    border: none;
+    border-bottom: 1px solid white;
+    outline: none;
+    color: white;
+    background-color: transparent;
+}
