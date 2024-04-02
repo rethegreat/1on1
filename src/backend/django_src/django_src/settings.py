@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'calendars',
     'accounts',
     'rest_framework.authtoken',
+    'notifications.apps.NotificationsConfig'
 ]
 
 REST_FRAMEWORK = {
