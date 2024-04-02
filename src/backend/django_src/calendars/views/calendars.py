@@ -66,7 +66,7 @@ class CalendarDetail(APIView):
         if is_calendar_finalized_manually(calendar):
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
-        # If automaitcally finalized, you can modify the deadline to later date and finalized status
+        # If automatically finalized, you can modify the deadline to later date and finalized status
         if is_calendar_finalized(calendar):
             if 'deadline' in request.data:
                 calendar.deadline = request.data['deadline']
