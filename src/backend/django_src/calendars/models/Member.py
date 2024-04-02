@@ -58,7 +58,7 @@ class Member(models.Model):
         
     def invite(self):
         """
-        Sends a inivtation email to the given member to submit their availability.
+        Sends an invitation email to the given member to submit their availability.
         """
         subject = 'Invitation to calendar: Submit Your Availability'
         unique_link = f"http://127.0.0.1:8000/calendars/{self.calendar.id}/availability/{self.member_hash}/"
