@@ -1,15 +1,52 @@
 "use client";
 import Head from "next/head";
 import styles from "../styles/account.module.css";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import "../globals.css";
 
 export default function Signup() {
   const router = useRouter();
 
-  const signupClick = () => {
-    router.push("/home");
+  const [email, setEmail] = useState("");
+  const [first_name, setFirstName] = useState("");
+  const [last_name, setLastName] = useState("");
+  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [error, setError] = useState("");
+
+  const signupClick = async () => {
+    setError("");
+
+    const signupData = { first_name, last_name, email, username, password };
+
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:8000/accounts/api/register/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(signupData),
+        }
+      );
+
+      if (!response.ok) {
+
+        throw new Error("Signup failed");
+      }
+
+      const data = await response.json();
+      console.log("Signup successful", data.token);
+      localStorage.setItem('userToken', data.token);
+      router.push("/home");
+    } catch (error) {
+      console.error("Signup error:", error);
+      setError(error.message);
+    }
   };
+
   return (
     <>
       <Head>
@@ -30,14 +67,35 @@ export default function Signup() {
         <div className={styles.title}>1ON1</div>
 
         <div className={styles.form}>
+          <div className={styles.label}>first name</div>
+          <input
+            className={styles.formInput}
+            onChange={(e) => setFirstName(e.target.value)}
+          />
+          <div className={styles.label}>last name</div>
+          <input
+            className={styles.formInput}
+            onChange={(e) => setLastName(e.target.value)}
+          />
           <div className={styles.label}>email</div>
-          <input className={styles.formInput} />
-          <div className={styles.label}>name</div>
-          <input className={styles.formInput} />
+          <input
+            className={styles.formInput}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <div className={styles.label}>username</div>
+          <input
+            className={styles.formInput}
+            onChange={(e) => setUsername(e.target.value)}
+          />
           <div className={styles.label}>password</div>
-          <input className={styles.formInput} />
-          <div className={styles.label}>confirm password</div>
-          <input className={styles.formInput} />
+          <input
+            type="password"
+            value={password}
+            className={styles.formInput}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          {error && <p className={styles.error}>{error}</p>}
           <div>
             <button onClick={signupClick} className={styles.whiteButton}>
               Sign Up

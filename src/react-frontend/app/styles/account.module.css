@@ -36,6 +36,11 @@
     justify-content: space-between;
 }
 
+.error {
+    font-size: 16px;
+    color: red;
+}
+
 .whiteButton {
     font-size: 20px;
 

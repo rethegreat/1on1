@@ -1,19 +1,43 @@
-'use client'
+"use client";
 import Head from "next/head";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import styles from "../styles/account.module.css";
 
 export default function Login() {
-  const router = useRouter()
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
-  const loginClick = () => {
-    router.push('/home');
+  const [error, setError] = useState("");
+
+  const router = useRouter();
+
+  const loginClick = async (e) => {
+    e.preventDefault();
+
+    const response = await fetch("http://127.0.0.1:8000/accounts/api/login/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password }),
+    });
+
+    if (!response.ok) {
+      setError("Login failed");
+      return;
+    }
+
+    const data = await response.json();
+    console.log("Login successful:", data);
+    localStorage.setItem('userToken', data.token);
+    router.push("/home");
   };
 
   const signupClick = () => {
-    router.push('/signup');
-  }
+    router.push("/signup");
+  };
 
   return (
     <>
@@ -35,14 +59,26 @@ export default function Login() {
         <div className={styles.title}>1ON1</div>
 
         <div className={styles.form}>
-          <div className={styles.label}>email</div>
-          <input className={styles.formInput} />
+          <div className={styles.label}>username</div>
+          <input
+            type="text"
+            value={username}
+            className={styles.formInput}
+            onChange={(e) => setUsername(e.target.value)}
+          />
           <div className={styles.label}>password</div>
-          <input className={styles.formInput} />
+          <input
+            type="password"
+            value={password}
+            className={styles.formInput}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
           <div className={styles.buttonContainer}>
             <div>
-              <button onClick={signupClick} className={styles.whiteButton}>Sign Up</button>
+              <button onClick={signupClick} className={styles.whiteButton}>
+                Sign Up
+              </button>
             </div>
             <div>
               <button onClick={loginClick} className={styles.blueButton}>

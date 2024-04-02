@@ -69,11 +69,13 @@ header {
 }
 
 .calendar-gallery {
-    white-space: nowrap;
-    max-width: 100vw; 
-    /* margin: auto; */
-    padding-top: 20px;
+    padding-top: 15px;
+    display: flex;
+    flex-direction: row;
     overflow-x: auto;
+    white-space: nowrap;
+    gap: 10px; /* Spacing between cards */
+
 }
 
 .calendar-gallery::-webkit-scrollbar {
@@ -81,9 +83,10 @@ header {
 }
 
 .calendar-card {
-    display: inline-block;
     width: 360px;
     height: 455px;
+    flex: 0 0 auto;
+    
     border-radius: 20px;
     border: 1px solid black;
     margin-bottom: 20px;
