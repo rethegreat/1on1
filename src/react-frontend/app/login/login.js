@@ -15,6 +15,7 @@ export default function Login() {
 
   const loginClick = async (e) => {
     e.preventDefault();
+    setError("");
 
     const response = await fetch("http://127.0.0.1:8000/accounts/api/login/", {
       method: "POST",
@@ -73,7 +74,7 @@ export default function Login() {
             className={styles.formInput}
             onChange={(e) => setPassword(e.target.value)}
           />
-
+          {error && <p className={styles.error}>{error}</p>}
           <div className={styles.buttonContainer}>
             <div>
               <button onClick={signupClick} className={styles.whiteButton}>
