@@ -8,17 +8,17 @@ import { useRouter } from "next/navigation";
 export default function HomePage() {
   const router = useRouter();
 
-  const [calendars, setCalendars] = useState([]); // State to store calendar data
+  const [calendars, setCalendars] = useState([]); 
 
   useEffect(() => {
     const fetchCalendars = async () => {
-      const token = localStorage.getItem("userToken"); // Or however you're storing your token
+      const token = localStorage.getItem("userToken"); 
       try {
         const response = await fetch("http://127.0.0.1:8000/calendars/list/", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `token ${token}`, // Ensure your backend expects a Bearer token
+            Authorization: `token ${token}`,
           },
         });
 
@@ -36,7 +36,6 @@ export default function HomePage() {
     };
 
     fetchCalendars();
-
   }, []);
 
   const logoutClick = async (e) => {
@@ -52,29 +51,26 @@ export default function HomePage() {
       method: "POST",
       headers: {
         Authorization: `Token ${token}`,
-        // Add other headers as required by the backend
       },
-      // No body is needed for logout, but adjust if your API requires it
     }).then((response) => {
       if (!response.ok) {
-        // Handle response not OK, possibly due to expired or invalid token
         throw new Error("Logout failed, please try again");
       }
-      // Logout was successful, clear the token from storage
-      localStorage.removeItem("userToken"); // Or 'sessionStorage' if you used it
-      // Redirect the user or update the UI as needed
+      localStorage.removeItem("userToken");
 
       console.log("Logged out successfully");
     });
   };
 
-  const personalClick = () => {
-    console.log("personal");
+  const personalClick = (calendar) => {
+    console.log(JSON.stringify(calendar))
+    localStorage.setItem('currentCalendar', JSON.stringify(calendar));
+
     router.push("/personal");
   };
 
   const createClick = () => {
-    router.push("createCalendar");
+    router.push("/createCalendar");
   };
 
   return (
@@ -111,7 +107,7 @@ export default function HomePage() {
           {calendars.map((calendar, index) => (
             <div
               key={calendar.id}
-              onClick={personalClick}
+              onClick={() => personalClick(calendar)}
               className={`calendar-card`}
             >
               <div className={`calendar-number cal2`}>cal {index + 1}</div>

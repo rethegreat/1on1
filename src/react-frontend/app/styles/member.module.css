@@ -8,6 +8,7 @@
     font-size: 24px;
     border: none;
     border-bottom: 1px solid black;
+    margin: 0px;
     outline: none;
     width: max(70%, 50px);
 }
@@ -86,6 +87,7 @@
 }
 .address{
     display: flex; 
+    flex-direction: column;
     justify-content: space-between; 
 }
 
@@ -104,13 +106,26 @@
     transform: translateX(-50%);
 }
 
-
-.circle{
+.circleContainer{
     display: flex;
+    flex-direction: row;
     align-items: center;
+    
+}
+
+.circleOrange {
+    margin-right: 5px;
     height: 15px;
     width: 15px;
     background-color: #dd7700;
+    border-radius: 50%;
+}
+
+.circleGreen {
+    margin-right: 5px;
+    height: 15px;
+    width: 15px;
+    background-color: #CCDD00;
     border-radius: 50%;
 }
 
@@ -131,9 +146,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 50px;
     border: 2px solid #dd7700;
     padding: 4px 0.5rem;
-    border-radius: 30px;
+    border-radius: 20px;
     background-color: #dd7700;
     color: white;
 }
@@ -151,7 +167,8 @@
     border: 1px solid black;
     padding: 4px 0.5rem;
     margin-left: 0.5rem;
-    border-radius: 30px;
+    height: 50px;
+    border-radius: 20px;
 }
 
 .plus:hover{
@@ -166,7 +183,7 @@
 
 .card{
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: space-between;
     padding: 2rem 18px 18px 2rem;
     margin: 1rem 0rem 0rem 0rem;
