@@ -11,6 +11,16 @@ export default function CreateCalendar() {
   const [calendarName, setCalendarName] = useState("");
   const [deadlineDate, setDeadlineDate] = useState("");
 
+  const [duration, setDuration] = useState("");
+
+  const handleDurationChange = (event) => {
+    const value = event.target.value;
+    // Ensure that the value is either empty (to allow clearing the input) or a positive integer
+    if (value === "" || (/^\d+$/.test(value) && Number(value) > 0)) {
+      setDuration(value);
+    }
+  };
+
   const createCalendarClick = async (e) => {
     e.preventDefault();
     // Here you can handle the form submission, e.g., by sending data to an API
@@ -25,6 +35,7 @@ export default function CreateCalendar() {
         body: JSON.stringify({
           name: calendarName,
           deadlineDate: deadlineDate,
+          meeting_duration: duration,
         }),
       });
 
@@ -38,7 +49,6 @@ export default function CreateCalendar() {
     } catch (error) {
       console.error("Saving calendar failed", error);
     }
-    
   };
 
   const logoutClick = () => {
@@ -49,6 +59,7 @@ export default function CreateCalendar() {
     console.log("personal");
     router.push("/home");
   };
+
 
   return (
     <div>
@@ -90,10 +101,23 @@ export default function CreateCalendar() {
             onChange={(e) => setCalendarName(e.target.value)}
             placeholder="enter calendar name"
           />
-          <div className="pick-color">
+          {/* <div className="pick-color">
             <div>Pick calendar color</div>
             <div className="calendar-color"></div>
-          </div>
+          </div> */}
+
+          <label htmlFor="durationInput">Duration (minutes):</label>
+          <input
+            type="number"
+            id="durationInput"
+            name="duration"
+            value={duration}
+            onChange={handleDurationChange}
+            min="1"
+            step="1"
+          />
+
+          <label htmlFor="durationInput">Deadline:</label>
           <input
             type="date"
             name="deadline-date"

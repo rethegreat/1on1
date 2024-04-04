@@ -72,7 +72,6 @@ export default function MemberPage() {
         var data = await response.json();
         data = data.slice(1);
         setMembers(data);
-        console.log(data);
       };
       getMembers();
     }

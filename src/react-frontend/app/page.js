@@ -6,6 +6,7 @@ import PersonalPage from "./personal/page";
 import MemberPage from "./member/page";
 import Schedule from "./schedule/page";
 import Availability from "./availability/page";
+import UserAvailability from "./calendars/page";
 import "./globals.css";
 
 export default function App() {
