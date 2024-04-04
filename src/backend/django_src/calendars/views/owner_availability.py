@@ -48,18 +48,53 @@ class OwnerAvailabilityView(APIView):
         if is_calendar_finalized(calendar):
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
-        # Create the time slot
-        serializer = OwnerTimeSlotSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(calendar=calendar)
+        # The user will give the list of timeslots list.
+        # The list will contain the timeslots that the user is available.
+        # Expecting data in the following format:
+        # [
+        #     {
+        #         "start_time": "2021-10-10T10:00:00Z",
+        #         "preference": "HIGH"
+        #     },
+        #     {
+        #         "start_time": "2021-10-10T11:00:00Z",
+        #         "preference": "NO_PREF"
+        #     }
+        # ]
 
-            #check if schedule exists if it does delete it so it can be regenerated
-            schedule = Schedule.objects.filter(calendar_id=calendar_id)
-            if schedule:
-                schedule.delete()
+        # Delete all the current timeslots and create new ones
+        OwnerTimeSlot.objects.filter(calendar=calendar).delete()
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        #check if schedule exists if it does delete it so it can be regenerated
+        schedule = Schedule.objects.filter(calendar_id=calendar_id)
+        if schedule:
+            schedule.delete()
+        
+        # list to store the error messages
+        error_list = []
+        start_time_added = []
+
+        for timeslot in request.data:
+            # Check if the start_time is already added
+            if timeslot['start_time'] in start_time_added:
+                error_list.append(f"Time slot {timeslot['start_time']} is already added")
+                continue
+            serializer = OwnerTimeSlotSerializer(data=timeslot)
+            if serializer.is_valid():
+                serializer.save(calendar=calendar)
+                start_time_added.append(timeslot['start_time'])
+        
+        # Return all the new timeslots
+        time_slots = OwnerTimeSlot.objects.filter(calendar=calendar)
+        serializer = OwnerTimeSlotSerializer(time_slots, many=True)
+
+        # If there was an error, add it to the response
+        if error_list:
+            result = []
+            result.append({'errors': error_list})
+            result.append(serializer.data)
+            return Response(result, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     def patch(self, request, calendar_id):
         action = request.data.get('action')
