@@ -280,7 +280,10 @@
     font-size: 20px;
 }
 
-
+.error {
+    font-size: 16px;
+    color: #d77474;
+}
 
 @media (max-width: 900px) {
 

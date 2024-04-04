@@ -7,15 +7,24 @@ import { useEffect, useState } from "react";
 
 export default function MemberPage() {
   const router = useRouter();
-
   const [calendar, setCalendar] = useState(0);
-
   const [members, setMembers] = useState([]);
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-
   const [refreshMembers, setRefreshMembers] = useState(0);
+  const [error, setError] = useState("");
+
+  const addInputErrorStyle = (idString) => {
+    const element = document.getElementById(idString);
+    element.style.borderBottom = "2px solid #d77474";
+    element.style.transition = "border-bottom 0.3s";
+  };
+
+  const removeInputErrorStyle = (idString) => {
+    const element = document.getElementById(idString);
+    element.style.borderBottom = "1px solid #000000";
+    element.style.transition = "None";
+  };
 
   useEffect(() => {
     const storedCalendar = localStorage.getItem("currentCalendar");
@@ -24,6 +33,10 @@ export default function MemberPage() {
   }, []);
 
   useEffect(() => {
+    setError("");
+    removeInputErrorStyle("name");
+    removeInputErrorStyle("email");
+
     if (calendar > 0) {
       const getMembers = async () => {
         const token = localStorage.getItem("userToken");
@@ -54,8 +67,27 @@ export default function MemberPage() {
   const handleAddMember = async () => {
     const endpoint = `http://127.0.0.1:8000/calendars/${calendar}/members/list/`;
     const memberData = { name, email };
-
     const token = localStorage.getItem("userToken");
+    
+    setError("");
+    removeInputErrorStyle("name");
+    removeInputErrorStyle("email");
+
+    // Before sending a request, 
+    
+    // 1) Reset the email field border color to default
+
+    // 2) Check if both fields are filled
+    if (!name || !email) {
+      if (!name) {
+        addInputErrorStyle("name");
+      }
+      if (!email) {
+        addInputErrorStyle("email");
+      }
+      setError("Please fill out all required fields");
+      return;
+    }
 
     try {
       const response = await fetch(endpoint, {
@@ -68,23 +100,33 @@ export default function MemberPage() {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json();
+        alert(errorData[0]);
+        addInputErrorStyle("email");
+        throw new Error(`${errorData[0]}`);
       }
 
       const result = await response.json();
+      // Reset the input fields
       setName("");
       setEmail("");
       setRefreshMembers((prev) => prev + 1);
     } catch (error) {
-      console.error("Failed to add member:", error);
+      console.error(`Failed to add member:`, error);
+      // alert("Failed to add member:" + error.message);
+      setError(error.message);
     }
   };
 
   const handleRemindMember = async (memberId) => {
     const endpoint = `http://127.0.0.1:8000/calendars/${calendar}/members/${memberId}/`;
     const actionData = { action: "remind" };
-
     const token = localStorage.getItem("userToken");
+
+    setError("");
+    removeInputErrorStyle("name");
+    removeInputErrorStyle("email");
 
     try {
       const response = await fetch(endpoint, {
@@ -110,6 +152,10 @@ export default function MemberPage() {
   const handleDeleteMember = async (memberId) => {
     const endpoint = `http://127.0.0.1:8000/calendars/${calendar}/members/${memberId}/`;
     const token = localStorage.getItem("userToken");
+
+    setError("");
+    removeInputErrorStyle("name");
+    removeInputErrorStyle("email");
   
     try {
       const response = await fetch(endpoint, {
@@ -198,7 +244,8 @@ export default function MemberPage() {
                   name
                 </label>
                 <input
-                  className={styles.input}
+                  className={`${styles.input}`}
+                  value={name}
                   onChange={(e) => setName(e.target.value)}
                   type="text"
                   id="name"
@@ -211,7 +258,8 @@ export default function MemberPage() {
                   email
                 </label>
                 <input
-                  className={styles.input}
+                  className={`${styles.input}`}
+                  value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   type="text"
                   id="email"
@@ -235,6 +283,9 @@ export default function MemberPage() {
             />
           </div>
         </div>
+
+        {error && <p className={styles.error}>{error}</p>}
+
       </div>
     </div>
   );
