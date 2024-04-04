@@ -62,9 +62,8 @@ class MemberListSerializer(serializers.ModelSerializer):
         # add calendar to the validated data
         try:
             return super().create(validated_data)
-        except IntegrityError as e:
-            error_message = str(e)
-            raise ValidationError("Member already exists in the calendar.")
+        except IntegrityError:
+            raise ValidationError("Member with the same email already exists in the calendar.")
 
 
 # Availability

@@ -193,7 +193,7 @@
 
 .newcard{
     width: 100%;
-    height: 132px;
+    height: fit-content;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -260,17 +260,6 @@
 
 /* Error Message */
 
-#add-member-error-msg {
-    width: fit-content;
-    height: fit-content;
-    /* margin: 0px 0px 20px 27vw; */
-    font-size: 15px;
-    font-weight: bold;
-    color: #d77474;
-    opacity: 0;
-    white-space: nowrap;
-}
-
 .input-error {
     border-bottom: 2px solid #d77474;
     transition: border-bottom 0.3s;
@@ -281,8 +270,9 @@
 }
 
 .error {
-    font-size: 16px;
+    font-size: 15px;
     color: #d77474;
+    align-self: center;
 }
 
 @media (max-width: 900px) {
@@ -412,7 +402,7 @@
         width: 78px;
     }
 
-    #add-member-error-msg {
+    .error {
         margin-top: 15px;
     }
 }

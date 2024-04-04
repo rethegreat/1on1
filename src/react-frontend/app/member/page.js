@@ -13,18 +13,34 @@ export default function MemberPage() {
   const [email, setEmail] = useState("");
   const [refreshMembers, setRefreshMembers] = useState(0);
   const [error, setError] = useState("");
+  const [nameError, setNameError] = useState("");
+  const [emailError, setEmailError] = useState("");
 
+  // ================= Helper functions =================
+  // Add error style to input field
   const addInputErrorStyle = (idString) => {
     const element = document.getElementById(idString);
     element.style.borderBottom = "2px solid #d77474";
     element.style.transition = "border-bottom 0.3s";
   };
 
+  // Remove error style from input field
   const removeInputErrorStyle = (idString) => {
     const element = document.getElementById(idString);
     element.style.borderBottom = "1px solid #000000";
     element.style.transition = "None";
   };
+
+  // Reset errors and input field styles
+  // This function is called before every function call below
+  const resetErrors = () => {
+    setError("");
+    removeInputErrorStyle("name");
+    removeInputErrorStyle("email");
+    setNameError("");
+    setEmailError("");
+  };
+  // ====================================================
 
   useEffect(() => {
     const storedCalendar = localStorage.getItem("currentCalendar");
@@ -33,9 +49,7 @@ export default function MemberPage() {
   }, []);
 
   useEffect(() => {
-    setError("");
-    removeInputErrorStyle("name");
-    removeInputErrorStyle("email");
+    resetErrors();
 
     if (calendar > 0) {
       const getMembers = async () => {
@@ -69,25 +83,7 @@ export default function MemberPage() {
     const memberData = { name, email };
     const token = localStorage.getItem("userToken");
     
-    setError("");
-    removeInputErrorStyle("name");
-    removeInputErrorStyle("email");
-
-    // Before sending a request, 
-    
-    // 1) Reset the email field border color to default
-
-    // 2) Check if both fields are filled
-    if (!name || !email) {
-      if (!name) {
-        addInputErrorStyle("name");
-      }
-      if (!email) {
-        addInputErrorStyle("email");
-      }
-      setError("Please fill out all required fields");
-      return;
-    }
+    resetErrors();
 
     try {
       const response = await fetch(endpoint, {
@@ -102,7 +98,19 @@ export default function MemberPage() {
       if (!response.ok) {
         // throw new Error(`HTTP error! status: ${response.status}`);
         const errorData = await response.json();
-        alert(errorData[0]);
+        // Validation Error: Name or Email field is empty/invalid
+        if (errorData.name || errorData.email) {
+          if (errorData.name) {
+            addInputErrorStyle("name");
+            setNameError(errorData.name);
+          }
+          if (errorData.email) {
+            addInputErrorStyle("email");
+            setEmailError(errorData.email);
+          }
+            throw new Error("Please check the fields and try again");
+        }
+        // Integrity Error: Member with this email already exists in the calendar
         addInputErrorStyle("email");
         throw new Error(`${errorData[0]}`);
       }
@@ -124,9 +132,7 @@ export default function MemberPage() {
     const actionData = { action: "remind" };
     const token = localStorage.getItem("userToken");
 
-    setError("");
-    removeInputErrorStyle("name");
-    removeInputErrorStyle("email");
+    resetErrors();
 
     try {
       const response = await fetch(endpoint, {
@@ -153,9 +159,7 @@ export default function MemberPage() {
     const endpoint = `http://127.0.0.1:8000/calendars/${calendar}/members/${memberId}/`;
     const token = localStorage.getItem("userToken");
 
-    setError("");
-    removeInputErrorStyle("name");
-    removeInputErrorStyle("email");
+    resetErrors();
   
     try {
       const response = await fetch(endpoint, {
@@ -252,6 +256,7 @@ export default function MemberPage() {
                   name="name"
                   required
                 />
+                <p className={styles.error}>{nameError}</p>
               </div>
               <div style={{ marginTop: "20px" }}>
                 <label className={styles.label} htmlFor="email">
@@ -266,6 +271,7 @@ export default function MemberPage() {
                   name="email"
                   required
                 />
+                <p className={styles.error}>{emailError}</p>
               </div>
             </form>
           </div>
