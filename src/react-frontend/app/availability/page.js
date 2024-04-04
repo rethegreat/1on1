@@ -60,38 +60,38 @@ export default function Availability() {
 
   const postEachAvailability = async () => {
     const token = localStorage.getItem("userToken");
-    for (const datetime of datetimeList) {
-      try {
-        const url = `http://127.0.0.1:8000/calendars/${calendar}/availability/`;
+    console.log(datetimeList);
+    try {
+      const url = `http://127.0.0.1:8000/calendars/${calendar}/availability/`;
 
-        // Make the POST request
-        const response = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Token ${token}`,
-          },
-          body: JSON.stringify(datetime),
-        });
+      // Make the POST request
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify(datetimeList),
+      });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.body}`);
-        }
-
-        const responseData = await response.json();
-        console.log("Success:", responseData);
-      } catch (error) {
-        console.log(error);
-        console.error("Error posting availability:", error.message);
-        break;
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(`API Error: ${error.detail}`);
       }
+
+      const responseData = await response.json();
+      console.log("Success:", responseData);
+      router.push('/personal')
+    } catch (error) {
+      console.log(error);
+      console.error("Error posting availability:", error);
     }
-  }
+  };
 
   const getStartOfWeekFromDate = (dateString) => {
     const today = new Date();
     const startOfWeekDate = startOfWeek(today, { weekStartsOn: 1 });
-    return addDays(startOfWeekDate, weekOffset * 7); 
+    return addDays(startOfWeekDate, weekOffset * 7);
   };
 
   const generateScheduleWithDates = () => {
@@ -100,7 +100,7 @@ export default function Availability() {
       (day, index) => ({
         day,
         date: format(addDays(startOfWeek, index), "MMM d"),
-        slots: [], 
+        slots: [],
       })
     );
   };
@@ -208,7 +208,7 @@ export default function Availability() {
         const preference = slot.color === "#DD7800" ? "HIGH" : "LOW";
 
         return {
-          time: date.toISOString(),
+          start_time: date.toISOString(),
           preference: preference,
         };
       });
@@ -216,7 +216,6 @@ export default function Availability() {
 
     return dateTimeList;
   };
-
 
   const times = [
     "09:00",
@@ -341,7 +340,9 @@ export default function Availability() {
               <div className="cancel" onClick={backClick}>
                 cancel
               </div>
-              <div className="submit" onClick={postEachAvailability}>submit</div>
+              <div className="submit" onClick={postEachAvailability}>
+                submit
+              </div>
             </div>
           </div>
         </div>
