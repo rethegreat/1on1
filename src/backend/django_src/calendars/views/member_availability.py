@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from ..models.Calendar import Calendar, Schedule
 from ..models.Member import Member
 from ..models.TimeSlot import OwnerTimeSlot, MemberTimeSlot
-from ..serializers import MemberTimeSlotSerializer
+from ..serializers import OwnerTimeSlotSerializer
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
 from ..permissions import is_calendar_finalized
@@ -131,8 +131,17 @@ class MemberAvailabilityView(APIView):
         if schedule:
             schedule.delete()
 
-        # Return the newly created MemberTimeSlots
-        return Response(MemberTimeSlotSerializer(MemberTimeSlot.objects.filter(member=member), many=True).data, status=status.HTTP_201_CREATED)
+        # Return all the newly created MemberTimeSlots
+        result = []
+        all_time_slots = MemberTimeSlot.objects.filter(member=member)
+        # Serialize it using OwnerTimeSlotSerializer using that MemberTimeSlot has the time_slot field which is OwnerTimeSlot
+        for slot in all_time_slots:
+            slot_data = {}
+            slot_data['start_time'] = slot.time_slot.start_time
+            slot_data['preference'] = slot.preference
+            result.append(slot_data)
+        return Response(result, status=status.HTTP_201_CREATED)
+        
 
     
 
