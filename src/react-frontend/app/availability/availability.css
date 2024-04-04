@@ -5,6 +5,25 @@
     border: none;
 }
 
+.calendar-grid {
+    display: flex;
+}
+
+.time-column, .day-column {
+    width: 50px;
+    display: flex;
+    flex-direction: column;
+}
+
+.start-of-event {
+    border-radius: 25px 25px 0 0; /* Rounded corners on the top */
+}
+
+.time-slot {
+    height: 35.5px; /* or desired height */
+    border: 1px solid #ccc;
+}
+
 .calendar-body {
     margin: 0px;
     padding: 0px;
@@ -131,7 +150,7 @@
     margin: 20px;
 }
 
-.content {
+.avilability-content {
     display: flex;
     flex-direction: row;
     padding-bottom: 30px;
