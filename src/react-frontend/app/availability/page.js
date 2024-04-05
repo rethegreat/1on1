@@ -169,7 +169,7 @@ export default function Availability() {
         newSchedule[dayIndex].slots.push({ time: time, color: "#CCDD00" });
       }
     } else {
-      const index = newSchedule[dayIndex].slots.findIndex((s) => s === slot);
+      const index = newSchedule[dayIndex].slots.findIndex((s) => s.time === slot.time);
       newSchedule[dayIndex].slots.splice(index, 1);
     }
 

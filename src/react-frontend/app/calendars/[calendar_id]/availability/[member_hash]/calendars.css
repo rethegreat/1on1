@@ -38,9 +38,10 @@
     padding-left: 10px;
 }
 
-.time-slot {
+.availaible-time-slot {
     height: 35.8px;
-    /* border: 1px solid #ccc; */
+    border-radius: 50px;
+    border: 1px solid;
 }
 
 .calendar-body {
