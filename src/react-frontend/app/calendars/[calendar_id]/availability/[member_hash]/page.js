@@ -21,7 +21,7 @@ export default function UserAvailability() {
 
     const parts = pathname.split("/");
     const calendarId = parts[2];
-    const hash = parts[3];
+    const hash = parts[4];
 
     setCalendarId(calendarId);
     setMemberHash(hash);
