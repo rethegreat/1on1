@@ -1,5 +1,5 @@
 
-body {
+.body {
     margin: 0px;
     padding: 0px;
 }
@@ -11,7 +11,7 @@ body {
     letter-spacing: .5px;
 }
 
-header {
+.header {
     color: black;
     display: flex;
     justify-content: space-between;
@@ -28,7 +28,7 @@ header {
         color: black;
     }
 
-    nav {
+    .nav {
         display: flex;
     }
 
@@ -188,21 +188,17 @@ header {
 
 
 @media (max-width: 900px) {
-    body {
+    .body {
         /* margin: 1rem; */
         padding: 0px;
     }
 
-    main {
+    .main {
         margin: 0px;
         padding: 0px;
     }
 
-    .main {
-        padding: 0px;
-    }
-
-    header {
+    .header {
         margin-top: 10px;
         margin-bottom: 10px;
     }
@@ -307,7 +303,7 @@ header {
         width: 70%;
     }
 
-    header {
+    .header {
         margin-left: 5px;
     }
     
