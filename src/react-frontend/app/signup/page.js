@@ -24,7 +24,6 @@ export default function Signup() {
   const [passwordError, setPasswordError] = useState("");
 
   // Reset errors and input field styles
-  // This function is called before every function call below
   const resetErrors = () => {
     setError("");
     removeInputErrorStyle("first_name");
@@ -120,28 +119,28 @@ export default function Signup() {
             onChange={(e) => setFirstName(e.target.value)}
             id="first_name"
           />
-          <div className={errorStyles.error}>{firstNameError}</div>
+          { firstNameError && <div className={styles.error + " " + errorStyles.error}>{firstNameError}</div>}
           <div className={styles.label}>last name</div>
           <input
             className={styles.formInput}
             onChange={(e) => setLastName(e.target.value)}
             id="last_name"
           />
-          <div className={errorStyles.error}>{lastNameError}</div>
+          { lastNameError && <div className={styles.error + " " + errorStyles.error}>{lastNameError}</div>}
           <div className={styles.label}>email</div>
           <input
             className={styles.formInput}
             onChange={(e) => setEmail(e.target.value)}
             id="email"
           />
-          <div className={errorStyles.error}>{emailError}</div>
+          { emailError && <div className={styles.error + " " + errorStyles.error}>{emailError}</div>}
           <div className={styles.label}>username</div>
           <input
             className={styles.formInput}
             onChange={(e) => setUsername(e.target.value)}
             id="username"
           />
-          <div className={errorStyles.error}>{usernameError}</div>
+          { usernameError && <div className={styles.error + " " + errorStyles.error}>{usernameError}</div>}
           <div className={styles.label}>password</div>
           <input
             type="password"
@@ -150,9 +149,8 @@ export default function Signup() {
             onChange={(e) => setPassword(e.target.value)}
             id="password"
           />
-          <div className={errorStyles.error}>{passwordError}</div>
-
-          {error && <p className={errorStyles.error}>{error}</p>}
+          <div className={styles.error + " " + errorStyles.error}>{passwordError}</div>
+          { error && <div className={styles.error + " " + errorStyles.error}>{error}</div>}
           <div>
             <button onClick={signupClick} className={styles.whiteButton}>
               Sign Up

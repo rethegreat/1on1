@@ -52,7 +52,6 @@ export default function Login() {
       }
 
       const data = await response.json();
-      console.log("Login successful:", data);
       localStorage.setItem('userToken', data.token);
       router.push("/home");
     } catch (error) {
@@ -92,7 +91,7 @@ export default function Login() {
             onChange={(e) => setUsername(e.target.value)}
             id="username"
           />
-          <p className={errorStyles.error}>{usernameError}</p>
+          <div className={styles.error + " " + errorStyles.error}>{usernameError}</div>
           <div className={styles.label}>password</div>
           <input
             type="password"
@@ -101,8 +100,8 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
             id="password"
           />
-          <p className={errorStyles.error}>{passwordError}</p>
-          {error && <p className={errorStyles.error}>{error}</p>}
+          <div className={styles.error + " " + errorStyles.error}>{passwordError}</div>
+          {error && <div className={styles.error + " " + errorStyles.error}>{error}</div>}
           <div className={styles.buttonContainer}>
             <div>
               <button onClick={signupClick} className={styles.whiteButton}>

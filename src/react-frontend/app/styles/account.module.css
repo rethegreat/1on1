@@ -81,3 +81,9 @@
     color: white;
     background-color: transparent;
 }
+
+.error {
+    /* Move towards the input fields for account-related pages */
+    margin-top: -10px;
+    margin-bottom: 20px;
+}
