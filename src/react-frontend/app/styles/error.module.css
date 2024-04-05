@@ -1,0 +1,17 @@
+
+.input-error {
+    border-bottom: 2px solid #d77474;
+    transition: border-bottom 0.3s;
+}
+
+.error {
+    font-size: 15px;
+    color: #d77474;
+    align-self: center;
+}
+
+@media (max-width: 600px) {
+    .error {
+        margin-top: 15px;
+    }
+}

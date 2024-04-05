@@ -2,6 +2,8 @@
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/member.module.css";
+import errorStyles from "../styles/error.module.css";
+import { addInputErrorStyle, removeInputErrorStyle } from "../utils/errorHandling";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -17,19 +19,6 @@ export default function MemberPage() {
   const [emailError, setEmailError] = useState("");
 
   // ================= Helper functions =================
-  // Add error style to input field
-  const addInputErrorStyle = (idString) => {
-    const element = document.getElementById(idString);
-    element.style.borderBottom = "2px solid #d77474";
-    element.style.transition = "border-bottom 0.3s";
-  };
-
-  // Remove error style from input field
-  const removeInputErrorStyle = (idString) => {
-    const element = document.getElementById(idString);
-    element.style.borderBottom = "1px solid #000000";
-    element.style.transition = "None";
-  };
 
   // Reset errors and input field styles
   // This function is called before every function call below
@@ -95,7 +84,6 @@ export default function MemberPage() {
       });
 
       if (!response.ok) {
-        // throw new Error(`HTTP error! status: ${response.status}`);
         const errorData = await response.json();
         // Validation Error: Name or Email field is empty/invalid
         if (errorData.name || errorData.email) {
@@ -121,7 +109,6 @@ export default function MemberPage() {
       setRefreshMembers((prev) => prev + 1);
     } catch (error) {
       console.error(`Failed to add member:`, error);
-      // alert("Failed to add member:" + error.message);
       setError(error.message);
     }
   };
@@ -255,7 +242,7 @@ export default function MemberPage() {
                   name="name"
                   required
                 />
-                <p className={styles.error}>{nameError}</p>
+                <p className={errorStyles.error}>{nameError}</p>
               </div>
               <div style={{ marginTop: "20px" }}>
                 <label className={styles.label} htmlFor="email">
@@ -270,7 +257,7 @@ export default function MemberPage() {
                   name="email"
                   required
                 />
-                <p className={styles.error}>{emailError}</p>
+                <p className={errorStyles.error}>{emailError}</p>
               </div>
             </form>
           </div>
@@ -289,7 +276,7 @@ export default function MemberPage() {
           </div>
         </div>
 
-        {error && <p className={styles.error}>{error}</p>}
+        {error && <p className={errorStyles.error}>{error}</p>}
 
       </div>
     </div>

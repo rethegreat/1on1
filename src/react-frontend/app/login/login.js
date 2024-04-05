@@ -2,38 +2,62 @@
 import Head from "next/head";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
 import styles from "../styles/account.module.css";
+import errorStyles from "../styles/error.module.css";
+import { addInputErrorStyle, removeInputErrorStyle } from "../utils/errorHandling";
 
 export default function Login() {
+  const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
   const [error, setError] = useState("");
+  const [usernameError, setUsernameError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
-  const router = useRouter();
+  // Reset errors and input field styles
+  // This function is called before every function call below
+  const resetErrors = () => {
+    setError("");
+    removeInputErrorStyle("username");
+    removeInputErrorStyle("password");
+    setUsernameError("");
+    setPasswordError("");
+  };
 
   const loginClick = async (e) => {
     e.preventDefault();
-    setError("");
+    resetErrors();
+    try {
+      const response = await fetch("http://127.0.0.1:8000/accounts/api/login/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
 
-    const response = await fetch("http://127.0.0.1:8000/accounts/api/login/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, password }),
-    });
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (errorData.username || errorData.password) {
+          if (errorData.username) {
+            setUsernameError(errorData.username);
+            addInputErrorStyle("username");
+          }
+          if (errorData.password) {
+            setPasswordError(errorData.password);
+            addInputErrorStyle("password");
+          }
+        } 
+        throw new Error("Invalid credentials");
+      }
 
-    if (!response.ok) {
-      setError("Login failed");
-      return;
+      const data = await response.json();
+      console.log("Login successful:", data);
+      localStorage.setItem('userToken', data.token);
+      router.push("/home");
+    } catch (error) {
+      setError("Invalid credentials");
     }
-
-    const data = await response.json();
-    console.log("Login successful:", data);
-    localStorage.setItem('userToken', data.token);
-    router.push("/home");
   };
 
   const signupClick = () => {
@@ -66,15 +90,19 @@ export default function Login() {
             value={username}
             className={styles.formInput}
             onChange={(e) => setUsername(e.target.value)}
+            id="username"
           />
+          <p className={errorStyles.error}>{usernameError}</p>
           <div className={styles.label}>password</div>
           <input
             type="password"
             value={password}
             className={styles.formInput}
             onChange={(e) => setPassword(e.target.value)}
+            id="password"
           />
-          {error && <p className={styles.error}>{error}</p>}
+          <p className={errorStyles.error}>{passwordError}</p>
+          {error && <p className={errorStyles.error}>{error}</p>}
           <div className={styles.buttonContainer}>
             <div>
               <button onClick={signupClick} className={styles.whiteButton}>

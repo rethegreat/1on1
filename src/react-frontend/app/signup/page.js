@@ -1,9 +1,12 @@
 "use client";
 import Head from "next/head";
 import styles from "../styles/account.module.css";
+import errorStyles from "../styles/error.module.css";
+import { addInputErrorStyle, removeInputErrorStyle } from "../utils/errorHandling";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import "../globals.css";
+import { add } from "date-fns";
 
 export default function Signup() {
   const router = useRouter();
@@ -14,9 +17,30 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
+  const [firstNameError, setFirstNameError] = useState("");
+  const [lastNameError, setLastNameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [usernameError, setUsernameError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+  // Reset errors and input field styles
+  // This function is called before every function call below
+  const resetErrors = () => {
+    setError("");
+    removeInputErrorStyle("first_name");
+    removeInputErrorStyle("last_name");
+    removeInputErrorStyle("email");
+    removeInputErrorStyle("username");
+    removeInputErrorStyle("password");
+    setFirstNameError("");
+    setLastNameError("");
+    setEmailError("");
+    setUsernameError("");
+    setPasswordError("");
+  };
 
   const signupClick = async () => {
-    setError("");
+    resetErrors();
 
     const signupData = { first_name, last_name, email, username, password };
 
@@ -33,8 +57,31 @@ export default function Signup() {
       );
 
       if (!response.ok) {
-
-        throw new Error("Signup failed");
+        // Parse the response body as JSON
+        const errorData = await response.json();
+        if (errorData.first_name || errorData.last_name || errorData.email || errorData.username || errorData.password) {
+          if (errorData.first_name) {
+            addInputErrorStyle("first_name");
+            setFirstNameError(errorData.first_name);
+          }
+          if (errorData.last_name) {
+            addInputErrorStyle("last_name");
+            setLastNameError(errorData.last_name);
+          }
+          if (errorData.email) {
+            addInputErrorStyle("email");
+            setEmailError(errorData.email);
+          }
+          if (errorData.username) {
+            addInputErrorStyle("username");
+            setUsernameError(errorData.username);
+          }
+          if (errorData.password) {
+            addInputErrorStyle("password");
+            setPasswordError(errorData.password);
+          }
+        }
+        throw new Error("Please check the fields and try again");
       }
 
       const data = await response.json();
@@ -71,31 +118,41 @@ export default function Signup() {
           <input
             className={styles.formInput}
             onChange={(e) => setFirstName(e.target.value)}
+            id="first_name"
           />
+          <div className={errorStyles.error}>{firstNameError}</div>
           <div className={styles.label}>last name</div>
           <input
             className={styles.formInput}
             onChange={(e) => setLastName(e.target.value)}
+            id="last_name"
           />
+          <div className={errorStyles.error}>{lastNameError}</div>
           <div className={styles.label}>email</div>
           <input
             className={styles.formInput}
             onChange={(e) => setEmail(e.target.value)}
+            id="email"
           />
+          <div className={errorStyles.error}>{emailError}</div>
           <div className={styles.label}>username</div>
           <input
             className={styles.formInput}
             onChange={(e) => setUsername(e.target.value)}
+            id="username"
           />
+          <div className={errorStyles.error}>{usernameError}</div>
           <div className={styles.label}>password</div>
           <input
             type="password"
             value={password}
             className={styles.formInput}
             onChange={(e) => setPassword(e.target.value)}
+            id="password"
           />
+          <div className={errorStyles.error}>{passwordError}</div>
 
-          {error && <p className={styles.error}>{error}</p>}
+          {error && <p className={errorStyles.error}>{error}</p>}
           <div>
             <button onClick={signupClick} className={styles.whiteButton}>
               Sign Up
