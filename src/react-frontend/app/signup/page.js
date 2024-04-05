@@ -16,7 +16,7 @@ export default function Signup() {
   const [last_name, setLastName] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-  const [error, setError] = useState("");
+  // const [error, setError] = useState("");
   const [firstNameError, setFirstNameError] = useState("");
   const [lastNameError, setLastNameError] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -25,7 +25,7 @@ export default function Signup() {
 
   // Reset errors and input field styles
   const resetErrors = () => {
-    setError("");
+    // setError("");
     removeInputErrorStyle("first_name");
     removeInputErrorStyle("last_name");
     removeInputErrorStyle("email");
@@ -88,8 +88,8 @@ export default function Signup() {
       localStorage.setItem('userToken', data.token);
       router.push("/home");
     } catch (error) {
-      console.error("Signup error:", error);
-      setError(error.message);
+      // console.error("Signup error:", error);
+      // setError(error.message);
     }
   };
 
@@ -150,7 +150,7 @@ export default function Signup() {
             id="password"
           />
           <div className={styles.error + " " + errorStyles.error}>{passwordError}</div>
-          { error && <div className={styles.error + " " + errorStyles.error}>{error}</div>}
+          {/* { error && <div className={styles.error + " " + errorStyles.error}>{error}</div>} */}
           <div>
             <button onClick={signupClick} className={styles.whiteButton}>
               Sign Up
