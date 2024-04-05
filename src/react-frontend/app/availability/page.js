@@ -4,6 +4,7 @@ import { addDays, startOfWeek, format, parseISO } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import "./availability.css";
+import { getTimes } from "../utils/schedule";
 
 export default function Availability() {
   const router = useRouter();
@@ -236,6 +237,11 @@ export default function Availability() {
     "04:30",
     "05:00",
   ];
+
+// Please discard the following lines if not needed!
+// getTimes returns an array of times between the start and end times(**inclusive**) with the given interval
+// const meeting_duration = JSON.parse(localStorage.getItem("currentCalendar")).meeting_duration;
+// const times = getTimes("09:00", "17:00", meeting_duration);
 
   const backClick = () => {
     router.push("/personal");
