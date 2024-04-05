@@ -67,8 +67,7 @@ class MemberListSerializer(serializers.ModelSerializer):
 
 
 # Availability
-# Availability is a list of all the time slots submitted by the calendar or each member
-
+# OwnerTimeSlot
 class OwnerTimeSlotSerializer(serializers.ModelSerializer):
     class Meta:
         model = OwnerTimeSlot
@@ -86,11 +85,6 @@ class OwnerTimeSlotSerializer(serializers.ModelSerializer):
         except IntegrityError:
             # If there's a conflict, raise a validation error with the same message
             raise ValidationError("Time slot conflicts with existing slot.")
-
-
-class MemberTimeSlotSerializer(serializers.Serializer):
-    time_slot_time = serializers.DateTimeField(required=True, validators=[validate_datetime_format])
-    preference = serializers.ChoiceField(choices=MemberTimeSlot.PREF_CHOICES)
 
 # Event
 # Show event.id as event_id, time_slot as when, and member as who

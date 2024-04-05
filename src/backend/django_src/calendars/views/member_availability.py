@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from ..models.Calendar import Calendar, Schedule
 from ..models.Member import Member
 from ..models.TimeSlot import OwnerTimeSlot, MemberTimeSlot
-from ..serializers import MemberTimeSlotSerializer
+from ..serializers import OwnerTimeSlotSerializer
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
 from ..permissions import is_calendar_finalized
@@ -89,37 +89,61 @@ class MemberAvailabilityView(APIView):
         # Then create the member's time slot with time_slot=possible_slots[start_time]
         data = request.data
 
-        # Validate the request data
-        serializer = MemberTimeSlotSerializer(data=data)
+        # Delete the old member's availability
+        MemberTimeSlot.objects.filter(member=member).delete()
 
-        # Find the corresponding possible slot(OwnerTimeSlot with time_slot_id), if not found, return 400
-        # If the member already submitted the member time slot with that time_slot_id, if found, return 400
-        if serializer.is_valid():
-            time_slot_time = serializer.validated_data.get('time_slot_time')
-            chosen_slot = get_object_or_404(possible_slots, start_time=time_slot_time)
-            if not chosen_slot:
-                return Response({'error': 'Invalid time slot'}, status=status.HTTP_400_BAD_REQUEST)
-            
-            previously_submitted = MemberTimeSlot.objects.filter(member=member)
-            # if chosen_slot is one of the previously_submitted's time_slot, return 400
-            if chosen_slot in previously_submitted:
-                return Response({'error': 'Time slot already submitted'}, status=status.HTTP_400_BAD_REQUEST)
-            # Otherwise, create the member's time slot
-            try:
-                MemberTimeSlot.objects.create(member=member, time_slot=chosen_slot, preference=serializer.validated_data.get('preference'))
-            except IntegrityError:
-                return Response({'error': 'Time slot already submitted'}, status=status.HTTP_400_BAD_REQUEST)
-            # Set member.submitted=True
-            member.submitted = True
-            member.save()
+        # Create new ones based on the request data
+        # Note data should be in the following format:
+        # [
+        #     {
+        #         "start_time": "2021-10-10T10:00:00Z",
+        #         "preference": "HIGH"
+        #     },
+        #     {
+        #         "start_time": "2021-10-10T11:00:00Z",
+        #         "preference": "NO_PREF"
+        #     }
+        # ]
 
-            #check if schedule exists if it does delete it so it can be regenerated
-            schedule = Schedule.objects.filter(calendar_id=calendar_id)
-            if schedule:
-                schedule.delete()
+        # Assumptions:
+        # 1) the data is in the correct format
+        # 3) the time slots are from the possible_slots
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        start_time_added = []
+        # for each time slot in data, create and save a new MemberTimeSlot
+        for slot in data:
+            # Ignore duplicates
+            if slot['start_time'] in start_time_added:
+                continue
+            # Find the corresponding OwnerTimeSlot
+            owner_slot = possible_slots.get(start_time=slot['start_time'])
+            # Create the MemberTimeSlot
+            member_slot = MemberTimeSlot(member=member, time_slot=owner_slot, preference=slot['preference'])
+            member_slot.save()
+            start_time_added.append(slot['start_time'])
+
+        # Set member.submitted=True
+        member.submitted = True
+        member.save()
+
+        #check if schedule exists if it does delete it so it can be regenerated
+        schedule = Schedule.objects.filter(calendar_id=calendar_id)
+        if schedule:
+            schedule.delete()
+
+        # Return all the newly created MemberTimeSlots
+        result = []
+        all_time_slots = MemberTimeSlot.objects.filter(member=member)
+        # Serialize it using OwnerTimeSlotSerializer using that MemberTimeSlot has the time_slot field which is OwnerTimeSlot
+        for slot in all_time_slots:
+            slot_data = {}
+            slot_data['start_time'] = slot.time_slot.start_time
+            slot_data['preference'] = slot.preference
+            result.append(slot_data)
+        return Response(result, status=status.HTTP_201_CREATED)
+        
+
+    
 
 
     def patch(self, request, member_id, calendar_id):
