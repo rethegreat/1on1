@@ -18,6 +18,8 @@ export default function Schedule() {
 
   const [page, setPage] = useState(0);
 
+  const [info, setInfo] = useState("");
+
   const backClick = () => {
     router.push("/personal");
   };
@@ -47,14 +49,36 @@ export default function Schedule() {
             throw new Error(`Error: ${response.statusText}`);
           }
           const data = await response.json();
-          console.log(data.results);
+          console.log(data);
           setInput(data.results);
         } catch (error) {
           console.error("Failed to fetch availability:", error);
         }
       };
 
+      const getMembers = async () => {
+        const token = localStorage.getItem("userToken");
+        const response = await fetch(
+          `http://127.0.0.1:8000/calendars/${calendar}/members/list/`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Token ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          console.error("Failed to fetch members");
+          return;
+        }
+
+        var data = await response.json();
+        setInfo(data[0].num_pending + " users have not submitted their avalibility yet")
+      };
+
       fetchAvailability();
+      getMembers();
     }
   }, [calendar]);
 
@@ -124,12 +148,42 @@ export default function Schedule() {
           }
           return sch;
         });
-        console.log(updatedSchedule)
+        console.log(updatedSchedule);
         return updatedSchedule;
       });
     }
-    
   }, [input, page]);
+
+  const remindAll = async () => {
+    const token = localStorage.getItem("userToken");
+    const url = `http://127.0.0.1:8000/calendars/${calendar}/remindAll/`; // Replace https://example.com/ with your actual domain
+    const requestBody = {
+      pending_only: true,
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Success:", data);
+      setInfo("reminder sent");
+      return data;
+    } catch (error) {
+      console.error("Error:", error);
+      throw error;
+    }
+  };
 
   const times = [
     "09:00",
@@ -176,10 +230,10 @@ export default function Schedule() {
           <div className="header pink">schedule</div>
 
           <div className="missing">
-            <div className="missing-text">
-              2 users have not submitted their schedules
+            <div className="missing-text">{info}</div>
+            <div className="remind" onClick={remindAll}>
+              remind
             </div>
-            <div className="remind">remind</div>
           </div>
 
           <div className="calendar">
@@ -207,7 +261,7 @@ export default function Schedule() {
                             backgroundColor: slot?.color || "transparent",
                           }}
                         >
-                          {slot ? slot.name : ''}
+                          {slot ? slot.name : ""}
                         </div>
                       );
                     })}

@@ -305,9 +305,7 @@ export default function Availability() {
                       return (
                         <div
                           key={time}
-                          className={`time-slot ${
-                            isStart ? "start-of-event" : ""
-                          }`}
+                          className={`time-slot`}
                           style={{
                             backgroundColor: slot?.color || "transparent",
                           }}

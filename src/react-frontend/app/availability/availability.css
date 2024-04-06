@@ -40,6 +40,9 @@
 
 .time-slot {
     height: 35.8px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    border-radius: 20px;
     /* border: 1px solid #ccc; */
 }
 
