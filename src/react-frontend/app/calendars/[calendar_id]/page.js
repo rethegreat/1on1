@@ -5,7 +5,7 @@ import styles from "../../styles/personal.module.css";
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
-export default function CalendarDetailPage() {
+export default function CalendarDetail() {
   const router = useRouter();
   const pathname = usePathname();
   const [calendarId, setCalendarId] = useState(0);
@@ -37,8 +37,8 @@ export default function CalendarDetailPage() {
       if (!response.ok) {
         const errorData = await response.json();
         alert(errorData.detail);
-        // Redirect to home page
-        router.push("/home");
+        // Redirect back
+        router.back();
       }
 
       const data = await response.json();
@@ -50,12 +50,13 @@ export default function CalendarDetailPage() {
   }, []);
 
   // ============== Helper functions ==============
-  const getCalendarName = () => {
+
+  const getCalendarAttribute = (attributeNameStr) => {
     if (calendar === null) {
-      return "";
+        return "";
     }
-    return calendar.name;
-  };
+    return calendar[attributeNameStr];
+  }
 
   // ============== When Clicked ==============
 
@@ -75,9 +76,10 @@ export default function CalendarDetailPage() {
     router.push("/member");
   };
 
-  // const settingsClick = () => {
-  //   router.push("/settings");
-  // };
+  const settingsClick = () => {
+    // go to settings page of this calendar(only in the front end)
+    router.push(`/calendars/${calendarId}/settings`);
+  };
   
   // =========================================
 
@@ -97,7 +99,7 @@ export default function CalendarDetailPage() {
           rel="stylesheet"
         />
       </Head>
-      <div className={"main " + styles.main}>
+      <div className={styles.main}>
         <header className={styles.header}>
           <a className={styles.logo}>1on1</a>
           <nav className={styles.nav}>
@@ -110,7 +112,8 @@ export default function CalendarDetailPage() {
           </nav>
         </header>
 
-        <div className={styles.title + " " + styles.personal}>{getCalendarName()}</div>
+        {/* Display calendar.name as a title */}
+        <div className={styles.title + " " + styles.personal}>{getCalendarAttribute("name")}</div>
 
         <div className={styles["calendar-gallery"]}>
           <div className={styles["calendar-card"] + " " + styles["cal1-card"]} onClick={availabilityClick}>
@@ -145,9 +148,9 @@ export default function CalendarDetailPage() {
               className={styles["redirect-arrow"]}
             />
           </div>
-{/* 
-          <div className={styles["calendar-card"] + " " + styles["cal3-card"]} onClick={editClick}>
-            <div className={styles["calendar-title"]}>Settings</div>
+
+          <div className={styles["calendar-card"] + " " + styles["cal3-card"]} onClick={settingsClick}>
+            <div className={styles["calendar-title"]}>settings</div>
             <Image
               width={500}
               height={500}
@@ -155,7 +158,7 @@ export default function CalendarDetailPage() {
               alt="Redirect Arrow"
               className={styles["redirect-arrow"]}
             />
-          </div> */}
+          </div>
         </div>
       </div>
     </div>
