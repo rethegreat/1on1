@@ -16,7 +16,6 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /* font-family: 'Ubuntu', Arial, Helvetica, sans-serif; */
 
     margin-left: 10px;
     margin-bottom: 30px;
@@ -69,13 +68,12 @@ header {
 }
 
 .calendar-gallery {
-    padding-top: 15px;
-    display: flex;
-    flex-direction: row;
+    margin-top: 20px;
     overflow-x: auto;
     white-space: nowrap;
-    gap: 10px; /* Spacing between cards */
 
+    display: flex;
+    flex-direction: row;
 }
 
 .calendar-gallery::-webkit-scrollbar {
@@ -83,10 +81,9 @@ header {
 }
 
 .calendar-card {
+    flex: 0 0 auto;
     width: 360px;
     height: 455px;
-    flex: 0 0 auto;
-    
     border-radius: 20px;
     border: 1px solid black;
     margin-bottom: 20px;
@@ -95,8 +92,6 @@ header {
     position: relative;
     background-color: white;
     padding: 2rem;
-    /* font-family: 'Verdana', Geneva, Tahoma, sans-serif; */
-
 }
 
 .calendar-number {

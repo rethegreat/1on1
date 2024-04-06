@@ -4,14 +4,26 @@ import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import "./create-calendar.css";
+import errorStyles from "../styles/error.module.css";
+import { addInputErrorStyle, removeInputErrorStyle } from "../utils/errorHandling";
 
 export default function CreateCalendar() {
   const router = useRouter();
-
   const [calendarName, setCalendarName] = useState("");
   const [deadlineDate, setDeadlineDate] = useState("");
+  const [duration, setDuration] = useState(30);
+  const [error, setError] = useState("");
+  const [calendarNameError, setCalendarNameError] = useState("");
+  const [durationError, setDurationError] = useState("");
 
-  const [duration, setDuration] = useState("");
+  // Reset errors and input field styles
+  const resetErrors = () => {
+    setError("");
+    removeInputErrorStyle("calendar-name");
+    removeInputErrorStyle("durationInput");
+    setCalendarNameError("");
+    setDurationError("");
+  };
 
   const handleDurationChange = (event) => {
     const value = event.target.value;
@@ -23,6 +35,8 @@ export default function CreateCalendar() {
 
   const createCalendarClick = async (e) => {
     e.preventDefault();
+    resetErrors();
+
     // Here you can handle the form submission, e.g., by sending data to an API
     const token = localStorage.getItem("userToken");
     try {
@@ -40,14 +54,25 @@ export default function CreateCalendar() {
       });
 
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        const errorData = await response.json();
+        if (errorData.name || errorData.meeting_duration) {
+          if (errorData.name) {
+            setCalendarNameError(errorData.name);
+            addInputErrorStyle("calendar-name");
+          }
+          if (errorData.meeting_duration) {
+            setDurationError(errorData.meeting_duration);
+            addInputErrorStyle("durationInput");
+          }
+        }
+        throw new Error("Please check the fields above and try again");
       }
 
       const data = await response.json();
       console.log(data);
       router.push("/home");
     } catch (error) {
-      console.error("Saving calendar failed", error);
+      setError(error.message);
     }
   };
 
@@ -100,7 +125,9 @@ export default function CreateCalendar() {
             name="calendar-name"
             onChange={(e) => setCalendarName(e.target.value)}
             placeholder="enter calendar name"
+            id="calendar-name"
           />
+          {calendarNameError && <p className={errorStyles.error}>{calendarNameError}</p>}
           {/* <div className="pick-color">
             <div>Pick calendar color</div>
             <div className="calendar-color"></div>
@@ -116,6 +143,7 @@ export default function CreateCalendar() {
             min="1"
             step="1"
           />
+          {durationError && <p className={errorStyles.error}>{durationError}</p>}
 
           <label htmlFor="durationInput">Deadline:</label>
           <input
@@ -133,6 +161,7 @@ export default function CreateCalendar() {
               done
             </div>
           </div>
+          {error && <p className={errorStyles.error}>{error}</p>}
         </div>
       </div>
     </div>

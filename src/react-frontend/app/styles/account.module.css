@@ -36,11 +36,6 @@
     justify-content: space-between;
 }
 
-.error {
-    font-size: 16px;
-    color: red;
-}
-
 .whiteButton {
     font-size: 20px;
 
@@ -85,4 +80,10 @@
     outline: none;
     color: white;
     background-color: transparent;
+}
+
+.error {
+    /* Move towards the input fields for account-related pages */
+    margin-top: -10px;
+    margin-bottom: 20px;
 }
