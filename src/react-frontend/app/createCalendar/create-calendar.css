@@ -122,6 +122,24 @@ input {
     justify-content: end;
 }
 
+
+.delete {
+    background-color: gray;
+    border-radius: 50px;
+    height: 30px;
+    width: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: auto;
+}
+
+.delete:hover {
+    background-color: #d77474;
+    cursor: pointer;
+}
+
+
 .cancel {
     outline: 1px solid black;
     border-radius: 50px;
@@ -156,6 +174,11 @@ input {
 }
 
 #durationInput {
+    background-color: #dbdbdb;
+    border-radius: 20px;
+}
+
+.duration {
     background-color: #dbdbdb;
     border-radius: 20px;
 }
