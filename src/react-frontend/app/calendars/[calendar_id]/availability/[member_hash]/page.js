@@ -15,6 +15,8 @@ export default function UserAvailability() {
 
   const [input, setInput] = useState([]);
 
+  const [info, setInfo] = useState("Click on the bubbles if you are availaible to meet at that time");
+
   useEffect(() => {
     setSchedule(generateScheduleWithDates());
     console.log(pathname);
@@ -81,6 +83,7 @@ export default function UserAvailability() {
 
       const responseData = await response.json();
       console.log("Success:", responseData);
+      setInfo("sucessfully submitted");
 
     } catch (error) {
       console.log(error);
@@ -261,7 +264,7 @@ export default function UserAvailability() {
           </div>
 
           <div style={{ margin: "10px", fontSize: "20px" }}>
-            Click on the bubbles if you are availaible to meet at that time
+            {info}
           </div>
           <div className="calendar">
             <div className="avilability-content">

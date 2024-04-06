@@ -5,6 +5,49 @@
     border: none;
 }
 
+.calendar-grid {
+    display: flex;
+}
+
+.month {
+    padding-left: 10px;
+    font-size: 64px;
+}
+
+.time-column, .day-column {
+    width: 50px;
+    display: flex;
+    flex-direction: column;
+}
+
+.start-of-event {
+    border-radius: 25px 25px 0 0; /* Rounded corners on the top */
+}
+
+.monthContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.changeWeek {
+    background-color: transparent;
+    border: none;
+    font-size: 64px;
+    padding-left: 10px;
+}
+
+.time-slot {
+    height: 38px;
+    border-radius: 20px;
+    /* border: 1px solid #ccc; */
+    font-size: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .calendar-body {
     margin: 0px;
     padding: 0px;
@@ -61,10 +104,16 @@
 }
 
 .p-item {
+    padding: 5px;
     margin-left: 20px;
     display: flex;
     flex-direction: row;
     align-items: center;
+}
+
+.bordered {
+    border: 2px solid #000; /* Adjust color and size as needed */
+    border-radius: 10px;
 }
 
 .more {
@@ -120,18 +169,26 @@
     width: 100%;
 }
 .label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     margin-left: 5px;
+    font-size: 24px;
+}
+
+.date {
+    font-size: 32px;
 }
 
 .spacer {
-    height: 45px;
+    height: 65px;
 }
 
 .time > div {
     margin: 20px;
 }
 
-.content {
+.avilability-content {
     display: flex;
     flex-direction: row;
     padding-bottom: 30px;

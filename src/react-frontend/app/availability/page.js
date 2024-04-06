@@ -195,15 +195,13 @@ export default function Availability() {
     const year = new Date().getFullYear();
 
     const dateTimeList = schedules.flatMap((schedule) => {
-      // Convert the month name and day to a month-day string, assuming the current year
       const dateStr = `${schedule.date}, ${year}`;
 
       return schedule.slots.map((slot) => {
         const date = new Date(Date.parse(dateStr));
         const [hours, minutes] = slot.time.split(":").map(Number);
 
-        // Adjust the Date object to include the specific time
-        date.setHours(hours, minutes, 0); // Sets hours, minutes, and seconds
+        date.setHours(hours, minutes, 0); 
 
         const preference = slot.color === "#DD7800" ? "HIGH" : "LOW";
 
