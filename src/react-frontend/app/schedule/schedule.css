@@ -259,6 +259,93 @@
     cursor: pointer;
 }
 
+.edit-box {
+    display: flex;
+    flex-direction: row;
+    margin-right: auto;
+    border-radius: 50px;
+    outline: 1px dotted gray;
+    padding: 5px;
+}
+
+.edit-button {
+    background-color: white;
+    border: 1px solid rgb(149, 149, 149);
+    border-radius: 50px;
+    height: 30px;
+    width: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: auto;
+}
+
+.edit-button:hover {
+    background-color: black;
+    color: white;
+    cursor: pointer;
+}
+
+.clicked-button {
+    border: 1px dotted gray;
+    color: gray;
+}
+
+.clicked-button:hover {
+    background-color: lightgray;
+    color: gray;
+    cursor: pointer;
+}
+
+.action-button-box {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-right: auto;
+    padding-left: 10px;
+    column-gap: 10px;
+    font-size: 14px;
+}
+
+.add-event-button, .move-event-button, .delete-event-button {
+    color: #ffffff;
+    border-radius: 50px;
+    height: 30px;
+    width: fit-content;
+    padding: 0px 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: auto;
+}
+
+.add-event-button {
+    background-color: #d56fbf;
+}
+
+.add-event-button:hover {
+    background-color: #cfa3c5;
+    cursor: pointer;
+}
+
+.move-event-button {
+    background-color: #008A76;
+}
+
+.move-event-button:hover {
+    background-color: #44a796;
+    cursor: pointer;
+}
+
+.delete-event-button {
+    background-color: #DD7800;
+}
+
+.delete-event-button:hover {
+    background-color: #bb8d58;
+    cursor: pointer;
+}
+
 .submit {
     border-radius: 50px;
     background-color: #0005DD;

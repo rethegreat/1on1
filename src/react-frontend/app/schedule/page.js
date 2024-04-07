@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { addDays, startOfWeek, format, parseISO, set } from "date-fns";
 import "./schedule.css";
-import { getTimes } from "../utils/schedule";
 
 export default function Schedule() {
   const router = useRouter();
@@ -14,15 +13,28 @@ export default function Schedule() {
   const [remindMessage, setRemindMessage] = useState("");
   const [pageNum, setPageNum] = useState(1);
   const [pageTotal, setPageTotal] = useState(0);
-  const [currentScheduleId, setCurrentScheduleId] = useState(0);
+  const [scheduleId, setScheduleId] = useState(0);
   const [events, setEvents] = useState([]);
   const [hoveredSlot, setHoveredSlot] = useState(null);
+  const [isEditClicked, setIsEditClicked] = useState(false);
+  const [isCalendarFinalized, setCalendarFinalized] = useState(false);
 
   // 0. Set the current calendar ID + Set up blnak schedule
   useEffect(() => {
     const storedCalendar = localStorage.getItem("currentCalendar");
     const id = JSON.parse(storedCalendar).id;
     setCalendarId(id);
+    // if localStorage has defined(not undefined) currentPageNum, set pageNum to the value
+    if (localStorage.getItem("currentPageNum")) {
+      // try parsing
+      const parsedPageNum = parseInt(localStorage.getItem("currentPageNum"));
+      // if the parsing is successful, set pageNum to the value
+      if (!isNaN(parsedPageNum)) {
+        setPageNum(parsedPageNum);
+        localStorage.removeItem("currentPageNum");
+
+      }
+    }
     setSchedule(generateScheduleWithDates());
   }, []);
 
@@ -48,10 +60,11 @@ export default function Schedule() {
           const data = await response.json();
           console.log(data);
           setPageTotal(data.count);
+          setCalendarFinalized(data.results[0].finalized);
           if (data.count == 0) {
             alert("There is no schedule possible yet!\nPlease wait for members to submit their availability");
           } else {
-            setCurrentScheduleId(data.results[0].id);
+            setScheduleId(data.results[0].id);
             setEvents(data.results[0].events);
           }
         } catch (error) {
@@ -250,11 +263,76 @@ export default function Schedule() {
     }
   }
 
-  const editClick = () => {
-    // Ask user to select action(Add, Edit, Delete)
-    // Redirect to the selected action page
-  };
+  // ========================================================================================================
+  // =============================================== EDIT =================================================
+  const handleAction = async (action) => {
+    // After handling action(which may route to different pages), we should come back to where we are now
+    // Save the current URL
+    localStorage.setItem("scheduleId", scheduleId);
+    console.log("scheduleId from schedule.js: ", scheduleId);
+    localStorage.setItem("currentPageNum", pageNum);
 
+    switch (action) {
+        case "add":
+            // add localStorage variables that we will use in addMeeting
+            localStorage.setItem("selectedMemberId", 0);
+            localStorage.setItem("selectedTime", "");
+            // Go to the page("/schedule/edit/add/memberSelect/page.js"- default export)
+            // where the user can select a member for this new meeting
+            // This page will ask the user to select a member then lead to another page for the time, and then it will call addMeeting at the end
+            router.push("/schedule/edit/add/memberSelect");
+            break;
+        case "delete":
+            break;
+        case "move":
+            break;
+        default:
+            console.error("Invalid action");
+    }
+  }
+
+  
+  // ========================================================================================================
+
+
+
+  // ========================================================================================================
+  // ============================================== FINALIZE ================================================
+
+  const finalizeClick = () => {
+    if (confirm("Are you sure you want to finalize the calendar with this schedule?")) {
+      setRemindMessage("Finalized Schedule");
+      finalizeSchedule(localStorage.getItem("userToken"), calendarId, scheduleId);
+    }
+  }
+
+  const finalizeSchedule = async (token, calendarId, scheduleId) => {
+    try {
+        const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${token}`,
+        },
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            // Whatever the key is in the data, get its value and alert it
+            alert(Object.values(data)[0]);
+        } else {
+            const message = data.detail;
+            alert(message);
+            localStorage.setItem("currentPageNum", 1);
+            router.push("/schedule");
+        }
+
+    } catch (error) {
+        console.error(error);
+    }
+  }
+
+
+  // ========================================================================================================
 
   return (
     <>
@@ -333,22 +411,56 @@ export default function Schedule() {
               ))}
             </div>
           </div>
+
+
+          { !isCalendarFinalized && (
           <div className="bottom">
+            {/* ================================== EDIT-BUTTON ============================== */}
+            {isEditClicked ?
+            (
+              <div className="edit-box">
+
+                <div className="edit-button clicked-button" onClick={() => setIsEditClicked(!isEditClicked)}>
+                  edit
+                </div>
+
+                <div className="action-button-box">
+                  <div className="add-event-button" onClick={() => handleAction("add")}>Add Meeting</div>
+                  <div className="move-event-button" onClick={() => handleAction("move")}>Move Meeting</div>
+                  <div className="delete-event-button" onClick={() => handleAction("delete")}>Delete Meeting</div>
+                </div>
+
+              </div>
+            )
+            :
+            (
+              <div className="edit-button" onClick={() => setIsEditClicked(!isEditClicked)}>
+                  edit
+              </div>
+            )}
+
+            {/* ================================== ARROWS ============================== */}
+
+            
             <div style={{ width: "150px" }}></div>
             <div className="page">
               <div className="arrow" onClick={goToPreviousPage}>&lt;</div>
               <div>{pageNum}/{pageTotal}</div>
               <div className="arrow" onClick={goToNextPage}>&gt;</div>
             </div>
+
+            {/* ================================== FINALIZE-BUTTON ============================== */}
             <div className="bottom-button">
-              <div className="cancel" onClick={backClick}>
-                cancel
-              </div>
-              <div className="submit" onClick={editClick}>
-                edit
+              <div className="submit" onClick={finalizeClick}>
+                finalize
               </div>
             </div>
+
+          {/* ================================================================ */}
           </div>
+          )}
+
+
         </div>
       </div>
     </>
