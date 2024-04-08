@@ -32,7 +32,6 @@ export default function Schedule() {
       if (!isNaN(parsedPageNum)) {
         setPageNum(parsedPageNum);
         localStorage.removeItem("currentPageNum");
-
       }
     }
     setSchedule(generateScheduleWithDates());
@@ -45,7 +44,7 @@ export default function Schedule() {
         const token = localStorage.getItem("userToken");
         try {
           const response = await fetch(
-            `http://127.0.0.1:8000/calendars/${calendarId}/schedules/?page=${pageNum}/`,
+            `http://127.0.0.1:8000/calendars/${calendarId}/schedules/?page=${pageNum}`,
             {
               method: "GET",
               headers: {
@@ -94,10 +93,11 @@ export default function Schedule() {
         setRemindMessage(data[0].num_pending + " users have not submitted their avalibility yet")
       };
 
+      setSchedule(generateScheduleWithDates());
       fetchSchedule();
       getMembers();
     }
-  }, [calendarId]);
+  }, [calendarId, pageNum]);
 
   const getStartOfWeekFromDate = (dateString) => {
     const today = new Date();
@@ -253,7 +253,8 @@ export default function Schedule() {
     } else {
       alert("You are already on the first page");
     }
-  }
+  };
+  
 
   const goToNextPage = () => {
     if (pageNum < pageTotal) {
@@ -261,7 +262,8 @@ export default function Schedule() {
     } else {
       alert("You are already on the last page");
     }
-  }
+  };
+  
 
   // ========================================================================================================
   // =============================================== EDIT =================================================
@@ -269,7 +271,6 @@ export default function Schedule() {
     // After handling action(which may route to different pages), we should come back to where we are now
     // Save the current URL
     localStorage.setItem("scheduleId", scheduleId);
-    console.log("scheduleId from schedule.js: ", scheduleId);
     localStorage.setItem("currentPageNum", pageNum);
 
     switch (action) {

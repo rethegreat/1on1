@@ -228,6 +228,7 @@ class ScheduleListView(APIView):
         # Construct custom paginated response
         response_data = {
             'count': paginator.count,
+            'finalized': calendar.finalized,
             'next': page_obj.next_page_number() if page_obj.has_next() else None,
             'previous': page_obj.previous_page_number() if page_obj.has_previous() else None,
             'results': results  # Include paginated data
