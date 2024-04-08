@@ -314,6 +314,12 @@
     flex-direction: row;
 }
 
+.add-meeting {
+    background-color: #d963c9;
+    width: fit-content;
+    padding: 0 10px;
+}
+
 @media (max-width: 900px) {
 
 
