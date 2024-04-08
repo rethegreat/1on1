@@ -1,14 +1,12 @@
 "use client";
 import Head from "next/head";
 import { useEffect, useState } from "react";
-import { addDays, startOfWeek, format, parseISO } from "date-fns";
+import { addDays, startOfWeek, format, parseISO, set } from "date-fns";
 import { useRouter, usePathname } from "next/navigation";
 import "../../../../calendars/[calendar_id]/availability/[member_hash]/calendars.css";
 
 export default function MeetingTime() {
   const router = useRouter();
-  const pathname = usePathname();
-
   const [calendarId, setCalendarId] = useState(0);
   const [scheduleId, setScheduleId] = useState(0);
   const [schedule, setSchedule] = useState([]);
@@ -88,9 +86,7 @@ export default function MeetingTime() {
 // =============================================== ADD =================================================
   const submitNewTime = async () => {
     if (datetimeList.length === 0) {
-      if (confirm("You have not selected a time. Do you want to quit editing the schedule?")) {
-        localStorage.removeItem("selectedMemberId");
-        localStorage.removeItem("currentSchedule");
+      if (confirm("You have not selected a time. Do you want to quit editing?")) {
         router.push(`/schedule`);
         return;
       } else {
@@ -139,15 +135,9 @@ export default function MeetingTime() {
             alert(Object.values(data)[0]);
         }
 
-        // delete localStorage variables that we used in this function
-        localStorage.removeItem("selectedMemberId");
-
-        // delete localStorage variables that we used in handleAction
-        localStorage.removeItem("currentSchedule");
-
-        // go back to the schedule page by the pageNum
-        const pageNum = localStorage.getItem("currentPageNum");
+        alert("Meeting added successfully!");
         router.push(`/schedule`);
+        return;
 
     } catch (error) {
         console.error(error);
@@ -175,7 +165,7 @@ export default function MeetingTime() {
           const [prevDayIndex, prevTime] = newTime;
           newSchedule[prevDayIndex].slots.push({
             time: prevTime,
-            color: color,
+            color: "transparent",
             selected: false,
           });
         }
@@ -194,7 +184,7 @@ export default function MeetingTime() {
 
         newSchedule[dayIndex].slots.push({
           time: time,
-          color: color,
+          color: "transparent",
           selected: false,
         });
       }
@@ -229,7 +219,7 @@ export default function MeetingTime() {
   };
 
   useEffect(() => {
-    if (memberSlots.length > 0 && scheduledSlots.length > 0) {
+    if (memberSlots.length > 0) {
     const parseDateTime = (datetimeObjects, isMemberSlot) => {
       const grouped = {};
 
@@ -264,7 +254,6 @@ export default function MeetingTime() {
 
       return Object.values(grouped);
     };
-
     const parsedScheduledSlots = parseDateTime(scheduledSlots, false);
     const parsedPossibleSlots = parseDateTime(memberSlots, true);
 
