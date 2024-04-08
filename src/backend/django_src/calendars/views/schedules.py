@@ -392,6 +392,6 @@ def delete_event(event):
     Delete an event from the schedule.
     """
     event.delete()
-    return Response({'message': 'Event deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+    return Response({'message': 'Event deleted successfully'}, status=status.HTTP_200_OK)
 
 #  ========================================================

@@ -57,7 +57,6 @@ export default function Schedule() {
             throw new Error(`Error: ${response.statusText} - ${errorData.detail}`);
           }
           const data = await response.json();
-          console.log(data);
           setPageTotal(data.count);
           setCalendarFinalized(data.results[0].finalized);
           if (data.count == 0) {
@@ -141,7 +140,7 @@ export default function Schedule() {
 
         grouped[key].slots.push({
           time: time,
-          color: "#DD7800",
+          color: "#DD7800", // "#CCDD00", (green)
           name: member_name,
           member_id: member_id,
           member_email: member_email,
@@ -275,15 +274,13 @@ export default function Schedule() {
 
     switch (action) {
         case "add":
-            // add localStorage variables that we will use in addMeeting
-            localStorage.setItem("selectedMemberId", 0);
-            localStorage.setItem("selectedTime", "");
             // Go to the page("/schedule/edit/add/memberSelect/page.js"- default export)
             // where the user can select a member for this new meeting
             // This page will ask the user to select a member then lead to another page for the time, and then it will call addMeeting at the end
             router.push("/schedule/edit/add/memberSelect");
             break;
         case "delete":
+            router.push("/schedule/edit/delete/meetingSelect");
             break;
         case "move":
             break;
