@@ -14,7 +14,7 @@ export default function MeetingTime() {
   const [memberSlots, setMemberSlots] = useState([]);
   const [scheduledSlots, setScheduledSlots] = useState([]);
   const [info, setInfo] = useState("Click on the bubble to select a time for the meeting.");
-  const [newTime, setNewTime] = useState([]);
+  const [addList, setAddList] = useState([]);
 
   useEffect(() => {
     setSchedule(generateScheduleWithDates());
@@ -66,11 +66,6 @@ export default function MeetingTime() {
             throw new Error(`Error: ${response.statusText}`);
           }
           const data = await response.json();
-          // event_id = serializers.IntegerField(source='id')
-          // start_time = serializers.DateTimeField(source='time_slot.start_time')
-          // member_id = serializers.IntegerField(source='member.id')
-          // member_name = serializers.CharField(source='member.name')
-          // member_email = serializers.CharField(source='member.email')
           setScheduledSlots(data.events);
         } catch (error) {
           console.error("Failed to fetch scheduled slots:", error);
@@ -84,8 +79,8 @@ export default function MeetingTime() {
   
 // ========================================================================================================
 // =============================================== ADD =================================================
-  const submitNewTime = async () => {
-    if (datetimeList.length === 0) {
+  const submitAddList = async () => {
+    if (addList.length === 0) {
       if (confirm("You have not selected a time. Do you want to quit editing?")) {
         router.push(`/schedule`);
         return;
@@ -93,40 +88,37 @@ export default function MeetingTime() {
         return;
       }
     }
-    addMeeting(datetimeList[0]);
+    addMeeting(addList);
   };
 
-  const addMeeting = async (newTimeStr) => {
+  const addMeeting = async (addList) => {
 
-    // Assuming that the user has already selected a member and a time:
-    // Who do you want to schedule another meeting with?
     const memberId = localStorage.getItem("selectedMemberId");
-    // When do you want to schedule another meeting?
-    const newTime = localStorage.getItem("selectedTime");
     const token = localStorage.getItem("userToken");
 
     if (memberId === 0) {
         alert("Member ID is not set");
         return;
     }
-    if (newTimeStr === "") {
+    if (addList == []) {
         alert("Meeting new time is not set");
         return;
     }
     // If this meeting is addable, add it to the schedule
     try {
+      for (const newTime of addList) {
         const response = await fetch(
           `http://127.0.0.1:8000/calendars/${calendarId}/schedules/${scheduleId}/`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Token ${token}`,
-        },
-        body: JSON.stringify({
-            action: "add",
-            member_id: memberId,
-            new_time: newTimeStr,
-        }),
+          method: "PUT",
+          headers: {
+              "Content-Type": "application/json",
+              Authorization: `Token ${token}`,
+          },
+          body: JSON.stringify({
+              action: "add",
+              member_id: memberId,
+              new_time: newTime,
+          }),
         });
         const data = await response.json();
         
@@ -134,8 +126,9 @@ export default function MeetingTime() {
             // Whatever the key is in the data, get its value and alert it
             alert(Object.values(data)[0]);
         }
+      }
 
-        alert("Meeting added successfully!");
+        alert("Meeting(s) added successfully");
         router.push(`/schedule`);
         return;
 
@@ -145,7 +138,6 @@ export default function MeetingTime() {
   }
   // ========================================================================================================
 
-  
   const toggleSlotSelection = (dayIndex, slot, time) => {
     var newSchedule = [...schedule].map((day) => ({
       ...day,
@@ -160,39 +152,38 @@ export default function MeetingTime() {
       newSchedule[dayIndex].slots.splice(index, 1);
 
       if(!selected){
-        // if there was a selected slot, unselect it
-        if (newTime.length > 0) {
-          const [prevDayIndex, prevTime] = newTime;
-          newSchedule[prevDayIndex].slots.push({
-            time: prevTime,
-            color: "transparent",
-            selected: false,
-          });
-        }
 
         newSchedule[dayIndex].slots.push({
           time: time,
           color: color,
           selected: true,
+          start_time: slot.start_time,
         });
 
-        setNewTime([dayIndex, time]);
+        setAddList([...addList, slot.start_time]);
         
       } else {
-
-        setNewTime([]);
-
+        
         newSchedule[dayIndex].slots.push({
           time: time,
-          color: "transparent",
+          color: color,
           selected: false,
+          start_time: slot.start_time,
         });
+
+        // Remove the ID from the addList array
+        const addListCopy = [...addList];
+        const index = addListCopy.indexOf(slot.start_time);
+        if (index > -1) {
+          addListCopy.splice(index, 1);
+        }
+        setAddList(addListCopy);
+
       }
       
     }
     setSchedule(newSchedule);
     const dateTimeList = scheduleToDateTimeList(newSchedule);
-    
     setDatetimeList(dateTimeList);
   };
 
@@ -207,9 +198,7 @@ export default function MeetingTime() {
         const date = new Date(Date.parse(dateStr));
         const [hours, minutes] = slot.time.split(":").map(Number);
   
-        date.setHours(hours, minutes, 0); 
-  
-        const preference = slot.color === "#DD7800" ? "HIGH" : "LOW";
+        date.setHours(hours, minutes, 0);
   
         return date.toISOString();
       });
@@ -220,10 +209,12 @@ export default function MeetingTime() {
 
   useEffect(() => {
     if (memberSlots.length > 0) {
+    setSchedule(generateScheduleWithDates());
     const parseDateTime = (datetimeObjects, isMemberSlot) => {
       const grouped = {};
 
       datetimeObjects.forEach((obj) => {
+
         const startDate = parseISO(obj["start_time"]);
         const dayOfWeek = format(startDate, "eee");
         const date = format(startDate, "MMM d");
@@ -242,13 +233,13 @@ export default function MeetingTime() {
         // For memberSlots(i.e. if there exists a key named "preference")
         if (isMemberSlot) {
           if (obj["preference"] === "HIGH") {
-            grouped[key].slots.push({ time: time, color: "#DD7800", selected: false });
+            grouped[key].slots.push({ time: time, color: "#DD7800", selected: false, start_time: obj["start_time"]});
           } else {
-            grouped[key].slots.push({ time: time, color: "#CCDD00", selected: false });
+            grouped[key].slots.push({ time: time, color: "#CCDD00", selected: false, start_time: obj["start_time"] });
           }
         } else {
           // For scheduledSlots
-          grouped[key].slots.push({ time: time, color: "lightgray", member_name: obj["member_name"]});
+          grouped[key].slots.push({ time: time, color: "lightgray", member_name: obj["member_name"], start_time: obj["start_time"]});
         }
       });
 
@@ -402,6 +393,7 @@ export default function MeetingTime() {
                           style={{
                             borderColor: slot?.color || "transparent",
                             backgroundColor: slot?.selected ? slot.color : "transparent",
+                            cursor: "pointer",
                           }}
                           onClick={() =>
                             toggleSlotSelection(dayIndex, slot, time)
@@ -416,7 +408,7 @@ export default function MeetingTime() {
           </div>
 
           <div className="bottom-button" style={{ paddingTop: "25px"}}>
-            <div className="submit add-meeting" onClick={submitNewTime}>add meeting</div>
+            <div className="submit add-meeting" onClick={submitAddList}>add meeting</div>
           </div>
         </div>
       </div>
