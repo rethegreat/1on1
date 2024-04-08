@@ -270,7 +270,7 @@ export default function Availability() {
             &lt; back
           </div>
 
-          <div className="header blue">availability</div>
+          <div className="header blue">Availability</div>
 
           <div className="preference">
             <div

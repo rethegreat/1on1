@@ -101,7 +101,7 @@ export default function HomePage() {
           </nav>
         </header>
 
-        <div className="title">HOME</div>
+        <div className="title">Home</div>
 
         <div className="calendar-gallery">
           {calendars.map((calendar, index) => (

@@ -189,7 +189,7 @@ export default function MemberPage() {
         </a>
 
         <div className={styles.heading}>
-          <h1 className={styles.title}>members</h1>
+          <h1 className={styles.title}>Members</h1>
         </div>
 
         {members.map((member, index) => (
