@@ -46,7 +46,8 @@
 }
 
 .font{
-    /* margin-top: 20px; */
+    margin-top: 0px;
+    margin-bottom: 0px;
     font-size: 30px;
 }
 

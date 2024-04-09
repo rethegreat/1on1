@@ -62,16 +62,32 @@ header {
     padding-left: 50px;
 }
 
-.notification-card {
+.notification-card-read {
     display: flex;
+    flex-direction: column;
     /* justify-content: space-between; */
-    align-items: center;
+    /* align-items: center; */
     height: 50px;
     border-radius: 20px;
     border: 1px solid black;
     margin-bottom: 20px;
     /* position: relative; */
     background-color: white;
+    padding: 2rem;
+    flex-grow: 1;
+}
+
+.notification-card-unread {
+    display: flex;
+    flex-direction: column;
+    /* justify-content: ; */
+    /* align-items: center; */
+    height: 50px;
+    border-radius: 20px;
+    border: 1px solid black;
+    margin-bottom: 20px;
+    /* position: relative; */
+    background-color: lightgrey;
     padding: 2rem;
     flex-grow: 1;
 }
@@ -86,110 +102,16 @@ header {
     /* flex-direction: row; */
 }
 
-.personal {
-    /* border: 0.5px solid black; */
-    background-color: #DD00AD;
+.notif-text {
+    margin-top: 0px;
+    margin-bottom: 20px;
 }
 
-.calendar-gallery::-webkit-scrollbar {
-    display: none;
+.notif-time {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    font-size: small;
 }
-
-.calendar-number {
-    font-size: 20px;
-    width: fit-content;
-    border-radius: 15px;
-    border: 1px solid white;
-    padding: 5px 15px;
-    color: white;
-}
-
-/* Colour per cal */
-    .cal1 {
-        background-color: red;
-    }
-
-    .cal2 {
-        background-color: #DD00AD;
-    }
-
-    .cal3 {
-        background-color: #CCDD00;
-    }
-
-    .pending {
-        border: 1px solid rgb(169, 169, 169);
-    }
-
-.calendar-title {
-    padding-top: 1rem;
-    padding-left: 0.4rem;
-    font-size: 48px;
-
-    white-space: pre-wrap;
-    max-width: 100px;
-    /* font-family: 'Verdana'; */
-}
-
-
-.redirect-arrow {
-    position: absolute;
-    bottom: 50px;
-    right: 30px;
-    width: 100px;
-    height: 100px;
-}
-
-.create-calendar, .pending {
-    display: inline-block;
-    vertical-align: top;
-    text-align: center;
-    justify-content: center;
-}
-
-.pending .calendar-title {
-    color: rgb(169, 169, 169);
-}
-
-.pending.calendar-card:hover {
-    background-color: white;
-}
-
-.add-icon { 
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    max-width: 250px;
-}
-
-
-/* On hover */
-    .calendar-card:hover {
-        color: white;
-        background-color: blue;
-    }
-
-    /* Colour per cal */
-    .cal1-card:hover {
-        background-color: red;
-    }
-
-    .cal2-card:hover {
-        background-color: #DD00AD
-    }
-
-    .cal3-card:hover {
-        background-color: #CCDD00
-    }
-
-    .calendar-card:hover .redirect-arrow {
-        filter: invert(1);
-    }
-    .create-calendar:hover .add-icon {
-        filter: invert(1);
-    }
-
 
 @media (max-width: 900px) {
     body {
