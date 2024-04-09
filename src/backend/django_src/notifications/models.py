@@ -22,7 +22,8 @@ class Notification(models.Model):
         ('time_updated', 'for calendar creator when a member submits/updates their time'),
         ('all_times_updated', 'for calendar creator when all members have submitted their times'),
         ('submit_reminder', "for member when they haven't submitted their time"),
-        ('calendar_finalized', 'for member when the calendar has been finalized')
+        ('calendar_finalized', 'for member when the calendar has been finalized'),
+        ('removed_from_cal', 'for member when they are removed from a calendar')
     ]
     recipient = models.ForeignKey(UserModel, on_delete=models.CASCADE)
     message = models.TextField()

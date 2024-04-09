@@ -1,7 +1,7 @@
 from django.dispatch import receiver
 
 from calendars.signals import member_added_to_calendar, creator_member_added_to_calendar, \
-    creator_all_member_added_to_calendar, member_submit_reminder, member_cal_finalized
+    creator_all_member_added_to_calendar, member_submit_reminder, member_cal_finalized, member_removed_from_cal
 from .models import Notification
 from django.contrib.auth import get_user_model
 
@@ -43,6 +43,14 @@ def handle_member_submit_reminder(calendar, member, **kwargs):
         notification_type='submit_reminder'
     )
 
+@receiver(member_removed_from_cal) 
+def handle_member_removed_from_cal(calendar, member, **kwargs):
+    Notification.objects.create(
+        recipient=member,
+        message=f"You have been removed from calendar: {calendar.name}",
+        notification_type='removed_from_cal'
+    )
+
 
 @receiver(member_cal_finalized)
 def handle_member_cal_finalized(calendar, **kwargs):
@@ -56,5 +64,4 @@ def handle_member_cal_finalized(calendar, **kwargs):
             )
         except:
             pass
-
 

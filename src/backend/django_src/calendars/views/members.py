@@ -9,7 +9,7 @@ from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from accounts.models import Contact
-from ..signals import member_added_to_calendar
+from ..signals import member_added_to_calendar, member_removed_from_cal
 from django.contrib.auth import get_user_model
 
 UserModel = get_user_model()
@@ -71,6 +71,7 @@ class MemberListView(APIView):
                 member_added_to_calendar.send(sender=calendar.__class__, calendar=calendar, member=user)
             finally:
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
+            
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # EndPoint: /calendars/<int:calendar_id>/members/list/selection/
@@ -171,7 +172,12 @@ class MemberDetailView(APIView):
         except Member.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         member.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        try:
+            # Send signal for notification app
+            user = UserModel.objects.get(email=member.email)
+            member_removed_from_cal.send(sender=calendar.__class__, calendar=calendar, member=user)
+        finally:
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
     def patch(self, request, calendar_id, member_id):
         """Edit a member's details or remind them to submit their availability"""
