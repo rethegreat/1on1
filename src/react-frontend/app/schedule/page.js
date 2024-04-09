@@ -283,6 +283,7 @@ export default function Schedule() {
             router.push("/schedule/edit/delete/meetingSelect");
             break;
         case "move":
+            router.push("/schedule/edit/move/meetingSelect");
             break;
         default:
             console.error("Invalid action");
