@@ -27,6 +27,7 @@ class Notification(models.Model):
     ]
     recipient = models.ForeignKey(UserModel, on_delete=models.CASCADE)
     message = models.TextField()
+    link = models.TextField()
     read_status = models.BooleanField(default=False)  # True for read, False for unread
     notification_type = models.CharField(max_length=20, choices=TYPES)
     created_at = models.DateTimeField(auto_now_add=True)

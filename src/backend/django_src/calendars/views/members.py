@@ -9,7 +9,7 @@ from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from accounts.models import Contact
-from ..signals import member_added_to_calendar, member_removed_from_cal
+from ..signals import member_added_to_calendar, member_removed_from_cal, member_submit_reminder
 from django.contrib.auth import get_user_model
 
 UserModel = get_user_model()
@@ -197,7 +197,15 @@ class MemberDetailView(APIView):
         action = request.data.get('action', None)
         if action == 'remind':
             member.remind()  # Trigger reminder if requested
-            return Response({'message': 'Reminder sent'}, status=status.HTTP_200_OK)
+
+            # notif
+            try:
+            # Send signal for notification app
+                user = UserModel.objects.get(email=member.email)
+                link = f"http://localhost:3000/calendars/{member.calendar.id}/availability/{member.member_hash}/"
+                member_submit_reminder.send(sender=calendar.__class__, calendar=calendar, member=user, link=link)
+            finally:
+                return Response({'message': 'Reminder sent'}, status=status.HTTP_200_OK)
         
         elif action == 'edit':
             # Update member fields as before

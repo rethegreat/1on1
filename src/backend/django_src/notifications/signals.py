@@ -36,10 +36,11 @@ def handle_creator_all_member_added_to_calendar(calendar, **kwargs):
 
 
 @receiver(member_submit_reminder)
-def handle_member_submit_reminder(calendar, member, **kwargs):
+def handle_member_submit_reminder(calendar, member, link, **kwargs):
     Notification.objects.create(
         recipient=member,
         message=f"Reminder to submit your availability: {calendar.name}",
+        link = link,
         notification_type='submit_reminder'
     )
 
