@@ -210,12 +210,13 @@ export default function MemberPage() {
             </div>
 
             <div className={styles.buttons}>
-              <div
-                className={styles.remind}
-                onClick={() => handleRemindMember(member.id)}
-              >
-                <p>remind</p>
-              </div>
+              { !member.submitted &&
+                <div
+                  className={styles.remind}
+                  onClick={() => handleRemindMember(member.id)}>
+                  <p>remind</p>
+                </div>
+              }
               <div
                 className={styles.delete}
                 onClick={() => handleDeleteMember(member.id)}

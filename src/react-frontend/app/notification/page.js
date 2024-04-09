@@ -5,15 +5,15 @@ import "./notification.css";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-const formatDate = (dateString) => {
-  const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'};
-  return new Date(dateString).toLocaleString('en-US', options);
-};
-
 export default function NotifPage() {
   const router = useRouter();
 
   const [notifications, setNotifications] = useState([]); 
+
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'};
+    return new Date(dateString).toLocaleString('en-US', options);
+  };
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -34,6 +34,8 @@ export default function NotifPage() {
         const data = await response.json();
         console.log(data);
         setNotifications(data); // Assuming the API returns an array of calendars
+
+        await readNotif();
       } catch (error) {
         console.error("Error fetching notification data:", error);
         // Handle errors, e.g., by setting error state or displaying a message
@@ -42,6 +44,26 @@ export default function NotifPage() {
 
     fetchNotifications();
   }, []);
+
+  const readNotif = async () => {
+    const token = localStorage.getItem("userToken"); 
+    try {
+      const response = await fetch("http://127.0.0.1:8000/notifications/list/", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `token ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+    } catch (error) {
+      console.error("Error set as read for notification data:", error);
+      // Handle errors, e.g., by setting error state or displaying a message
+    }
+  }
 
   return (
     <div>

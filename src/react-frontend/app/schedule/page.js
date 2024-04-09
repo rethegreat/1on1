@@ -74,7 +74,11 @@ export default function Schedule() {
         }
 
         var data = await response.json();
-        setInfo(data[0].num_pending + " users have not submitted their avalibility yet")
+        if (data[0].num_pending == 0) {
+          setInfo("");
+        } else {
+          setInfo(data[0].num_pending  + " users have not submitted their avalibility yet")
+        }
       };
 
       fetchAvailability();
@@ -230,10 +234,14 @@ export default function Schedule() {
           <div className="header pink">Schedule</div>
 
           <div className="missing">
-            <div className="missing-text">{info}</div>
-            <div className="remind" onClick={remindAll}>
-              remind
-            </div>
+            { info && (
+              <> 
+                <div className="missing-text">{info}</div>
+                <div className="remind" onClick={remindAll}>
+                  remind
+                </div>
+              </>
+            )}
           </div>
 
           <div className="calendar">

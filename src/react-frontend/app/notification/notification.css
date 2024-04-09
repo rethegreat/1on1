@@ -99,12 +99,12 @@ header {
     /* overflow-x: auto; */
     /* white-space: nowrap; */
 
-    /* flex-direction: row; */
+    flex-direction: column;
 }
 
 .notif-text {
     margin-top: 0px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .notif-time {
