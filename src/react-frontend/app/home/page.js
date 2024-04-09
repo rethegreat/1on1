@@ -116,6 +116,7 @@ export default function HomePage() {
               className={`calendar-card`}
             >
               <div className={`calendar-number cal2`}>cal {index + 1}</div>
+              <div className="calendar-status">{calendar.finalized ? "finalized" : "not finalized"}</div>
               <div className="calendar-title">{calendar.name}</div>
               <Image
                 width={600}

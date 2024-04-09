@@ -5,6 +5,12 @@
     justify-content: end;
 }
 
+.page {
+    display: flex;
+    flex-direction: row;
+    margin: auto;
+}
+
 .arrow {
     color: black;
     cursor: pointer;

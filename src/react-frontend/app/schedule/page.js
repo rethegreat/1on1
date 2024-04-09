@@ -190,7 +190,7 @@ export default function Schedule() {
 
   const remindAll = async () => {
     const token = localStorage.getItem("userToken");
-    const url = `http://127.0.0.1:8000/calendars/${calendarId}/remindAll/`; // Replace https://example.com/ with your actual domain
+    const url = `http://127.0.0.1:8000/calendars/${calendarId}/remindAll/`; 
     const requestBody = {
       pending_only: true,
     };
@@ -308,6 +308,7 @@ export default function Schedule() {
   }
 
   const finalizeSchedule = async (token, calendarId, scheduleId) => {
+    const url = `http://127.0.0.1:8000/calendars/${calendarId}/schedules/${scheduleId}/`; 
     try {
         const response = await fetch(url, {
         method: "POST",
