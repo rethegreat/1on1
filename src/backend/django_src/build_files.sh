@@ -1,4 +1,4 @@
 # build files
 
-pip install -r requirements.txt
-python3.11.7 managepy collectstatic --noinput
+pip3 install -r requirements.txt
+python3.9 managepy collectstatic --noinput
