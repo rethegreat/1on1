@@ -162,29 +162,29 @@ header {
 
 /* On hover */
     .calendar-card:hover {
-        color: white;
+        /* color: white; */
         background-color: blue;
     }
 
     /* Colour per cal */
     .cal1-card:hover {
-        background-color: red;
+        background-color: #f2f2f2;
     }
 
     .cal2-card:hover {
-        background-color: #DD00AD
+        background-color: #f2f2f2;
     }
 
     .cal3-card:hover {
-        background-color: #CCDD00
+        background-color: #f2f2f2;
     }
 
-    .calendar-card:hover .redirect-arrow {
+    /* .calendar-card:hover .redirect-arrow {
         filter: invert(1);
     }
     .create-calendar:hover .add-icon {
         filter: invert(1);
-    }
+    } */
 
 
 @media (max-width: 900px) {

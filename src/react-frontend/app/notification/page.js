@@ -65,6 +65,10 @@ export default function NotifPage() {
     }
   }
 
+  const backClick = () => {
+    router.push("/home");
+  };
+
   return (
     <div>
       <Head>
@@ -82,9 +86,9 @@ export default function NotifPage() {
         />
       </Head>
       <div className="main">
-        <header>
-          <a className="logo">1on1</a>
-        </header>
+        <div className="back" onClick={backClick}>
+          &lt; back
+        </div>
 
         <div className="title">Notification</div>
 

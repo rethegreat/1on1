@@ -11,6 +11,20 @@ body {
     letter-spacing: .5px;
 }
 
+.back {
+    font-size: large;
+    /* top: 40px;
+    left: 60px;
+    position: fixed; */
+    margin-bottom: 30px;
+    width: 60px;
+}
+
+.back:hover {
+    color: rgb(202, 202, 202);
+    cursor: pointer;
+}
+
 header {
     color: black;
     display: flex;

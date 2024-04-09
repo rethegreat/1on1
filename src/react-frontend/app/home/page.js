@@ -73,6 +73,10 @@ export default function HomePage() {
     router.push("/createCalendar");
   };
 
+  const notifClick = () => {
+    router.push("/notification");
+  };
+
   return (
     <div>
       <Head>
@@ -92,6 +96,7 @@ export default function HomePage() {
       <div className="main">
         <header>
           <a className="logo">1on1</a>
+          <div className="notification-button" onClick={notifClick} />
           <nav>
             <a className="nav-link active">Home</a>
 
