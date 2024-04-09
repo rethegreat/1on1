@@ -24,5 +24,6 @@
       "src": "/(.*)",
       "dest": "django_src/wsgi.py"
     }
-  ]
+  ],
+  "installCommand": "pip install -r requirements.txt"
 }
