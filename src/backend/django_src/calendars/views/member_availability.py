@@ -129,18 +129,18 @@ class MemberAvailabilityView(APIView):
         member.submitted = True
         member.save()
 
-            # Send signal for notif
-            creator_member_added_to_calendar(calendar=calendar, member=member)
+        # Send signal for notif
+        creator_member_added_to_calendar(calendar=calendar, member=member)
 
-            # check if all members have submitted for notif signal
-            all_submitted = not Member.objects.filter(calendar=calendar, submitted=False).exists()
-            if all_submitted:
-                creator_all_member_added_to_calendar(calendar=calendar)
+        # check if all members have submitted for notif signal
+        all_submitted = not Member.objects.filter(calendar=calendar, submitted=False).exists()
+        if all_submitted:
+            creator_all_member_added_to_calendar(calendar=calendar)
 
-            # check if schedule exists if it does delete it so it can be regenerated
-            schedule = Schedule.objects.filter(calendar_id=calendar_id)
-            if schedule:
-                schedule.delete()
+        # check if schedule exists if it does delete it so it can be regenerated
+        schedule = Schedule.objects.filter(calendar_id=calendar_id)
+        if schedule:
+            schedule.delete()
 
         # Return all the newly created MemberTimeSlots
         result = []
