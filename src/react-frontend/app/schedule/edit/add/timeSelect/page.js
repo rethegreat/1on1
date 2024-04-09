@@ -34,7 +34,7 @@ export default function MeetingTime() {
         // Get member availability
         try {
           const response = await fetch(
-            `http://127.0.0.1:8000/calendars/${calendarId}/members/${memberId}/availability/`,
+            `http://1on1-django.fly.dev/calendars/${calendarId}/members/${memberId}/availability/`,
             {
               method: "GET",
               headers: {
@@ -54,7 +54,7 @@ export default function MeetingTime() {
         // Get already scheduled meetings
         try {
           const response = await fetch(
-            `http://127.0.0.1:8000/calendars/${calendarId}/schedules/${scheduleId}`,
+            `http://1on1-django.fly.dev/calendars/${calendarId}/schedules/${scheduleId}`,
             {
               method: "GET",
               headers: {
@@ -108,7 +108,7 @@ export default function MeetingTime() {
     try {
       for (const newTime of addList) {
         const response = await fetch(
-          `http://127.0.0.1:8000/calendars/${calendarId}/schedules/${scheduleId}/`, {
+          `http://1on1-django.fly.dev/calendars/${calendarId}/schedules/${scheduleId}/`, {
           method: "PUT",
           headers: {
               "Content-Type": "application/json",

@@ -28,7 +28,7 @@ export default function Login() {
     e.preventDefault();
     resetErrors();
     try {
-      const response = await fetch("http://127.0.0.1:8000/accounts/api/login/", {
+      const response = await fetch("http://1on1-django.fly.dev/accounts/api/login/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

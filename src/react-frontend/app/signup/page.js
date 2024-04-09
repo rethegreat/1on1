@@ -45,7 +45,7 @@ export default function Signup() {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/accounts/api/register/",
+        "http://1on1-django.fly.dev/accounts/api/register/",
         {
           method: "POST",
           headers: {

@@ -24,7 +24,7 @@ export default function PersonalPage() {
         const token = localStorage.getItem("userToken");
         try {
           const response = await fetch(
-            `http://127.0.0.1:8000/calendars/${calendar}/`,
+            `http://1on1-django.fly.dev/calendars/${calendar}/`,
             {
               method: "GET",
               headers: {

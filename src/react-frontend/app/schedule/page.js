@@ -46,7 +46,7 @@ export default function Schedule() {
         const token = localStorage.getItem("userToken");
         try {
           const response = await fetch(
-            `http://127.0.0.1:8000/calendars/${calendarId}/schedules/?page=${pageNum}`,
+            `http://1on1-django.fly.dev/calendars/${calendarId}/schedules/?page=${pageNum}`,
             {
               method: "GET",
               headers: {
@@ -81,7 +81,7 @@ export default function Schedule() {
       const getMembers = async () => {
         const token = localStorage.getItem("userToken");
         const response = await fetch(
-          `http://127.0.0.1:8000/calendars/${calendarId}/members/list/`,
+          `http://1on1-django.fly.dev/calendars/${calendarId}/members/list/`,
           {
             method: "GET",
             headers: {
@@ -199,7 +199,7 @@ export default function Schedule() {
 
   const remindAll = async () => {
     const token = localStorage.getItem("userToken");
-    const url = `http://127.0.0.1:8000/calendars/${calendarId}/remindAll/`;
+    const url = `http://1on1-django.fly.dev/calendars/${calendarId}/remindAll/`;
     const requestBody = {
       pending_only: true,
     };
@@ -230,7 +230,7 @@ export default function Schedule() {
 
   const remindAllAdd = async () => {
     const token = localStorage.getItem("userToken");
-    const url = `http://127.0.0.1:8000/calendars/${calendarId}/remindAdd/`;
+    const url = `http://1on1-django.fly.dev/calendars/${calendarId}/remindAdd/`;
     const requestBody = {
       pending_only: true,
     };
@@ -351,7 +351,7 @@ export default function Schedule() {
   };
 
   const finalizeSchedule = async (token, calendarId, scheduleId) => {
-    const url = `http://127.0.0.1:8000/calendars/${calendarId}/schedules/${scheduleId}/`;
+    const url = `http://1on1-django.fly.dev/calendars/${calendarId}/schedules/${scheduleId}/`;
     try {
       const response = await fetch(url, {
         method: "POST",

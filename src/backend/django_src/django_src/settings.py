@@ -161,4 +161,4 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-ALLOWED_HOSTS = ['.vercel.app', '.now.sh', '.fly.dev']
+ALLOWED_HOSTS = ['.vercel.app', '.now.sh', '.fly.dev', 'localhost']

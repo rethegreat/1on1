@@ -45,7 +45,7 @@ export default function NotifPage() {
     const fetchNotifications = async () => {
       const token = localStorage.getItem("userToken"); 
       try {
-        const response = await fetch("http://127.0.0.1:8000/notifications/list/", {
+        const response = await fetch("http://1on1-django.fly.dev/notifications/list/", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -74,7 +74,7 @@ export default function NotifPage() {
   const readNotif = async () => {
     const token = localStorage.getItem("userToken"); 
     try {
-      const response = await fetch("http://127.0.0.1:8000/notifications/list/", {
+      const response = await fetch("http://1on1-django.fly.dev/notifications/list/", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
