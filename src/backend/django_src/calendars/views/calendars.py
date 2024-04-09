@@ -142,3 +142,39 @@ class CalendarRemind(APIView):
                     pass
 
         return Response({'detail': 'Emails sent successfully'}, status=status.HTTP_200_OK)
+    
+    
+# EndPoint: /calendars/<int:calendar_id>/remindAdd
+class CalendarRemindAdd(APIView):
+    permission_classes = [IsAuthenticated, IsCalendarOwner]
+    
+    def post(self, request, calendar_id):
+        """Remind all members of the calendar to submit their availability"""
+        calendar = get_object_or_404(Calendar, id=calendar_id)
+        self.check_object_permissions(request, calendar)
+
+        # Check additional permission
+        if is_calendar_finalized(calendar):
+            return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
+
+        members = Member.objects.filter(calendar=calendar)
+        owner_name = request.user.first_name
+
+        # If `pending_only` option is set, only remind those who haven't submitted!
+        pending_only = request.data.get('pending_only')
+        if pending_only:
+            members = members.filter(submitted=False)
+        
+        for member in members:
+            member.remind()
+
+            # notif
+            try:
+            # Send signal for notification app
+                user = UserModel.objects.get(email=member.email)
+                link = f"http://localhost:3000/calendars/{member.calendar.id}/availability/{member.member_hash}/"
+                member_submit_reminder.send(sender=calendar.__class__, calendar=calendar, member=user, link=link)
+            except:
+                pass
+
+        return Response({'detail': 'Emails sent successfully'}, status=status.HTTP_200_OK)

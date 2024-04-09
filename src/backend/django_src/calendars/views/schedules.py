@@ -188,7 +188,6 @@ class ScheduleListView(APIView):
         # delete all schedules and events related to this calendar
         # Event.objects.filter()
 
-
         #starttime: member
             mapping = _create_schedules(calendar)
             if not mapping:

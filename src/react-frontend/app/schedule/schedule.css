@@ -14,6 +14,22 @@
     font-size: 64px;
 }
 
+.finalized {
+    padding: 10px;
+    font-size: 24px;
+}
+
+.mapping-error {
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    align-items: center;
+}
+
+.mapping-text {
+    padding-right: 10px;
+}
+
 .time-column, .day-column {
     width: 50px;
     display: flex;
