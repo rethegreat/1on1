@@ -33,7 +33,6 @@ export default function Availability() {
     if (calendar) {
       const fetchAvailability = async () => {
         const token = localStorage.getItem("userToken");
-        console.log(token);
         try {
           const response = await fetch(
             `http://127.0.0.1:8000/calendars/${calendar}/availability/`,

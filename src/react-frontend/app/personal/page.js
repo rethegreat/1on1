@@ -8,9 +8,44 @@ import { useRouter } from "next/navigation";
 export default function PersonalPage() {
   const router = useRouter();
 
+  const [calendar, setCalendar] = useState(0);
 
+  const [title, setTitle] = useState("");
+
+  useEffect(() => {
+    const storedCalendar = localStorage.getItem("currentCalendar");
+    const id = JSON.parse(storedCalendar).id;
+    setCalendar(id);
+  }, []);
   
-  
+  useEffect(() => {
+    if (calendar) {
+      const fetchAvailability = async () => {
+        const token = localStorage.getItem("userToken");
+        try {
+          const response = await fetch(
+            `http://127.0.0.1:8000/calendars/${calendar}/`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Token ${token}`,
+              },
+            }
+          );
+          if (!response.ok) {
+            throw new Error(`Error: ${response.statusText}`);
+          }
+          const data = await response.json();
+          console.log(data);
+          setTitle(data.name);
+        } catch (error) {
+          console.error("Failed to fetch availability:", error);
+        }
+      };
+
+      fetchAvailability();
+    }
+  }, [calendar]);
 
   const availabilityClick = () => {
     console.log("personal");
@@ -58,7 +93,7 @@ export default function PersonalPage() {
           </nav>
         </header>
 
-        <div className="title personal">Personal</div>
+        <div className="title personal">{title}</div>
 
         <div className="calendar-gallery">
           <div className="calendar-card cal1-card" onClick={availabilityClick}>

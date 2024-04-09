@@ -10,7 +10,9 @@ from ..serializers import OwnerTimeSlotSerializer
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
 from ..permissions import is_calendar_finalized, IsCalendarOwner
+
 from ..signals import creator_member_added_to_calendar, creator_all_member_added_to_calendar
+
 
 # Member Availability
 # - Member(not authenticated, but by a unique link) should be able to ...

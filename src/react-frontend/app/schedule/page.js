@@ -2,42 +2,51 @@
 import Head from "next/head";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { addDays, startOfWeek, format, parseISO } from "date-fns";
+import { addDays, startOfWeek, format, parseISO, set } from "date-fns";
 import "./schedule.css";
+import styles from "./schedule.module.css";
 
 export default function Schedule() {
   const router = useRouter();
-
-  const [calendar, setCalendar] = useState(0);
-
+  const [calendarId, setCalendarId] = useState(0);
   const [weekOffset, setWeekOffset] = useState(0);
-
   const [schedule, setSchedule] = useState([]);
+  const [remindMessage, setRemindMessage] = useState("");
+  const [pageNum, setPageNum] = useState(1);
+  const [pageTotal, setPageTotal] = useState(0);
+  const [scheduleId, setScheduleId] = useState(0);
+  const [events, setEvents] = useState([]);
+  const [hoveredSlot, setHoveredSlot] = useState(null);
+  const [isEditClicked, setIsEditClicked] = useState(false);
+  const [isCalendarFinalized, setCalendarFinalized] = useState(false);
+  const [exist, setExist] = useState(false);
 
-  const [input, setInput] = useState([]);
-
-  const [page, setPage] = useState(0);
-
-  const [info, setInfo] = useState("");
-
-  const backClick = () => {
-    router.push("/personal");
-  };
-
+  // 0. Set the current calendar ID + Set up blnak schedule
   useEffect(() => {
     const storedCalendar = localStorage.getItem("currentCalendar");
     const id = JSON.parse(storedCalendar).id;
-    setCalendar(id);
+    setCalendarId(id);
+    // if localStorage has defined(not undefined) currentPageNum, set pageNum to the value
+    if (localStorage.getItem("currentPageNum")) {
+      // try parsing
+      const parsedPageNum = parseInt(localStorage.getItem("currentPageNum"));
+      // if the parsing is successful, set pageNum to the value
+      if (!isNaN(parsedPageNum)) {
+        setPageNum(parsedPageNum);
+        localStorage.removeItem("currentPageNum");
+      }
+    }
     setSchedule(generateScheduleWithDates());
   }, []);
 
+  // 1. Parse the response data
   useEffect(() => {
-    if (calendar) {
-      const fetchAvailability = async () => {
+    if (calendarId) {
+      const fetchSchedule = async () => {
         const token = localStorage.getItem("userToken");
         try {
           const response = await fetch(
-            `http://127.0.0.1:8000/calendars/${calendar}/schedules/?page=${page}/`,
+            `http://127.0.0.1:8000/calendars/${calendarId}/schedules/?page=${pageNum}`,
             {
               method: "GET",
               headers: {
@@ -46,20 +55,33 @@ export default function Schedule() {
             }
           );
           if (!response.ok) {
-            throw new Error(`Error: ${response.statusText}`);
+            const errorData = await response.json();
+            throw new Error(
+              `Error: ${response.statusText} - ${errorData.error}`
+            );
           }
           const data = await response.json();
           console.log(data);
-          setInput(data.results);
+          setExist(true);
+          setPageTotal(data.count);
+          setCalendarFinalized(data.finalized);
+          if (data.count == 0) {
+            alert(
+              "There is no schedule possible yet!\nPlease wait for members to submit their availability"
+            );
+          } else {
+            setScheduleId(data.results[0].id);
+            setEvents(data.results[0].events);
+          }
         } catch (error) {
-          console.error("Failed to fetch availability:", error);
+          console.error(error);
         }
       };
 
       const getMembers = async () => {
         const token = localStorage.getItem("userToken");
         const response = await fetch(
-          `http://127.0.0.1:8000/calendars/${calendar}/members/list/`,
+          `http://127.0.0.1:8000/calendars/${calendarId}/members/list/`,
           {
             method: "GET",
             headers: {
@@ -74,17 +96,17 @@ export default function Schedule() {
         }
 
         var data = await response.json();
-        if (data[0].num_pending == 0) {
-          setInfo("");
-        } else {
-          setInfo(data[0].num_pending  + " users have not submitted their avalibility yet")
-        }
+        setRemindMessage(
+          data[0].num_pending +
+            " users have not submitted their avalibility yet"
+        );
       };
 
-      fetchAvailability();
+      setSchedule(generateScheduleWithDates());
+      fetchSchedule();
       getMembers();
     }
-  }, [calendar]);
+  }, [calendarId, pageNum]);
 
   const getStartOfWeekFromDate = (dateString) => {
     const today = new Date();
@@ -122,20 +144,24 @@ export default function Schedule() {
             slots: [],
           };
         }
-        const name = obj["member_name"];
+        const member_id = obj["member_id"];
+        const member_name = obj["member_name"];
+        const member_email = obj["member_email"];
 
         grouped[key].slots.push({
           time: time,
-          color: "#DD7800",
-          name: name,
+          color: "#DD7800", // "#CCDD00", (green)
+          name: member_name,
+          member_id: member_id,
+          member_email: member_email,
         });
       });
 
       return Object.values(grouped);
     };
 
-    if (input[page] != null) {
-      const newScheduleParts = parseDateTime(input[page].events);
+    if (events.length) {
+      const newScheduleParts = parseDateTime(events);
       setSchedule((prevSchedule) => {
         const existingDates = prevSchedule.map((sch) => sch.date);
         const filteredNewParts = newScheduleParts.filter((part) =>
@@ -152,15 +178,28 @@ export default function Schedule() {
           }
           return sch;
         });
-        console.log(updatedSchedule);
         return updatedSchedule;
       });
     }
-  }, [input, page]);
+  }, [events]);
+
+  const getSlotMemberName = (slot) => {
+    if (slot) {
+      return slot.name;
+    }
+    return "";
+  };
+
+  const getSlotMemberEmail = (slot) => {
+    if (slot) {
+      return slot.member_email;
+    }
+    return "";
+  };
 
   const remindAll = async () => {
     const token = localStorage.getItem("userToken");
-    const url = `http://127.0.0.1:8000/calendars/${calendar}/remindAll/`; // Replace https://example.com/ with your actual domain
+    const url = `http://127.0.0.1:8000/calendars/${calendarId}/remindAll/`;
     const requestBody = {
       pending_only: true,
     };
@@ -181,7 +220,38 @@ export default function Schedule() {
 
       const data = await response.json();
       console.log("Success:", data);
-      setInfo("reminder sent");
+      setRemindMessage("reminder sent");
+      return data;
+    } catch (error) {
+      console.error("Error:", error);
+      throw error;
+    }
+  };
+
+  const remindAllAdd = async () => {
+    const token = localStorage.getItem("userToken");
+    const url = `http://127.0.0.1:8000/calendars/${calendarId}/remindAdd/`;
+    const requestBody = {
+      pending_only: true,
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Success:", data);
+      setRemindMessage("reminder sent");
       return data;
     } catch (error) {
       console.error("Error:", error);
@@ -209,6 +279,104 @@ export default function Schedule() {
     "05:00",
   ];
 
+  // Please discard the following lines if not needed!
+  // getTimes returns an array of times between the start and end times(**inclusive**) with the given interval
+  // const meeting_duration = JSON.parse(localStorage.getItem("currentCalendar")).meeting_duration;
+  // const times = getTimes("09:00", "17:00", meeting_duration);
+
+  const backClick = () => {
+    router.push("/personal");
+  };
+
+  const goToPreviousPage = () => {
+    if (pageNum > 1) {
+      setPageNum(pageNum - 1);
+    } else {
+      alert("You are already on the first page");
+    }
+  };
+
+  const goToNextPage = () => {
+    if (pageNum < pageTotal) {
+      setPageNum(pageNum + 1);
+    } else {
+      alert("You are already on the last page");
+    }
+  };
+
+  // ========================================================================================================
+  // =============================================== EDIT =================================================
+  const handleAction = async (action) => {
+    // After handling action(which may route to different pages), we should come back to where we are now
+    // Save the current URL
+    localStorage.setItem("scheduleId", scheduleId);
+    localStorage.setItem("currentPageNum", pageNum);
+
+    switch (action) {
+      case "add":
+        // Go to the page("/schedule/edit/add/memberSelect/page.js"- default export)
+        // where the user can select a member for this new meeting
+        // This page will ask the user to select a member then lead to another page for the time, and then it will call addMeeting at the end
+        router.push("/schedule/edit/add/memberSelect");
+        break;
+      case "delete":
+        router.push("/schedule/edit/delete");
+        break;
+      case "move":
+        router.push("/schedule/edit/move");
+        break;
+      default:
+        console.error("Invalid action");
+    }
+  };
+
+  // ========================================================================================================
+
+  // ========================================================================================================
+  // ============================================== FINALIZE ================================================
+
+  const finalizeClick = () => {
+    if (
+      confirm(
+        "Are you sure you want to finalize the calendar with this schedule?"
+      )
+    ) {
+      setRemindMessage("Finalized Schedule");
+      finalizeSchedule(
+        localStorage.getItem("userToken"),
+        calendarId,
+        scheduleId
+      );
+    }
+  };
+
+  const finalizeSchedule = async (token, calendarId, scheduleId) => {
+    const url = `http://127.0.0.1:8000/calendars/${calendarId}/schedules/${scheduleId}/`;
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        // Whatever the key is in the data, get its value and alert it
+        alert(Object.values(data)[0]);
+      } else {
+        const message = data.detail;
+        alert(message);
+        localStorage.setItem("currentPageNum", 1);
+        router.push("/schedule");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // ========================================================================================================
+
   return (
     <>
       <Head>
@@ -233,16 +401,26 @@ export default function Schedule() {
 
           <div className="header pink">Schedule</div>
 
-          <div className="missing">
-            { info && (
-              <> 
-                <div className="missing-text">{info}</div>
-                <div className="remind" onClick={remindAll}>
-                  remind
-                </div>
-              </>
-            )}
-          </div>
+          {!exist ? (
+            <div  className="mapping-error">
+              <div className="mapping-text">
+                No mapping possible please add more avalibilities and remind
+                users to update their avalibilities
+              </div>
+              <div className="remind" onClick={remindAllAdd}>
+                remind
+              </div>
+            </div>
+          ) : !isCalendarFinalized ? (
+            <div className="missing">
+              <div className="missing-text">{remindMessage}</div>
+              <div className="remind" onClick={remindAll}>
+                remind
+              </div>
+            </div>
+          ) : (
+            <div className="finalized">Finalized Schedule</div>
+          )}
 
           <div className="calendar">
             <div className="avilability-content">
@@ -267,9 +445,27 @@ export default function Schedule() {
                           className={`time-slot`}
                           style={{
                             backgroundColor: slot?.color || "transparent",
+                            color: "white",
+                            fontSize: "15px",
                           }}
+                          onMouseEnter={() => setHoveredSlot(slot)}
+                          onMouseLeave={() => setHoveredSlot(null)}
                         >
-                          {slot ? slot.name : ""}
+                          {/* if hovered display both name and email, otherwise just name */}
+                          {hoveredSlot === slot ? (
+                            <div
+                              style={{ textAlign: "center", fontSize: "14px" }}
+                            >
+                              <div>{getSlotMemberName(slot)}</div>
+                              <div
+                                style={{ color: "lightgray", fontSize: "13px" }}
+                              >
+                                {getSlotMemberEmail(slot)}
+                              </div>
+                            </div>
+                          ) : (
+                            <div>{getSlotMemberName(slot)}</div>
+                          )}
                         </div>
                       );
                     })}
@@ -278,20 +474,70 @@ export default function Schedule() {
               ))}
             </div>
           </div>
-          <div className="bottom">
-            <div style={{ width: "150px" }}></div>
-            <div className="page">
-              <div className="arrow">&lt;</div>
-              <div>1/3</div>
-              <div className="arrow">&gt;</div>
-            </div>
-            <div className="bottom-button">
-              <div className="cancel" onClick={backClick}>
-                cancel
+
+          {!isCalendarFinalized && (
+            <div className={`${styles["bottom"]}`}>
+              {/* ================================== EDIT-BUTTON ============================== */}
+              {isEditClicked ? (
+                <div className={`${styles["edit-box"]}`}>
+                  <div
+                    className={`${styles["edit-button"]} + " " + ${styles["clicked-button"]}`}
+                    onClick={() => setIsEditClicked(!isEditClicked)}
+                  >
+                    edit
+                  </div>
+
+                  <div className={`${styles["action-button-box"]}`}>
+                    <div
+                      className={`${styles["add-event-button"]}`}
+                      onClick={() => handleAction("add")}
+                    >
+                      Add Meeting
+                    </div>
+                    <div
+                      className={`${styles["move-event-button"]}`}
+                      onClick={() => handleAction("move")}
+                    >
+                      Move Meeting
+                    </div>
+                    <div
+                      className={`${styles["delete-event-button"]}`}
+                      onClick={() => handleAction("delete")}
+                    >
+                      Delete Meeting
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  className={`${styles["edit-button"]}`}
+                  onClick={() => setIsEditClicked(!isEditClicked)}
+                >
+                  edit
+                </div>
+              )}
+
+              {/* ================================== ARROWS ============================== */}
+
+              <div className={`${styles.page}`}>
+                <div className={`${styles.arrow}`} onClick={goToPreviousPage}>
+                  &lt;
+                </div>
+                <div>
+                  {pageNum}/{pageTotal}
+                </div>
+                <div className={`${styles.arrow}`} onClick={goToNextPage}>
+                  &gt;
+                </div>
               </div>
-              <div className="submit">submit</div>
+
+              {/* ================================== FINALIZE-BUTTON ============================== */}
+              <div className={`${styles.submit}`} onClick={finalizeClick}>
+                finalize
+              </div>
+              {/* ================================================================ */}
             </div>
-          </div>
+          )}
         </div>
       </div>
     </>
