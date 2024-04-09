@@ -357,7 +357,7 @@ export default function Schedule() {
             &lt; back
           </div>
 
-          <div className="header pink">schedule</div>
+          <div className="header pink">Schedule</div>
 
           <div className="missing">
             <div className="missing-text">{remindMessage}</div>

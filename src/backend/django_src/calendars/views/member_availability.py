@@ -11,6 +11,9 @@ from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
 from ..permissions import is_calendar_finalized, IsCalendarOwner
 
+from ..signals import creator_member_added_to_calendar, creator_all_member_added_to_calendar
+
+
 # Member Availability
 # - Member(not authenticated, but by a unique link) should be able to ...
 #       - view their availability
@@ -128,7 +131,15 @@ class MemberAvailabilityView(APIView):
         member.submitted = True
         member.save()
 
-        #check if schedule exists if it does delete it so it can be regenerated
+        # Send signal for notif
+        creator_member_added_to_calendar.send(sender=calendar.__class__, calendar=calendar, member=member)
+
+        # check if all members have submitted for notif signal
+        all_submitted = not Member.objects.filter(calendar=calendar, submitted=False).exists()
+        if all_submitted:
+            creator_all_member_added_to_calendar.send(sender=calendar.__class__, calendar=calendar)
+
+        # check if schedule exists if it does delete it so it can be regenerated
         schedule = Schedule.objects.filter(calendar_id=calendar_id)
         if schedule:
             schedule.delete()
@@ -146,6 +157,7 @@ class MemberAvailabilityView(APIView):
         
 
     
+
 
 
     def patch(self, request, member_id, calendar_id):
@@ -169,7 +181,10 @@ class MemberAvailabilityView(APIView):
             member.submitted = False
             member.save()
 
-        #check if schedule exists if it does delete it so it can be regenerated
+            # Send signal for notif
+            creator_member_added_to_calendar(calendar=calendar, member=member)
+
+        # check if schedule exists if it does delete it so it can be regenerated
         schedule = Schedule.objects.filter(calendar_id=calendar_id)
         if schedule:
             schedule.delete()

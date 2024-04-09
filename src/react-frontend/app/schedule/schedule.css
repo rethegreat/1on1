@@ -254,8 +254,8 @@
 }
 
 .cancel:hover {
-    background-color: black;
-    color: white;
+    background-color: #f2f2f2;
+    /* color: white; */;
     cursor: pointer;
 }
 

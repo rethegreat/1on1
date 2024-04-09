@@ -11,6 +11,20 @@ body {
     letter-spacing: .5px;
 }
 
+.back {
+    font-size: large;
+    /* top: 40px;
+    left: 60px;
+    position: fixed; */
+    margin-bottom: 30px;
+    width: 60px;
+}
+
+.back:hover {
+    color: rgb(202, 202, 202);
+    cursor: pointer;
+}
+
 header {
     color: black;
     display: flex;
@@ -62,130 +76,62 @@ header {
     padding-left: 50px;
 }
 
-.personal {
-    /* border: 0.5px solid black; */
-    background-color: #DD00AD;
-}
-
-.calendar-gallery {
-    margin-top: 20px;
-    overflow-x: auto;
-    white-space: nowrap;
-}
-
-.calendar-gallery::-webkit-scrollbar {
-    display: none;
-}
-
-.calendar-card {
-    display: inline-block;
-    width: 360px;
-    height: 455px;
+.notification-card-read {
+    display: flex;
+    flex-direction: column;
+    /* justify-content: space-between; */
+    /* align-items: center; */
+    height: 50px;
     border-radius: 20px;
     border: 1px solid black;
     margin-bottom: 20px;
-    margin-right: 10px;
-    cursor: pointer;
-    position: relative;
+    /* position: relative; */
     background-color: white;
     padding: 2rem;
+    flex-grow: 1;
 }
 
-.calendar-number {
-    font-size: 20px;
-    width: fit-content;
-    border-radius: 15px;
-    border: 1px solid white;
-    padding: 5px 15px;
-    color: white;
+.notification-card-unread {
+    display: flex;
+    flex-direction: column;
+    /* justify-content: ; */
+    /* align-items: center; */
+    height: 50px;
+    border-radius: 20px;
+    border: 1px solid black;
+    margin-bottom: 20px;
+    /* position: relative; */
+    background-color: lightgrey;
+    padding: 2rem;
+    flex-grow: 1;
 }
 
-/* Colour per cal */
-    .cal1 {
-        background-color: red;
-    }
+.notification-gallery {
+    margin-top: 20px;
+    display: flex;
+    position: relative;
+    /* overflow-x: auto; */
+    /* white-space: nowrap; */
 
-    .cal2 {
-        background-color: #DD00AD;
-    }
-
-    .cal3 {
-        background-color: #CCDD00;
-    }
-
-    .pending {
-        border: 1px solid rgb(169, 169, 169);
-    }
-
-.calendar-title {
-    padding-top: 1rem;
-    padding-left: 0.4rem;
-    font-size: 48px;
-
-    white-space: pre-wrap;
-    max-width: 100px;
-    /* font-family: 'Verdana'; */
+    flex-direction: column;
 }
 
-
-.redirect-arrow {
-    position: absolute;
-    bottom: 50px;
-    right: 30px;
-    width: 100px;
-    height: 100px;
+.notif-text {
+    margin-top: 0px;
+    margin-bottom: 10px;
 }
 
-.create-calendar, .pending {
-    display: inline-block;
-    vertical-align: top;
-    text-align: center;
-    justify-content: center;
+.notif-link {
+    color: blue;
+    text-decoration: none;
+    font-size: medium;
 }
 
-.pending .calendar-title {
-    color: rgb(169, 169, 169);
+.notif-time {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    font-size: small;
 }
-
-.pending.calendar-card:hover {
-    background-color: white;
-}
-
-.add-icon { 
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    max-width: 250px;
-}
-
-
-/* On hover */
-    .calendar-card:hover {
-        /* color: white; */
-        background-color: blue;
-    }
-
-    /* Colour per cal */
-    .cal1-card:hover {
-        background-color: #f2f2f2;
-    }
-
-    .cal2-card:hover {
-        background-color: #f2f2f2;
-    }
-
-    .cal3-card:hover {
-        background-color: #f2f2f2;
-    }
-
-    /* .calendar-card:hover .redirect-arrow {
-        filter: invert(1);
-    }
-    .create-calendar:hover .add-icon {
-        filter: invert(1);
-    } */
-
 
 @media (max-width: 900px) {
     body {

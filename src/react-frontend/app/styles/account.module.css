@@ -68,6 +68,10 @@
     border: 1px solid white;
 }
 
+.blueButton:hover {
+    background-color: #000159;
+}
+
 
 .formInput {
     width: 500px;

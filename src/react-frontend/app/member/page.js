@@ -189,7 +189,7 @@ export default function MemberPage() {
         </a>
 
         <div className={styles.heading}>
-          <h1 className={styles.title}>members</h1>
+          <h1 className={styles.title}>Members</h1>
         </div>
 
         {members.map((member, index) => (
@@ -210,17 +210,18 @@ export default function MemberPage() {
             </div>
 
             <div className={styles.buttons}>
-              <div
-                className={styles.remind}
-                onClick={() => handleRemindMember(member.id)}
-              >
-                <p>remind</p>
-              </div>
+              { !member.submitted &&
+                <div
+                  className={styles.remind}
+                  onClick={() => handleRemindMember(member.id)}>
+                  <p className={styles.member_p}>remind</p>
+                </div>
+              }
               <div
                 className={styles.delete}
                 onClick={() => handleDeleteMember(member.id)}
               >
-                <p>remove</p>
+                <p className={styles.member_p}>remove</p>
               </div>
             </div>
           </div>
@@ -260,19 +261,10 @@ export default function MemberPage() {
                 <p className={errorStyles.error}>{emailError}</p>
               </div>
             </form>
-          </div>
-          <div
-            className={styles.plus}
-            id="plus-button"
-            onClick={handleAddMember}
-          >
-            <Image
-              className={styles.image}
-              width={150}
-              height={150}
-              src="/arrow.svg"
-              alt=""
-            />
+
+            <div className={styles.addmember} onClick={handleAddMember}>
+              <p className={styles.member_p}>add</p>
+            </div>
           </div>
         </div>
 

@@ -10,6 +10,10 @@ from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from django.utils import timezone
+from ..signals import member_submit_reminder, member_cal_finalized
+from django.contrib.auth import get_user_model
+
+UserModel = get_user_model()
 
 # Calendars
 # - User should be able to ...
@@ -29,7 +33,7 @@ class CalendarList(APIView):
         for calendar in calendars:
             is_calendar_finalized(calendar)
         return Response(serializer.data)
-    
+
     def post(self, request):
         """Create a new calendar"""
         data = request.data.copy()
@@ -43,7 +47,8 @@ class CalendarList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
 # EndPoint: /calendars/<int:calendar_id>/
 class CalendarDetail(APIView):
     permission_classes = [IsAuthenticated, IsCalendarOwner]
@@ -64,9 +69,12 @@ class CalendarDetail(APIView):
 
         # Manually finalized calendar is not modifiable
         if is_calendar_finalized_manually(calendar):
+            # signal for finalized calendar
+            member_cal_finalized.send(sender=calendar.__class__, calendar=calendar)
+
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
-        # If automaitcally finalized, you can modify the deadline to later date and finalized status
+        # If automatically finalized, you can modify the deadline to later date and finalized status
         if is_calendar_finalized(calendar):
             if 'deadline' in request.data:
                 calendar.deadline = request.data['deadline']
@@ -78,6 +86,9 @@ class CalendarDetail(APIView):
                     calendar.finalized = False
                     calendar.save()
                 else:
+                    # signal for finalized calendar
+                    member_cal_finalized.send(sender=calendar.__class__, calendar=calendar)
+
                     return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
             else:
                 return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
@@ -94,7 +105,8 @@ class CalendarDetail(APIView):
 
         calendar.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
+
 # EndPoint: /calendars/<int:calendar_id>/remindAll
 class CalendarRemind(APIView):
     permission_classes = [IsAuthenticated, IsCalendarOwner]
@@ -119,4 +131,14 @@ class CalendarRemind(APIView):
         for member in members:
             if not member.submitted:
                 member.remind()
+
+                # notif
+                try:
+                # Send signal for notification app
+                    user = UserModel.objects.get(email=member.email)
+                    link = f"http://localhost:3000/calendars/{member.calendar.id}/availability/{member.member_hash}/"
+                    member_submit_reminder.send(sender=calendar.__class__, calendar=calendar, member=user, link=link)
+                except:
+                    pass
+
         return Response({'detail': 'Emails sent successfully'}, status=status.HTTP_200_OK)

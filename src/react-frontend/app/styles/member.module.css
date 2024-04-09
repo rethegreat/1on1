@@ -19,7 +19,7 @@
     font-size: large;
     /* padding-left: 5rem; */
     /* padding-top: 2rem; */
-    margin-bottom: 10px;
+    margin-bottom: 30px;
     width: 60px;
     white-space: nowrap;
 }
@@ -47,8 +47,9 @@
 }
 
 .font{
-    /* margin-top: 20px; */
-    font-size: 30px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    /* font-size: 30px; */
 }
 
 #font{
@@ -148,8 +149,8 @@
     justify-content: center;
     align-items: center;
     height: 50px;
-    border: 2px solid #dd7700;
-    padding: 4px 0.5rem;
+    border: 1px solid #dd7700;
+    padding: 0px 0.5rem;
     border-radius: 20px;
     background-color: #dd7700;
     color: white;
@@ -157,7 +158,7 @@
 
 .remind:hover{
     background-color: #c46900;
-    border: 2px solid #c46900;
+    border: 1px solid #c46900;
     cursor: pointer;
 }
 
@@ -166,10 +167,30 @@
     justify-content: center;
     align-items: center;
     border: 1px solid black;
-    padding: 4px 0.5rem;
+    padding: 0px 0.5rem;
     margin-left: 0.5rem;
     height: 50px;
     border-radius: 20px;
+}
+
+.member_p {
+    margin: 0;
+}
+
+.addmember {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid black;
+    /* height: 50px; */
+    padding: .5rem 0;
+    width: 10%;
+    border-radius: 20px;
+}
+
+.addmember:hover {
+    background-color: #f2f2f2;
+    cursor: pointer;
 }
 
 .plus:hover{
@@ -186,8 +207,8 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    padding: 2rem 18px 18px 2rem;
-    margin: 1rem 0rem 0rem 0rem;
+    padding: 2rem;
+    margin-top: 20px;
     border: 1px solid black;
     border-radius: 30px;
 }
@@ -198,8 +219,9 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 1rem 0rem 18px 2rem;
-    margin: 1rem 1rem 1rem 0rem;
+    padding: 2rem;
+    margin-top: 20px;
+    /* margin: 1rem 1rem 1rem 0rem; */
     border: 1px solid black;
     border-radius: 30px;
 }

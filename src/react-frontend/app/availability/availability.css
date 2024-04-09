@@ -114,6 +114,11 @@
     border-radius: 10px;
 }
 
+.emptyborder {
+    border: 2px solid white; /* Adjust color and size as needed */
+    border-radius: 10px;
+}
+
 .more {
     background-color: black;
     border-radius: 50px;
@@ -252,8 +257,8 @@
 }
 
 .cancel:hover {
-    background-color: black;
-    color: white;
+    background-color: #f2f2f2;
+    /* color: white; */
     cursor: pointer;
 }
 

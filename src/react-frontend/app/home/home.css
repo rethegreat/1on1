@@ -14,7 +14,7 @@ body {
 header {
     color: black;
     display: flex;
-    justify-content: space-between;
+    /* justify-content: space-between; */
     align-items: center;
 
     margin-left: 10px;
@@ -38,6 +38,7 @@ header {
         text-decoration: none;
         color: black;
         transition: color 0.3s;
+        cursor: pointer;
     }
 
     .nav-link:hover {
@@ -47,7 +48,26 @@ header {
     .active {
         text-decoration: underline;
     }
-
+    
+    .notification-button {
+        /* flex: 0 0 auto;
+        width: 360px;
+        height: 455px; */
+        border-radius: 20px;
+        border: 1px solid black;
+        margin-left: 10px;
+        margin-right: auto;
+        /* margin-bottom: 20px;
+        margin-right: 10px; */
+        cursor: pointer;
+        /* position: relative; */
+        background-color: rgb(255, 255, 0);
+        padding: 10px;
+    }
+    
+    .notification-button:hover {
+        background-color: rgb(229, 230, 0);
+    }
 
 .title {
     border-radius: 30px;
@@ -165,8 +185,8 @@ header {
 
 /* On hover */
     .calendar-card:hover {
-        color: white;
-        background-color: blue;
+        /* color: white; */
+        background-color: #f2f2f2;
     }
 
     /* Colour per cal */
@@ -182,12 +202,12 @@ header {
         background-color: #CCDD00
     }
 
-    .calendar-card:hover .redirect-arrow {
+    /* .calendar-card:hover .redirect-arrow {
         filter: invert(1);
     }
     .create-calendar:hover .add-icon {
         filter: invert(1);
-    }
+    } */
 
 
 @media (max-width: 900px) {

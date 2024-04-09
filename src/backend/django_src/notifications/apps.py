@@ -1,9 +1,9 @@
 from django.apps import AppConfig
 
 
-class CalendarsConfig(AppConfig):
+class NotificationsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'calendars'
+    name = 'notifications'
 
     def ready(self):
         from . import signals
