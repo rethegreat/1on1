@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { addDays, startOfWeek, format, parseISO, set } from "date-fns";
 import "./schedule.css";
+import styles from "./schedule.module.css";
+
 
 export default function Schedule() {
   const router = useRouter();
@@ -413,48 +415,43 @@ export default function Schedule() {
 
 
           { !isCalendarFinalized && (
-          <div className="bottom">
+          <div className={`${styles["bottom"]}`}>
             {/* ================================== EDIT-BUTTON ============================== */}
             {isEditClicked ?
             (
-              <div className="edit-box">
+              <div className={`${styles["edit-box"]}`}>
 
-                <div className="edit-button clicked-button" onClick={() => setIsEditClicked(!isEditClicked)}>
+                <div className={`${styles["edit-button"]} + " " + ${styles["clicked-button"]}`} onClick={() => setIsEditClicked(!isEditClicked)}>
                   edit
                 </div>
 
-                <div className="action-button-box">
-                  <div className="add-event-button" onClick={() => handleAction("add")}>Add Meeting</div>
-                  <div className="move-event-button" onClick={() => handleAction("move")}>Move Meeting</div>
-                  <div className="delete-event-button" onClick={() => handleAction("delete")}>Delete Meeting</div>
+                <div className={`${styles["action-button-box"]}`}>
+                  <div className={`${styles["add-event-button"]}`} onClick={() => handleAction("add")}>Add Meeting</div>
+                  <div className={`${styles["move-event-button"]}`} onClick={() => handleAction("move")}>Move Meeting</div>
+                  <div className={`${styles["delete-event-button"]}`} onClick={() => handleAction("delete")}>Delete Meeting</div>
                 </div>
 
               </div>
             )
             :
             (
-              <div className="edit-button" onClick={() => setIsEditClicked(!isEditClicked)}>
+              <div className={`${styles["edit-button"]}`} onClick={() => setIsEditClicked(!isEditClicked)}>
                   edit
               </div>
             )}
 
             {/* ================================== ARROWS ============================== */}
 
-            
-            <div style={{ width: "150px" }}></div>
-            <div className="page">
-              <div className="arrow" onClick={goToPreviousPage}>&lt;</div>
+            <div className={`${styles.page}`}>
+              <div className={`${styles.arrow}`} onClick={goToPreviousPage}>&lt;</div>
               <div>{pageNum}/{pageTotal}</div>
-              <div className="arrow" onClick={goToNextPage}>&gt;</div>
+              <div className={`${styles.arrow}`} onClick={goToNextPage}>&gt;</div>
             </div>
 
             {/* ================================== FINALIZE-BUTTON ============================== */}
-            <div className="bottom-button">
-              <div className="submit" onClick={finalizeClick}>
-                finalize
-              </div>
+            <div className={`${styles.submit}`} onClick={finalizeClick}>
+              finalize
             </div>
-
           {/* ================================================================ */}
           </div>
           )}
