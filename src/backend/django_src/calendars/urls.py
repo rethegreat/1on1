@@ -14,6 +14,7 @@ urlpatterns = [
     path('<int:calendar_id>/availability/', owner_availability.OwnerAvailabilityView.as_view(), name='owner-availability'),
     # path('<int:calendar_id>/members/<int:member_id>/availability/', member_availability.MemberAvailabilityView.as_view(), name='member-availability'),
     path('<calendar_id>/availability/<str:hash>/', member_availability.MemberAvailabilityView.as_view(), name='member_availability'),
+    path('<int:calendar_id>/members/<int:member_id>/availability/', member_availability.MemberAvailabilityByIDView.as_view(), name='member-availability-by-id'),
 
     path('<int:calendar_id>/schedules/', schedules.ScheduleListView.as_view(), name='schedule-list'),
     path('<int:calendar_id>/schedules/<int:schedule_id>/', schedules.ScheduleDetailView.as_view(), name='schedule-detail'),

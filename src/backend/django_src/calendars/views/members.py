@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from accounts.models import Contact
+from ..signals import member_added_to_calendar
 
 # Members
 # - User should be able to ...
@@ -60,6 +61,10 @@ class MemberListView(APIView):
         if serializer.is_valid():
             new_member = serializer.save(calendar=calendar)
             new_member.invite()
+
+            # Send signal for notification app
+            member_added_to_calendar.send(calendar=calendar, member=new_member)
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -121,6 +126,10 @@ class MemberSelectionView(APIView):
         if serializer.is_valid():
             new_member = serializer.save(calendar=calendar)
             new_member.invite()
+
+            # Send signal for notification app
+            member_added_to_calendar.send(calendar=calendar, member=new_member)
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 

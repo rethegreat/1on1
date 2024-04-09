@@ -9,7 +9,8 @@ from ..models.TimeSlot import OwnerTimeSlot, MemberTimeSlot
 from ..serializers import OwnerTimeSlotSerializer
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
-from ..permissions import is_calendar_finalized
+from ..permissions import is_calendar_finalized, IsCalendarOwner
+from ..signals import creator_member_added_to_calendar, creator_all_member_added_to_calendar
 
 # Member Availability
 # - Member(not authenticated, but by a unique link) should be able to ...
@@ -19,7 +20,7 @@ from ..permissions import is_calendar_finalized
 
 # A unique link provided by the notification email will be used to access the member's availability
 # The provided link will redirect to this page, where the member can view, edit, and submit their availability
-# EndPoint: /calendars/<calendar-id>/members/<member_id>/availability
+# EndPoint: /calendars/<calendar_id>/availability/<str:hash>/
 class MemberAvailabilityView(APIView):
     
     def get_member_by_hash(self, hash, calendar_id):
@@ -55,14 +56,16 @@ class MemberAvailabilityView(APIView):
             'previously_submitted': [
                 {
                     'id': slot.id,
-                    'start_time': slot.time_slot.start_time
+                    'start_time': slot.time_slot.start_time,
+                    'preference': slot.preference
                 }
                 for slot in previously_submitted
             ],
             'possible_slots': [
                 {
                     'id': slot.id,
-                    'start_time': slot.start_time
+                    'start_time': slot.start_time,
+                    "owner's preference": slot.preference
                 }
                 for slot in possible_slots
             ]
@@ -126,10 +129,18 @@ class MemberAvailabilityView(APIView):
         member.submitted = True
         member.save()
 
-        #check if schedule exists if it does delete it so it can be regenerated
-        schedule = Schedule.objects.filter(calendar_id=calendar_id)
-        if schedule:
-            schedule.delete()
+            # Send signal for notif
+            creator_member_added_to_calendar(calendar=calendar, member=member)
+
+            # check if all members have submitted for notif signal
+            all_submitted = not Member.objects.filter(calendar=calendar, submitted=False).exists()
+            if all_submitted:
+                creator_all_member_added_to_calendar(calendar=calendar)
+
+            # check if schedule exists if it does delete it so it can be regenerated
+            schedule = Schedule.objects.filter(calendar_id=calendar_id)
+            if schedule:
+                schedule.delete()
 
         # Return all the newly created MemberTimeSlots
         result = []
@@ -144,6 +155,7 @@ class MemberAvailabilityView(APIView):
         
 
     
+
 
 
     def patch(self, request, member_id, calendar_id):
@@ -167,9 +179,56 @@ class MemberAvailabilityView(APIView):
             member.submitted = False
             member.save()
 
-        #check if schedule exists if it does delete it so it can be regenerated
+            # Send signal for notif
+            creator_member_added_to_calendar(calendar=calendar, member=member)
+
+        # check if schedule exists if it does delete it so it can be regenerated
         schedule = Schedule.objects.filter(calendar_id=calendar_id)
         if schedule:
             schedule.delete()
             
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+# A view for the owner to view the availability of a specific member
+# ENDPOINT: calendars/<int:calendar_id>/members/<int:member_id>/availability/
+class MemberAvailabilityByIDView(APIView):
+
+    permission_classes = [IsAuthenticated, IsCalendarOwner]
+    
+    # Get all of this member's availability(Get all the non-busy time slots this member submitted)
+    def get(self, request, calendar_id, member_id):        # Validate and retrieve the member based on the ID
+        calendar = get_object_or_404(Calendar, id=calendar_id)
+        self.check_object_permissions(request, calendar)
+        is_calendar_finalized(calendar) # Update the calendar's finalized status
+        
+        try:
+            member = Member.objects.get(id=member_id, calendar_id=calendar_id)
+        except Member.DoesNotExist:
+            return Response("Member not found in the calendar", status=status.HTTP_404_NOT_FOUND)
+
+        # Get all the non-busy time slots this member submitted
+        previously_submitted = MemberTimeSlot.objects.filter(member=member)
+
+        # Serialize the data
+        # Manually serialize the data
+        data = {
+
+            'calendar_status': calendar.finalized,
+
+            'member': {
+                'id': member.id,
+                'name': member.name,
+                'email': member.email,
+            },
+            'previously_submitted': [
+                {
+                    'id': slot.id,
+                    'start_time': slot.time_slot.start_time,
+                    'preference': slot.preference
+                }
+                for slot in previously_submitted
+            ]
+        }
+
+        return Response(data, status=status.HTTP_200_OK)

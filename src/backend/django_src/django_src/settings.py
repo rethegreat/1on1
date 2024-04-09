@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'accounts',
     'rest_framework.authtoken',
+    'notifications.apps.NotificationsConfig'
 ]
 
 REST_FRAMEWORK = {
