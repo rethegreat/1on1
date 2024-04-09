@@ -14,7 +14,7 @@ export default function HomePage() {
     const fetchCalendars = async () => {
       const token = localStorage.getItem("userToken"); 
       try {
-        const response = await fetch("http://1on1-django.fly.dev/calendars/list/", {
+        const response = await fetch("https://1on1-django.fly.dev//calendars/list/", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -47,7 +47,7 @@ export default function HomePage() {
       return;
     }
 
-    fetch("http://1on1-django.fly.dev/accounts/api/logout/", {
+    fetch("https://1on1-django.fly.dev//accounts/api/logout/", {
       method: "POST",
       headers: {
         Authorization: `Token ${token}`,

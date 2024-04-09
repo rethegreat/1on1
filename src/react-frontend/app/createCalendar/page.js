@@ -40,7 +40,7 @@ export default function CreateCalendar() {
     // Here you can handle the form submission, e.g., by sending data to an API
     const token = localStorage.getItem("userToken");
     try {
-      const response = await fetch("http://1on1-django.fly.dev/calendars/list/", {
+      const response = await fetch("https://1on1-django.fly.dev//calendars/list/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

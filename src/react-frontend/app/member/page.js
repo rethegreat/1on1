@@ -44,7 +44,7 @@ export default function MemberPage() {
       const getMembers = async () => {
         const token = localStorage.getItem("userToken");
         const response = await fetch(
-          `http://1on1-django.fly.dev/calendars/${calendar}/members/list/`,
+          `https://1on1-django.fly.dev//calendars/${calendar}/members/list/`,
           {
             method: "GET",
             headers: {
@@ -67,7 +67,7 @@ export default function MemberPage() {
   }, [calendar, refreshMembers]);
 
   const handleAddMember = async () => {
-    const endpoint = `http://1on1-django.fly.dev/calendars/${calendar}/members/list/`;
+    const endpoint = `https://1on1-django.fly.dev//calendars/${calendar}/members/list/`;
     const memberData = { name, email };
     const token = localStorage.getItem("userToken");
     
@@ -114,7 +114,7 @@ export default function MemberPage() {
   };
 
   const handleRemindMember = async (memberId) => {
-    const endpoint = `http://1on1-django.fly.dev/calendars/${calendar}/members/${memberId}/`;
+    const endpoint = `https://1on1-django.fly.dev//calendars/${calendar}/members/${memberId}/`;
     const actionData = { action: "remind" };
     const token = localStorage.getItem("userToken");
 
@@ -142,7 +142,7 @@ export default function MemberPage() {
   };
 
   const handleDeleteMember = async (memberId) => {
-    const endpoint = `http://1on1-django.fly.dev/calendars/${calendar}/members/${memberId}/`;
+    const endpoint = `https://1on1-django.fly.dev//calendars/${calendar}/members/${memberId}/`;
     const token = localStorage.getItem("userToken");
 
     resetErrors();

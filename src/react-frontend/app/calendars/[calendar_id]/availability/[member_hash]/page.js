@@ -37,7 +37,7 @@ export default function UserAvailability() {
         console.log(token);
         try {
           const response = await fetch(
-            `http://1on1-django.fly.dev/calendars/${calendarId}/availability/`,
+            `https://1on1-django.fly.dev//calendars/${calendarId}/availability/`,
             {
               method: "GET",
               headers: {
@@ -64,7 +64,7 @@ export default function UserAvailability() {
     const token = localStorage.getItem("userToken");
     console.log(datetimeList);
     try {
-      const url = `http://1on1-django.fly.dev/calendars/${calendarId}/availability/${memberHash}/`;
+      const url = `https://1on1-django.fly.dev//calendars/${calendarId}/availability/${memberHash}/`;
 
       // Make the POST request
       const response = await fetch(url, {
