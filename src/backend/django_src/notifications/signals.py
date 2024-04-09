@@ -3,6 +3,9 @@ from django.dispatch import receiver
 from calendars.signals import member_added_to_calendar, creator_member_added_to_calendar, \
     creator_all_member_added_to_calendar, member_submit_reminder, member_cal_finalized
 from .models import Notification
+from django.contrib.auth import get_user_model
+
+UserModel = get_user_model()
 
 
 @receiver(member_added_to_calendar)
@@ -44,10 +47,14 @@ def handle_member_submit_reminder(calendar, member, **kwargs):
 @receiver(member_cal_finalized)
 def handle_member_cal_finalized(calendar, **kwargs):
     for member in calendar.members.all():
-        Notification.objects.create(
-            recipient=member,
-            message=f"{calendar.name} has been finalized",
-            notification_type='calendar_finalized'
-        )
+        try: 
+            user = user = UserModel.objects.get(email=member.email)
+            Notification.objects.create(
+                    recipient=user,
+                    message=f"{calendar.name} has been finalized",
+                    notification_type='calendar_finalized'
+            )
+        except:
+            pass
 
 

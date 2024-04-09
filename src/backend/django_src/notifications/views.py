@@ -12,3 +12,7 @@ class UserNotificationsAPIView(APIView):
         notifications = Notification.objects.filter(recipient=request.user).order_by('-created_at')
         serializer = NotificationSerializer(notifications, many=True)
         return Response(serializer.data)
+
+    def patch(self, request, *args, **kwargs):
+        Notification.objects.filter(recipient=request.user, read_status=False).update(read_status=True)
+        return Response({"message": "Marked as read"})

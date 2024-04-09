@@ -14,6 +14,8 @@ class Notification(models.Model):
         - for calendar creator when all members have submitted their times
         - for member when they haven't submitted their time
         - for member when the calendar has been finalized
+
+        - for member when they are removed
     """
     TYPES = [
         ('added_to_calendar', 'for member when they are added to a calendar'),

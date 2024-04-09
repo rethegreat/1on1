@@ -132,10 +132,13 @@ class MemberSelectionView(APIView):
             new_member = serializer.save(calendar=calendar)
             new_member.invite()
 
-            # Send signal for notification app
-            member_added_to_calendar.send(calendar=calendar, member=new_member)
-
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            try:
+                # Send signal for notification app
+                user = UserModel.objects.get(email=new_member.email)
+                member_added_to_calendar.send(sender=calendar.__class__, calendar=calendar, member=user)
+            finally:
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 # EndPoint: /calendars/<int:calendar_id>/members/<int:member_id>/

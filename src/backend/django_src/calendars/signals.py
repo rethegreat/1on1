@@ -7,6 +7,8 @@ from django.dispatch import Signal
         - for calendar creator when all members have submitted their times
         - for member when they haven't submitted their time
         - for member when the calendar has been finalized
+
+        - for member when they are removed
 """
 # first word is who gets the notif
 member_added_to_calendar = Signal()

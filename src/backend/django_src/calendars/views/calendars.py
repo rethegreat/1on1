@@ -11,6 +11,9 @@ from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from django.utils import timezone
 from ..signals import member_submit_reminder, member_cal_finalized
+from django.contrib.auth import get_user_model
+
+UserModel = get_user_model()
 
 # Calendars
 # - User should be able to ...
@@ -67,7 +70,7 @@ class CalendarDetail(APIView):
         # Manually finalized calendar is not modifiable
         if is_calendar_finalized_manually(calendar):
             # signal for finalized calendar
-            member_cal_finalized.send(calendar=calendar)
+            member_cal_finalized.send(sender=calendar.__class__, calendar=calendar)
 
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
@@ -84,7 +87,7 @@ class CalendarDetail(APIView):
                     calendar.save()
                 else:
                     # signal for finalized calendar
-                    member_cal_finalized.send(calendar=calendar)
+                    member_cal_finalized.send(sender=calendar.__class__, calendar=calendar)
 
                     return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
             else:
@@ -128,6 +131,13 @@ class CalendarRemind(APIView):
         for member in members:
             if not member.submitted:
                 member.remind()
+
                 # notif
-                member_submit_reminder.send(calendar=calendar, member=member)
+                try:
+                # Send signal for notification app
+                    user = UserModel.objects.get(email=member.email)
+                    member_submit_reminder.send(sender=calendar.__class__, calendar=calendar, member=user)
+                except:
+                    pass
+
         return Response({'detail': 'Emails sent successfully'}, status=status.HTTP_200_OK)

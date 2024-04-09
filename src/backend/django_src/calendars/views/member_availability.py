@@ -130,12 +130,12 @@ class MemberAvailabilityView(APIView):
         member.save()
 
         # Send signal for notif
-        creator_member_added_to_calendar(calendar=calendar, member=member)
+        creator_member_added_to_calendar.send(sender=calendar.__class__, calendar=calendar, member=member)
 
         # check if all members have submitted for notif signal
         all_submitted = not Member.objects.filter(calendar=calendar, submitted=False).exists()
         if all_submitted:
-            creator_all_member_added_to_calendar(calendar=calendar)
+            creator_all_member_added_to_calendar.send(sender=calendar.__class__, calendar=calendar)
 
         # check if schedule exists if it does delete it so it can be regenerated
         schedule = Schedule.objects.filter(calendar_id=calendar_id)
