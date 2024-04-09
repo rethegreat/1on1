@@ -121,6 +121,12 @@ header {
     margin-bottom: 10px;
 }
 
+.notif-link {
+    color: blue;
+    text-decoration: none;
+    font-size: medium;
+}
+
 .notif-time {
     margin-top: 0px;
     margin-bottom: 0px;

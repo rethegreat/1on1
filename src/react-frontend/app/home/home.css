@@ -38,6 +38,7 @@ header {
         text-decoration: none;
         color: black;
         transition: color 0.3s;
+        cursor: pointer;
     }
 
     .nav-link:hover {

@@ -274,14 +274,14 @@ export default function Availability() {
 
           <div className="preference">
             <div
-              className={`p-item ${preference ? "bordered" : ""}`}
+              className={`p-item ${preference ? "bordered" : "emptyborder"}`}
               onClick={toggleHigh}
             >
               <div className="orange circle"></div>
               <div>high preference</div>
             </div>
             <div
-              className={`p-item ${preference ? "" : "bordered"}`}
+              className={`p-item ${preference ? "emptyborder" : "bordered"}`}
               onClick={toggleLow}
             >
               <div className="green circle"></div>
@@ -329,14 +329,14 @@ export default function Availability() {
 
           <div className="monthContainer">
             <div style={{ width: "150px" }}></div>
-            <div>
+            {/* <div>
               <button className="changeWeek" onClick={goToPreviousWeek}>
                 &lt;
               </button>
               <button className="changeWeek" onClick={goToNextWeek}>
                 &gt;
               </button>
-            </div>
+            </div> */}
 
             <div className="bottom-button" style={{ paddingTop: "25px" }}>
               <div className="cancel" onClick={backClick}>

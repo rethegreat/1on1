@@ -96,12 +96,20 @@ export default function NotifPage() {
           {notifications.map((notif, index) => (
             notif.read_status ? (
               <div className="notification-card-unread">
-                <p className="notif-text">{notif.message}</p>
+                <p className="notif-text">{notif.message}
+                { notif.link &&
+                  <a className="notif-link" href={notif.link} target="_blank" rel="noopener noreferrer"> link</a>
+                }
+                </p>
                 <p className="notif-time">{formatDate(notif.created_at)}</p>
               </div>
             ) : (
               <div className="notification-card-read">
-                <p className="notif-text">{notif.message}</p>
+                <p className="notif-text">{notif.message}
+                { notif.link &&
+                  <a className="notif-link" href={notif.link} target="_blank" rel="noopener noreferrer"> link</a>
+                }
+                </p>
                 <p className="notif-time">{formatDate(notif.created_at)}</p>
               </div>
             )))}
