@@ -76,6 +76,21 @@ header {
     padding-left: 50px;
 }
 
+.filter-option {
+    cursor: pointer;
+    margin-right: 15px; 
+    /* padding-bottom: 3px;  */
+}
+
+.filter-option.active {
+    text-decoration: underline;
+}
+
+.filter-bar {
+    margin-left: 2rem;
+    margin-top: 10px; 
+}
+
 .notification-card-read {
     display: flex;
     flex-direction: column;

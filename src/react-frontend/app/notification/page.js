@@ -9,6 +9,32 @@ export default function NotifPage() {
   const router = useRouter();
 
   const [notifications, setNotifications] = useState([]); 
+  const [activeFilter, setActiveFilter] = useState('all');
+
+  const filteredNotif = activeFilter === 'all' 
+  ? notifications
+  : notifications.filter(notif => notif.notification_type === activeFilter);
+
+  const changeFilter = (type) => {
+    setActiveFilter(type);
+  };
+
+  const renderFilters = () => {
+    const types = [
+      'all', 'added_to_calendar', 'time_updated', 
+      'all_times_updated', 'submit_reminder', 
+      'calendar_finalized', 'removed_from_cal'
+  ];
+
+  return types.map(type => (
+    <span 
+      key={type} 
+      className={`filter-option ${activeFilter === type ? 'active' : ''}`} 
+      onClick={() => changeFilter(type)}>
+      {type.replace(/_/g, ' ')}
+    </span>
+  ));
+};
 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'};
@@ -92,8 +118,12 @@ export default function NotifPage() {
 
         <div className="title">Notification</div>
 
+        <div className="filter-bar">
+          {renderFilters()}
+        </div>
+
         <div className="notification-gallery">
-          {notifications.map((notif, index) => (
+          {filteredNotif.map((notif, index) => (
             notif.read_status ? (
               <div className="notification-card-unread">
                 <p className="notif-text">{notif.message}
