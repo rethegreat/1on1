@@ -228,6 +228,7 @@ class ScheduleListView(APIView):
         # Construct custom paginated response
         response_data = {
             'count': paginator.count,
+            'finalized': calendar.finalized,
             'next': page_obj.next_page_number() if page_obj.has_next() else None,
             'previous': page_obj.previous_page_number() if page_obj.has_previous() else None,
             'results': results  # Include paginated data
@@ -391,6 +392,6 @@ def delete_event(event):
     Delete an event from the schedule.
     """
     event.delete()
-    return Response({'message': 'Event deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+    return Response({'message': 'Event deleted successfully'}, status=status.HTTP_200_OK)
 
 #  ========================================================
