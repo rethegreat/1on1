@@ -3,16 +3,16 @@ import Head from "next/head";
 import { useEffect, useState } from "react";
 import { addDays, startOfWeek, format, parseISO, set } from "date-fns";
 import { useRouter, usePathname } from "next/navigation";
-import "../../../../calendars/[calendar_id]/availability/[member_hash]/calendars.css";
+import "../../../calendars/[calendar_id]/availability/[member_hash]/calendars.css";
 
-export default function MeetingTime() {
+export default function MeetingID() {
   const router = useRouter();
   const [calendarId, setCalendarId] = useState(0);
   const [scheduleId, setScheduleId] = useState(0);
   const [schedule, setSchedule] = useState([]);
   const [datetimeList, setDatetimeList] = useState([]);
   const [scheduledSlots, setScheduledSlots] = useState([]);
-  const [info, setInfo] = useState("Click on the time slots to select the meeting you want to delete.");
+  const [info, setInfo] = useState("Click on the meeting(s) you want to delete.");
   const [deleteList, setDeleteList] = useState([]);
   const [hoveredSlot, setHoveredSlot] = useState(null);
 
@@ -373,7 +373,7 @@ export default function MeetingTime() {
           </div>
 
           <div className="bottom-button" style={{ paddingTop: "25px"}}>
-            <div className="submit add-meeting" onClick={submitDeletingList}>delete</div>
+            <div className="submit" onClick={submitDeletingList}>delete</div>
           </div>
         </div>
       </div>
