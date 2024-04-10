@@ -160,7 +160,7 @@ class CalendarRemindAdd(APIView):
             members = members.filter(submitted=False)
         
         for member in members:
-            member.remind()
+            member.remind_update()
 
             # notif
             try:
