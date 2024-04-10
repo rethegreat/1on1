@@ -11,6 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from ..permissions import IsCalendarOwner, is_calendar_finalized
 from ..signals import member_submit_reminder
 from django.contrib.auth import get_user_model
+from datetime import datetime
 
 UserModel = get_user_model()
 
@@ -41,7 +42,7 @@ def _update_member_submitted(time_slot):
                 user = UserModel.objects.get(email=member.email)
                 link = f"https://1on1-frontend.vercel.app/calendars/{member.calendar.id}/availability/{member.member_hash}/"
                 member_submit_reminder.send(sender=calendar.__class__, calendar=calendar, member=user, link=link)
-            finally:
+            except UserModel.DoesNotExist:
                 pass
 
             mts.member.save()
@@ -93,27 +94,47 @@ class OwnerAvailabilityView(APIView):
         for old_timeslot in old_timeslots:
             found = False
             for new_timeslot in request.data:
-                if old_timeslot.start_time == new_timeslot['start_time']:
+
+
+                # the newtimeslot's start time is in this format: 2024-04-08T16:00:00.000Z
+                # old start time is in this format:                2024-04-08T14:30:00Z
+                # compare strings
+                # return Response({"detail": [old_timeslot.start_time, new_timeslot['start_time']]}, status=status.HTTP_401_UNAUTHORIZED)
+                # 2024-04-09T15:30:00Z, 2024-04-10T06:00:00.000Z
+                parsed_new_start_time = datetime.fromisoformat(new_timeslot['start_time']).strftime("%Y-%m-%d %H:%M:%S%z")
+                if old_timeslot.start_time == parsed_new_start_time:
+
+                    # return Response({"detail": "debug"}, status=status.HTTP_401_UNAUTHORIZED)
                     if old_timeslot.preference != new_timeslot['preference']:
                         # If the preference is different, update the old timeslot
-                        OwnerTimeSlot.objects.filter(calendar=calendar, start_time=old_timeslot['start_time']).update(preference=new_timeslot['preference'])
+                        ots = OwnerTimeSlot.objects.filter(calendar=calendar, start_time=old_timeslot.start_time)
+                        ots.update(preference=new_timeslot['preference'])
+                        # save
+                        ots[0].save()
                         # save it
                     else:
                         # If the preference is the same, do nothing
                         pass
                     found = True
-                    #delete from the data_copy for the faster search in the next loop!!!
+                    debug = [data_copy.copy()]
+                    # delete from the data_copy for the faster search in the next loop!
                     data_copy.remove(new_timeslot)
+                    debug.append(data_copy)
+                    return Response({"detail": debug}, status=status.HTTP_401_UNAUTHORIZED)
                     break
             if not found:
                 # If the old timeslot is not in the new timeslots, add to delete list
-                delete_list.append(old_timeslot['start_time'])
+                delete_list.append(old_timeslot.start_time)
+        
+        # for debugging
+        # return Response({"detail": old_timeslot}, status=status.HTTP_401_UNAUTHORIZED)
 
         # If the new timeslot is not in the old timeslots, add to add list
         for new_timeslot in data_copy:
             found = False
             for old_timeslot in old_timeslots:
-                if old_timeslot.start_time == new_timeslot['start_time']:
+                parsed_new_start_time = datetime.fromisoformat(new_timeslot['start_time']).strftime("%Y-%m-%d %H:%M:%S%z")
+                if old_timeslot.start_time == parsed_new_start_time:
                     found = True
                     break
             if not found:
