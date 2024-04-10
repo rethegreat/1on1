@@ -5,7 +5,21 @@
     flex-direction: column;
     padding: 50px;
     letter-spacing: .5px;
-    height: 60vh;
+    /* height: 60vh; */
+}
+
+.back {
+    font-size: large;
+    /* top: 40px;
+    left: 60px;
+    position: fixed; */
+    margin-bottom: 30px;
+    width: 60px;
+}
+
+.back:hover {
+    color: rgb(202, 202, 202);
+    cursor: pointer;
 }
 
 header {
@@ -66,7 +80,7 @@ header {
     height: fit-content;
     width: 500px;
 
-    margin-top: 30px;
+    margin-top: 20px;
     padding: 30px;
     display: flex;
     flex-direction: column;

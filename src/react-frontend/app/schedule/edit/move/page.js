@@ -39,7 +39,7 @@ export default function MoveMeeting() {
         // Get all members
         try {
           const response = await fetch(
-            `http://127.0.0.1:8000/calendars/${calendarId}/members/list/`,
+            `https://1on1-django.fly.dev/calendars/${calendarId}/members/list/`,
             {
               method: "GET",
               headers: {
@@ -67,7 +67,7 @@ export default function MoveMeeting() {
           try {
             // Get member availability
             const response = await fetch(
-              `http://127.0.0.1:8000/calendars/${calendarId}/members/${memberId}/availability/`,
+              `https://1on1-django.fly.dev/calendars/${calendarId}/members/${memberId}/availability/`,
               {
                 method: "GET",
                 headers: {
@@ -105,7 +105,7 @@ export default function MoveMeeting() {
         // Get already scheduled meetings
         try {
           const response = await fetch(
-            `http://127.0.0.1:8000/calendars/${calendarId}/schedules/${scheduleId}`,
+            `https://1on1-django.fly.dev/calendars/${calendarId}/schedules/${scheduleId}`,
             {
               method: "GET",
               headers: {
@@ -144,7 +144,7 @@ export default function MoveMeeting() {
       const eventID = movingSlot.id;
       const newTime = destinationSlot.start_time;
       const response = await fetch(
-        `http://127.0.0.1:8000/calendars/${calendarId}/schedules/${scheduleId}/`, {
+        `https://1on1-django.fly.dev/calendars/${calendarId}/schedules/${scheduleId}/`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",

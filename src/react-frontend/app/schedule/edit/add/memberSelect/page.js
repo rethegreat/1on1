@@ -24,7 +24,7 @@ export default function MeetingMember() {
         const getMembers = async () => {
             const token = localStorage.getItem("userToken");
             const response = await fetch(
-                `http://127.0.0.1:8000/calendars/${calendar}/members/list/`,
+                `https://1on1-django.fly.dev/calendars/${calendar}/members/list/`,
                 {
                 method: "GET",
                 headers: {
