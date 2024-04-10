@@ -412,7 +412,7 @@ export default function Schedule() {
             &lt; back
           </div>
 
-          <div className="header pink">Schedule</div>
+          <div className="header pink" style={{marginBottom : "15px"}}>Schedule</div>
 
           {!exist ? (
             <div className="mapping-error">
@@ -437,7 +437,7 @@ export default function Schedule() {
             <div className="finalized">Finalized Schedule</div>
           )}
 
-          <div className="calendar">
+          <div className="calendar" style={{marginTop : "15px"}}>
             <div className="avilability-content">
               <div className="time">
                 <div className="spacer"></div>
