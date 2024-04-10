@@ -33,7 +33,7 @@ export default function MeetingID() {
         // Get already scheduled meetings
         try {
           const response = await fetch(
-            `http://127.0.0.1:8000/calendars/${calendarId}/schedules/${scheduleId}`,
+            `https://1on1-django.fly.dev/calendars/${calendarId}/schedules/${scheduleId}`,
             {
               method: "GET",
               headers: {
@@ -84,7 +84,7 @@ export default function MeetingID() {
         // For each eventID in the list, delete it
         for (const eventID of eventIDList) {
           const response = await fetch(
-            `http://127.0.0.1:8000/calendars/${calendarId}/schedules/${scheduleId}/`, {
+            `https://1on1-django.fly.dev/calendars/${calendarId}/schedules/${scheduleId}/`, {
           method: "PUT",
           headers: {
               "Content-Type": "application/json",

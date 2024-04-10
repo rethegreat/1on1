@@ -171,10 +171,10 @@ header {
 
 
 /* On hover */
-    .calendar-card:hover {
-        /* color: white; */
+    /* .calendar-card:hover {
+        color: white;
         background-color: blue;
-    }
+    } */
 
     /* Colour per cal */
     .cal1-card:hover {

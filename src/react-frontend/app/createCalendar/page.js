@@ -40,7 +40,7 @@ export default function CreateCalendar() {
     // Here you can handle the form submission, e.g., by sending data to an API
     const token = localStorage.getItem("userToken");
     try {
-      const response = await fetch("http://127.0.0.1:8000/calendars/list/", {
+      const response = await fetch("https://1on1-django.fly.dev/calendars/list/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -85,6 +85,10 @@ export default function CreateCalendar() {
     router.push("/home");
   };
 
+  const backClick = () => {
+    router.push("/home");
+  };
+
 
   return (
     <div>
@@ -103,18 +107,9 @@ export default function CreateCalendar() {
         />
       </Head>
       <div className="cc-main">
-        <header>
-          <a className="logo">1on1</a>
-          <nav>
-            <a className="nav-link active" href="/home">
-              Home
-            </a>
-
-            <a href="/" className="nav-link">
-              Logout
-            </a>
-          </nav>
-        </header>
+        <div className="back" onClick={backClick}>
+              &lt; back
+        </div>
 
         <div className="title">New Calendar</div>
 
