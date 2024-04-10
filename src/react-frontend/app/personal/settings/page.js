@@ -118,7 +118,7 @@ export default function Settings() {
     const token = localStorage.getItem("userToken");
     try {
       const response = await fetch(
-        `http://1on1-django.fly.dev/calendars/${calendarId}/`,
+        `https://1on1-django.fly.dev/calendars/${calendarId}/`,
         {
           method: "PUT",
           headers: {
@@ -190,7 +190,7 @@ export default function Settings() {
       const token = localStorage.getItem("userToken");
       try {
         const response = await fetch(
-          `http://1on1-django.fly.dev/calendars/${calendarId}/`,
+          `https://1on1-django.fly.dev/calendars/${calendarId}/`,
           {
             method: "DELETE",
             headers: {

@@ -33,7 +33,7 @@ export default function MeetingID() {
         // Get already scheduled meetings
         try {
           const response = await fetch(
-            `https://1on1-django.fly.dev/calendars/${calendarId}/schedules/${scheduleId}`,
+            `https://1on1-django.fly.dev/calendars/${calendarId}/schedules/${scheduleId}/`,
             {
               method: "GET",
               headers: {
