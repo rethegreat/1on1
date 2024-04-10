@@ -24,6 +24,7 @@ export default function PersonalPage() {
         const token = localStorage.getItem("userToken");
         try {
           const response = await fetch(
+
             `https://1on1-django.fly.dev/calendars/${calendar}/`,
             {
               method: "GET",
@@ -92,8 +93,12 @@ export default function PersonalPage() {
             </a>
           </nav>
         </header>
-
-        <div className="title personal">{title}</div>
+        <div className="title personal">
+          {title}
+          <img src="/settings.svg" alt="Settings" className="settings"
+          onClick={() => router.push("/personal/settings")} />
+        </div>
+          
 
         <div className="calendar-gallery">
           <div className="calendar-card cal1-card" onClick={availabilityClick}>
