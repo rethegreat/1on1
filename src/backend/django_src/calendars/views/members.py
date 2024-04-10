@@ -202,7 +202,7 @@ class MemberDetailView(APIView):
             try:
             # Send signal for notification app
                 user = UserModel.objects.get(email=member.email)
-                link = f"http://localhost:3000/calendars/{member.calendar.id}/availability/{member.member_hash}/"
+                link = f"https://1on1-frontend.vercel.app/calendars/{member.calendar.id}/availability/{member.member_hash}/"
                 member_submit_reminder.send(sender=calendar.__class__, calendar=calendar, member=user, link=link)
             finally:
                 return Response({'message': 'Reminder sent'}, status=status.HTTP_200_OK)
