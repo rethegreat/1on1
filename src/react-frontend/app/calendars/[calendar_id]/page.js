@@ -25,7 +25,7 @@ export default function CalendarDetail() {
     const getCalendar = async () => {
       const token = localStorage.getItem("userToken");
       const response = await fetch(
-        `https://1on1-django.fly.dev//calendars/${calendarId}`,
+        `https://1on1-django.fly.dev/calendars/${calendarId}`,
         {
           method: "GET",
           headers: {

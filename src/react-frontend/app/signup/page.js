@@ -45,7 +45,7 @@ export default function Signup() {
 
     try {
       const response = await fetch(
-        "https://1on1-django.fly.dev//accounts/api/register/",
+        "https://1on1-django.fly.dev/accounts/api/register/",
         {
           method: "POST",
           headers: {
