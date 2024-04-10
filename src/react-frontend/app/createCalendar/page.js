@@ -85,6 +85,10 @@ export default function CreateCalendar() {
     router.push("/home");
   };
 
+  const backClick = () => {
+    router.push("/home");
+  };
+
 
   return (
     <div>
@@ -103,18 +107,9 @@ export default function CreateCalendar() {
         />
       </Head>
       <div className="cc-main">
-        <header>
-          <a className="logo">1on1</a>
-          <nav>
-            <a className="nav-link active" href="/home">
-              Home
-            </a>
-
-            <a href="/" className="nav-link">
-              Logout
-            </a>
-          </nav>
-        </header>
+        <div className="back" onClick={backClick}>
+              &lt; back
+        </div>
 
         <div className="title">New Calendar</div>
 
