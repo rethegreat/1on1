@@ -3,7 +3,7 @@ from .models.Calendar import Calendar, Schedule
 from .models.Member import Member
 from .models.Event import Event
 from .models.TimeSlot import OwnerTimeSlot
-from signals import member_cal_finalized
+from .signals import member_cal_finalized
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from django.conf import settings
