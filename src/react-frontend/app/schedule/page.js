@@ -408,7 +408,7 @@ export default function Schedule() {
           {!exist ? (
             <div  className="mapping-error">
               <div className="mapping-text">
-                No mapping possible please add more availabilities and remind
+                No mapping possible, please add more availabilities and remind
                 users to update their availabilities
               </div>
               <div className="remind" onClick={remindAllAdd}>
