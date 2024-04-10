@@ -198,7 +198,7 @@ header {
     }
 
     /* Colour per cal */
-    .cal1-card:hover {
+    /* .cal1-card:hover {
         background-color: red;
     }
 
@@ -208,7 +208,7 @@ header {
 
     .cal3-card:hover {
         background-color: #CCDD00
-    }
+    } */
 
     /* .calendar-card:hover .redirect-arrow {
         filter: invert(1);
