@@ -9,6 +9,10 @@ from ..serializers import OwnerTimeSlotSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from ..permissions import IsCalendarOwner, is_calendar_finalized
+from ..signals import member_submit_reminder
+from django.contrib.auth import get_user_model
+
+UserModel = get_user_model()
 
 # Owner Availability
 # - User should be able to ...
@@ -24,7 +28,22 @@ def _update_member_submitted(time_slot):
     for mts in member_time_slots:
         # If there is only one belongs to that member, set member.submitted=False
         if len(MemberTimeSlot.objects.filter(member=mts.member)) == 1:
-            mts.member.submitted = False
+            member = mts.member
+            calendar = member.calendar
+            member.submitted = False
+            # Remind member to submit
+
+            member.remind()  # Trigger reminder if requested
+
+            # notif
+            try:
+            # Send signal for notification app
+                user = UserModel.objects.get(email=member.email)
+                link = f"https://1on1-frontend.vercel.app/calendars/{member.calendar.id}/availability/{member.member_hash}/"
+                member_submit_reminder.send(sender=calendar.__class__, calendar=calendar, member=user, link=link)
+            finally:
+                pass
+
             mts.member.save()
 
 # EndPoint: /calendars/<int:calendar-id>/availability/
@@ -62,8 +81,52 @@ class OwnerAvailabilityView(APIView):
         #     }
         # ]
 
-        # Delete all the current timeslots and create new ones
-        OwnerTimeSlot.objects.filter(calendar=calendar).delete()
+        # Get all the current timeslots
+        data_copy = request.data.copy()
+        old_timeslots = OwnerTimeSlot.objects.filter(calendar=calendar)
+        # old_timeslots_parsed = [ {"start_time": slot.start_time, "preference": slot.preference} for slot in old_timeslots ]
+        delete_list = []
+        add_list = []
+
+        # Now compare the old timeslots with the new timeslots
+        # If the old timeslot is not in the new timeslots, add to delete list
+        for old_timeslot in old_timeslots:
+            found = False
+            for new_timeslot in request.data:
+                if old_timeslot.start_time == new_timeslot['start_time']:
+                    if old_timeslot.preference != new_timeslot['preference']:
+                        # If the preference is different, update the old timeslot
+                        OwnerTimeSlot.objects.filter(calendar=calendar, start_time=old_timeslot['start_time']).update(preference=new_timeslot['preference'])
+                        # save it
+                    else:
+                        # If the preference is the same, do nothing
+                        pass
+                    found = True
+                    #delete from the data_copy for the faster search in the next loop!!!
+                    data_copy.remove(new_timeslot)
+                    break
+            if not found:
+                # If the old timeslot is not in the new timeslots, add to delete list
+                delete_list.append(old_timeslot['start_time'])
+
+        # If the new timeslot is not in the old timeslots, add to add list
+        for new_timeslot in data_copy:
+            found = False
+            for old_timeslot in old_timeslots:
+                if old_timeslot.start_time == new_timeslot['start_time']:
+                    found = True
+                    break
+            if not found:
+                add_list.append(new_timeslot)
+
+        # STEP 1> DELETE
+        # Delete the timeslots in the delete list, and notify the member if they no longer have any timeslots submitted(also remind member to submit)
+        for delete_timeslot in delete_list:
+            time_slot = OwnerTimeSlot.objects.get(calendar=calendar, start_time=delete_timeslot)
+            _update_member_submitted(time_slot)
+            time_slot.delete()
+        
+        # STEP 2> ADD (only the difference!)
 
         #check if schedule exists if it does delete it so it can be regenerated
         schedule = Schedule.objects.filter(calendar_id=calendar_id)
@@ -74,7 +137,7 @@ class OwnerAvailabilityView(APIView):
         error_list = []
         start_time_added = []
 
-        for timeslot in request.data:
+        for timeslot in add_list:
             # Check if the start_time is already added
             if timeslot['start_time'] in start_time_added:
                 error_list.append(f"Time slot {timeslot['start_time']} is already added")
