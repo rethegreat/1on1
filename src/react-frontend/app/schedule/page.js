@@ -65,11 +65,7 @@ export default function Schedule() {
           setExist(true);
           setPageTotal(data.count);
           setCalendarFinalized(data.finalized);
-          if (data.count == 0) {
-            alert(
-              "There is no schedule possible yet!\nPlease wait for members to submit their availability"
-            );
-          } else {
+          if (data.count != 0) {
             setScheduleId(data.results[0].id);
             setEvents(data.results[0].events);
           }
