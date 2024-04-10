@@ -62,7 +62,7 @@ export default function Schedule() {
           }
           const data = await response.json();
           console.log(data);
-          
+
           setPageTotal(data.count);
           setCalendarFinalized(data.finalized);
           if (data.count != 0) {
@@ -95,10 +95,11 @@ export default function Schedule() {
         var data = await response.json();
 
         if (data[0].num_pending == 0) {
-          setRemindMessage("All users have submitted their availability");
+          setRemindMessage("");
         } else {
           setRemindMessage(
-            data[0].num_pending + " users have not submitted their availability yet"
+            data[0].num_pending +
+              " users have not submitted their availability yet"
           );
         }
       };
@@ -149,8 +150,8 @@ export default function Schedule() {
         const member_name = obj["member_name"];
         const member_email = obj["member_email"];
         const priority = obj["pref_choice"];
-        
-        if(priority == "HIGH"){
+
+        if (priority == "HIGH") {
           grouped[key].slots.push({
             time: time,
             color: "#DD7800", // "#CCDD00", (green)
@@ -167,7 +168,6 @@ export default function Schedule() {
             member_email: member_email,
           });
         }
-        
       });
 
       return Object.values(grouped);
@@ -415,7 +415,7 @@ export default function Schedule() {
           <div className="header pink">Schedule</div>
 
           {!exist ? (
-            <div  className="mapping-error">
+            <div className="mapping-error">
               <div className="mapping-text">
                 No mapping possible, please add more availabilities and remind
                 users to update their availabilities
@@ -425,12 +425,14 @@ export default function Schedule() {
               </div>
             </div>
           ) : !isCalendarFinalized ? (
-            <div className="missing">
-              <div className="missing-text">{remindMessage}</div>
-              <div className="remind" onClick={remindAll}>
-                remind
+            remindMessage && (
+              <div className="missing">
+                <div className="missing-text">{remindMessage}</div>
+                <div className="remind" onClick={remindAll}>
+                  remind
+                </div>
               </div>
-            </div>
+            )
           ) : (
             <div className="finalized">Finalized Schedule</div>
           )}
