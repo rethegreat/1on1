@@ -95,8 +95,8 @@ def _create_schedules(calendar: Calendar):
         
     high1_schedule = _create_another_schedule(base_schedule, owner_mapping['HIGH'], times_members, used)
     high2_schedule = _create_another_schedule(base_schedule, owner_mapping['HIGH'][::-1], times_members, used)
-    mid1_schedule = _create_another_schedule(base_schedule, owner_mapping['NO_PREF'], times_members, used)
-    mid2_schedule = _create_another_schedule(base_schedule, owner_mapping['NO_PREF'][::-1], times_members, used)
+    mid1_schedule = _create_another_schedule(base_schedule, owner_mapping['LOW'], times_members, used)
+    mid2_schedule = _create_another_schedule(base_schedule, owner_mapping['LOW'][::-1], times_members, used)
 
     return [base_schedule, high1_schedule, high2_schedule, mid1_schedule, mid2_schedule]
 
