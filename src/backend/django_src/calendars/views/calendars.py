@@ -69,9 +69,6 @@ class CalendarDetail(APIView):
 
         # Manually finalized calendar is not modifiable
         if is_calendar_finalized_manually(calendar):
-            # signal for finalized calendar
-            member_cal_finalized.send(sender=calendar.__class__, calendar=calendar)
-
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
         # If automatically finalized, you can modify the deadline to later date and finalized status
@@ -86,9 +83,6 @@ class CalendarDetail(APIView):
                     calendar.finalized = False
                     calendar.save()
                 else:
-                    # signal for finalized calendar
-                    member_cal_finalized.send(sender=calendar.__class__, calendar=calendar)
-
                     return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
             else:
                 return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
