@@ -45,7 +45,7 @@ class Member(models.Model):
         Sends a reminder email to the given member to submit their availability.
         """
         subject = 'Reminder: Submit Your Availability'
-        unique_link = f"http://localhost:3000/calendars/{self.calendar.id}/availability/{self.member_hash}/"
+        unique_link = f"https://1on1-frontend.vercel.app/calendars/{self.calendar.id}/availability/{self.member_hash}/"
         message = (
             f"Dear {self.name},\n\n"
             f"This is a friendly reminder to submit your availability to the calendar {self.calendar.name}.\n\n"
@@ -61,7 +61,7 @@ class Member(models.Model):
         Sends an invitation email to the given member to submit their availability.
         """
         subject = 'Invitation to calendar: Submit Your Availability'
-        unique_link = f"http://localhost:3000/calendars/{self.calendar.id}/availability/{self.member_hash}/"
+        unique_link = f"https://1on1-frontend.vercel.app/calendars/{self.calendar.id}/availability/{self.member_hash}/"
         message = (
             f"Dear {self.name},\n\n"
             f"You haven been invited to submit your availability to the calendar {self.calendar.name}.\n\n"

@@ -263,7 +263,7 @@ export default function UserAvailability() {
             Member availability
           </div>
 
-          <div style={{ margin: "10px", fontSize: "20px" }}>
+          <div style={{ margin: "0px 10px 10px 10px", fontSize: "20px" }}>
             {info}
           </div>
           <div className="calendar">

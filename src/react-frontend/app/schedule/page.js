@@ -96,10 +96,14 @@ export default function Schedule() {
         }
 
         var data = await response.json();
-        setRemindMessage(
-          data[0].num_pending +
-            " users have not submitted their avalibility yet"
-        );
+
+        if (data[0].num_pending == 0) {
+          setRemindMessage("All users have submitted their availability");
+        } else {
+          setRemindMessage(
+            data[0].num_pending + " users have not submitted their availability yet"
+          );
+        }
       };
 
       setSchedule(generateScheduleWithDates());
@@ -404,8 +408,8 @@ export default function Schedule() {
           {!exist ? (
             <div  className="mapping-error">
               <div className="mapping-text">
-                No mapping possible please add more avalibilities and remind
-                users to update their avalibilities
+                No mapping possible, please add more availabilities and remind
+                users to update their availabilities
               </div>
               <div className="remind" onClick={remindAllAdd}>
                 remind

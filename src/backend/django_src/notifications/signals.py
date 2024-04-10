@@ -9,10 +9,11 @@ UserModel = get_user_model()
 
 
 @receiver(member_added_to_calendar)
-def handle_member_added_to_calendar(calendar, member, **kwargs):
+def handle_member_added_to_calendar(calendar, member, link, **kwargs):
     Notification.objects.create(
         recipient=member,
         message=f"You have been added to calendar: {calendar.name}",
+        link = link,
         notification_type='added_to_calendar'
     )
 
@@ -54,15 +55,9 @@ def handle_member_removed_from_cal(calendar, member, **kwargs):
 
 
 @receiver(member_cal_finalized)
-def handle_member_cal_finalized(calendar, **kwargs):
-    for member in calendar.members.all():
-        try: 
-            user = user = UserModel.objects.get(email=member.email)
-            Notification.objects.create(
-                    recipient=user,
-                    message=f"{calendar.name} has been finalized",
-                    notification_type='calendar_finalized'
-            )
-        except:
-            pass
-
+def handle_member_cal_finalized(calendar, member, msg, **kwargs):
+    Notification.objects.create(
+            recipient=member,
+            message=f"{msg}",
+            notification_type='calendar_finalized'
+    )

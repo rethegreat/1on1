@@ -68,7 +68,8 @@ class MemberListView(APIView):
             try:
                 # Send signal for notification app
                 user = UserModel.objects.get(email=new_member.email)
-                member_added_to_calendar.send(sender=calendar.__class__, calendar=calendar, member=user)
+                link = f"https://1on1-frontend.vercel.app/{new_member.calendar.id}/availability/{new_member.member_hash}/"
+                member_added_to_calendar.send(sender=calendar.__class__, calendar=calendar, member=user, link=link)
             finally:
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             
@@ -136,7 +137,8 @@ class MemberSelectionView(APIView):
             try:
                 # Send signal for notification app
                 user = UserModel.objects.get(email=new_member.email)
-                member_added_to_calendar.send(sender=calendar.__class__, calendar=calendar, member=user)
+                link = f"https://1on1-frontend.vercel.app/{new_member.calendar.id}/availability/{new_member.member_hash}/"
+                member_added_to_calendar.send(sender=calendar.__class__, calendar=calendar, member=user, link=link)
             finally:
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             
@@ -202,7 +204,7 @@ class MemberDetailView(APIView):
             try:
             # Send signal for notification app
                 user = UserModel.objects.get(email=member.email)
-                link = f"http://localhost:3000/calendars/{member.calendar.id}/availability/{member.member_hash}/"
+                link = f"https://1on1-frontend.vercel.app/calendars/{member.calendar.id}/availability/{member.member_hash}/"
                 member_submit_reminder.send(sender=calendar.__class__, calendar=calendar, member=user, link=link)
             finally:
                 return Response({'message': 'Reminder sent'}, status=status.HTTP_200_OK)
