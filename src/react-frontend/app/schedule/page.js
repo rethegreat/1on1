@@ -62,10 +62,11 @@ export default function Schedule() {
           }
           const data = await response.json();
           console.log(data);
-          setExist(true);
+          
           setPageTotal(data.count);
           setCalendarFinalized(data.finalized);
           if (data.count != 0) {
+            setExist(true);
             setScheduleId(data.results[0].id);
             setEvents(data.results[0].events);
           }
