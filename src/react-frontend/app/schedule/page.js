@@ -147,14 +147,26 @@ export default function Schedule() {
         const member_id = obj["member_id"];
         const member_name = obj["member_name"];
         const member_email = obj["member_email"];
-
-        grouped[key].slots.push({
-          time: time,
-          color: "#DD7800", // "#CCDD00", (green)
-          name: member_name,
-          member_id: member_id,
-          member_email: member_email,
-        });
+        const priority = obj["pref_choice"];
+        
+        if(priority == "HIGH"){
+          grouped[key].slots.push({
+            time: time,
+            color: "#DD7800", // "#CCDD00", (green)
+            name: member_name,
+            member_id: member_id,
+            member_email: member_email,
+          });
+        } else {
+          grouped[key].slots.push({
+            time: time,
+            color: "#CCDD00", // green
+            name: member_name,
+            member_id: member_id,
+            member_email: member_email,
+          });
+        }
+        
       });
 
       return Object.values(grouped);
