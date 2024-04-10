@@ -143,8 +143,15 @@ class OwnerAvailabilityView(APIView):
         # STEP 1> DELETE
         # Delete the timeslots in the delete list, and notify the member if they no longer have any timeslots submitted(also remind member to submit)
         for delete_timeslot in delete_list:
+            # get all members that have submitted this timeslot
+            members = MemberTimeSlot.objects.filter(time_slot__calendar=calendar, time_slot__start_time=delete_timeslot)
+            for member in members:
+                time_slot = OwnerTimeSlot.objects.get(calendar=calendar, start_time=delete_timeslot)
+                _update_member_submitted(time_slot)
+        
+        for delete_timeslot in delete_list:
+            # delete the timeslot
             time_slot = OwnerTimeSlot.objects.get(calendar=calendar, start_time=delete_timeslot)
-            _update_member_submitted(time_slot)
             time_slot.delete()
         
         # STEP 2> ADD (only the difference!)
