@@ -94,7 +94,8 @@ class EventSerializer(serializers.ModelSerializer):
     member_id = serializers.IntegerField(source='member.id')
     member_name = serializers.CharField(source='member.name')
     member_email = serializers.CharField(source='member.email')
+    pref_choice = serializers.CharField(source='time_slot.preference')
 
     class Meta:
         model = Event
-        fields = ['event_id', 'start_time', 'member_id', 'member_name', 'member_email']
+        fields = ['event_id', 'start_time', 'member_id', 'member_name', 'member_email', 'pref_choice']
