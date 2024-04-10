@@ -96,7 +96,7 @@ export default function PersonalPage() {
         <div className="title personal">
           {title}
           <img
-                src="/settings.png" alt="Settings" className="settings"
+                src="/settings.svg" alt="Settings" className="settings"
                 onClick={() => router.push("/personal/settings")} 
               />
         </div>
