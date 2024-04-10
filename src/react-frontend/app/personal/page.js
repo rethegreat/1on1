@@ -92,8 +92,12 @@ export default function PersonalPage() {
             </a>
           </nav>
         </header>
-
-        <div className="title personal">{title}</div>
+        <div className="title personal">
+          {title}
+          <img src="/settings.svg" alt="Settings" className="settings"
+          onClick={() => router.push("/personal/settings")} />
+        </div>
+          
 
         <div className="calendar-gallery">
           <div className="calendar-card cal1-card" onClick={availabilityClick}>

@@ -1,3 +1,32 @@
+.container {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    border: 2px dashed #ccc;
+    margin: 20px auto;
+  }
+  
+  .box {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: #3498db;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: grab;
+  }
+  
+  .box.dragging {
+    opacity: 0.5; /* Reduce opacity when dragging */
+  }
+  
+  /* Optional: Add hover effect */
+  .box:hover {
+    background-color: #2980b9;
+  }
+  
 .calendar-button {
     margin: 0;
     padding: 0;
@@ -42,6 +71,7 @@
     height: 35.8px;
     border-radius: 50px;
     border: 1px solid;
+    color: white;
 }
 
 .calendar-body {
