@@ -24,7 +24,7 @@ class Member(models.Model):
     # 4) submitted: whether the member submitted their availability or not
     submitted = models.BooleanField(default=False)
     
-    member_hash = models.CharField(max_length=16, unique=True, blank=True)
+    member_hash = models.CharField(max_length=100, unique=True, blank=True)
 
     # No duplicate email within one calendar
     class Meta:
