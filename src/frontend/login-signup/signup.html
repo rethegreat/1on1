@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - 1on1</title>
+
+    <!-- Including the Roboto and Gothic A1 fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Gothic+A1:wght@400;700;900&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto@400;700&display=swap">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="login.css">
+
+    <!-- JavaScript file -->
+    <script defer src="signup.js"></script>
+
+</head>
+<body>
+
+    
+    <div class="page-container">
+
+        <div class="content-container">
+
+            <div class="title">1ON1</div>
+
+                
+                <form id="signup-form">
+                    <p id="signup-error-msg"></p>
+
+                    <label for="name">name</label>
+                    <input type="text" id="name" name="name" required>
+
+                    <label for="email">email</label>
+                    <input type="text" id="email" name="email" required>
+
+                    <label for="password">password</label>
+                    <input type="password" id="password" name="password" required>
+                
+
+                    <label for="password-confirm">confirm password</label>
+                    <input type="password" id="password-confirm" name="password-confirm" required>
+                
+                    <br>
+                    <button type="submit" class="signup-button" id="signup-button">Sign Up</button>
+
+            </form>
+        </div>
+
+    </div>
+
+</body>
+</html>

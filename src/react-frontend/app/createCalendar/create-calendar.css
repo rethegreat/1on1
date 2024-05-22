@@ -1,0 +1,278 @@
+
+
+.cc-main {
+    display: flex;
+    flex-direction: column;
+    padding: 50px;
+    letter-spacing: .5px;
+    /* height: 60vh; */
+}
+
+.back {
+    font-size: large;
+    /* top: 40px;
+    left: 60px;
+    position: fixed; */
+    margin-bottom: 30px;
+    width: 60px;
+}
+
+.back:hover {
+    color: rgb(202, 202, 202);
+    cursor: pointer;
+}
+
+header {
+    color: black;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* font-family: 'Ubuntu', Arial, Helvetica, sans-serif; */
+
+    margin-left: 10px;
+}
+
+    .logo {
+        font-size: x-large;
+        font-weight: bold;
+        text-decoration: none;
+        color: black;
+    }
+
+    nav {
+        display: flex;
+    }
+
+    .nav-link {
+        font-size: large;
+        margin-left: 20px;
+        text-decoration: none;
+        color: black;
+        transition: color 0.3s;
+    }
+
+    .nav-link:hover {
+        color: blue;
+    }
+
+    .active {
+        text-decoration: underline;
+    }
+
+
+.title {
+    border-radius: 30px;
+    background-color: blue;
+
+    height: 200px;
+    color: white;
+    font-size: 110px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    padding-left: 50px;
+    margin: 0px;
+}
+
+.create-container {
+    border-radius: 30px;
+    outline: 1px solid black;
+    height: fit-content;
+    width: 500px;
+
+    margin-top: 20px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+
+}
+
+.cal-num {
+    background-color: #CCDD00;
+    width: 70px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 30px;
+}
+
+input {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border: none; 
+    font-size: 50px;
+  }
+  
+  input::placeholder {
+    font-style: italic; 
+
+  }
+  
+
+.pick-color {
+    display: flex;
+    flex-direction: row;
+
+    height: 50px;
+    align-items: center;
+    margin-bottom: 150px;
+
+    font-weight: 520;
+}
+
+.calendar-color {
+    height: 25px;
+    width: 25px;
+    background-color: #CCDD00;
+    border-radius: 180px;
+
+    margin-left: 10px;
+}
+
+.bottom-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+}
+
+.cancel {
+    outline: 1px solid black;
+    border-radius: 50px;
+    height: 30px;
+    width: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cancel:hover {
+    background-color: black;
+    color: white;
+    cursor: pointer;
+}
+
+.submit:hover {
+    background-color: #000159;
+    cursor: pointer;
+}
+
+.submit {
+    border-radius: 50px;
+    background-color: black;
+    color: white;
+    margin-left: 10px;
+    height: 30px;
+    width: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#durationInput {
+    background-color: #dbdbdb;
+    border-radius: 20px;
+}
+
+@media (max-width: 900px) {
+    .title {
+        font-size: 70px;
+        height: 100px;
+    }
+
+}
+
+
+@media (max-width: 660px) {
+    body {
+        /* margin: 1rem; */
+        padding: 0px;
+    }
+
+    main {
+        margin: 0px;
+        padding: 0px;
+    }
+
+    .main {
+        padding: 0px;
+    }
+
+    .create-container {
+
+        height: fit-content;
+        width: 280px;
+    }
+
+    header {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+        .logo {
+                font-size: 20px;
+        }
+
+        .nav-link {
+            font-size: 15px;
+            margin-left: 20px;
+        }
+
+   
+    .title {
+        font-size: 40px;
+        padding-left: 25px;
+    }
+
+    input {
+        font-size: 28px;
+      }
+
+      .pick-color {
+        margin-bottom: 50px;
+    }
+}
+
+/* For Smaller Screens */
+
+@media (max-width: 370px) {
+
+    .title {
+        font-size: min(40px, 15vw);
+    }
+    .create-container {
+        align-self: center;
+        width: 90%;
+        padding: 16px;
+    }
+
+    input[type="text"] {
+        white-space: wrap;
+        font-size: 8vw;
+    }
+}
+
+@media (max-width: 215px) {
+    .title {
+        margin-left: -10px;
+        min-width: 98%;
+    }
+
+    .calendar-card {
+        padding: 16px;
+        width: 70%;
+    }
+
+    header {
+        margin-left: 5px;
+    }
+    
+    .logo {
+        font-size: 15px;
+    }
+
+    .nav-link {
+        font-size: min(13px, 7vw);
+        margin-left: 10px;
+    }
+}

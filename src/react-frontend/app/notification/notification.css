@@ -1,0 +1,283 @@
+
+body {
+    margin: 0px;
+    padding: 0px;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    padding: 50px;
+    letter-spacing: .5px;
+}
+
+.back {
+    font-size: large;
+    /* top: 40px;
+    left: 60px;
+    position: fixed; */
+    margin-bottom: 30px;
+    width: 60px;
+}
+
+.back:hover {
+    color: rgb(202, 202, 202);
+    cursor: pointer;
+}
+
+header {
+    color: black;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-left: 10px;
+    margin-bottom: 30px;
+}
+
+    .logo {
+        font-size: x-large;
+        font-weight: bold;
+        text-decoration: none;
+        color: black;
+    }
+
+    nav {
+        display: flex;
+    }
+
+    .nav-link {
+        font-size: large;
+        margin-left: 20px;
+        text-decoration: none;
+        color: black;
+        transition: color 0.3s;
+    }
+
+    .nav-link:hover {
+        color: blue;
+    }
+
+    .active {
+        text-decoration: underline;
+    }
+
+
+.title {
+    border-radius: 30px;
+    background-color: blue;
+
+    height: 200px;
+    color: white;
+    font-size: 118px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    padding-left: 50px;
+}
+
+.filter-option {
+    cursor: pointer;
+    margin-right: 15px; 
+    /* padding-bottom: 3px;  */
+}
+
+.filter-option.active {
+    text-decoration: underline;
+}
+
+.filter-bar {
+    margin-left: 2rem;
+    margin-top: 10px; 
+}
+
+.notification-card-read {
+    display: flex;
+    flex-direction: column;
+    /* justify-content: space-between; */
+    /* align-items: center; */
+    height: 50px;
+    border-radius: 20px;
+    border: 1px solid black;
+    margin-bottom: 20px;
+    /* position: relative; */
+    background-color: white;
+    padding: 2rem;
+    flex-grow: 1;
+}
+
+.notification-card-unread {
+    display: flex;
+    flex-direction: column;
+    /* justify-content: ; */
+    /* align-items: center; */
+    height: 50px;
+    border-radius: 20px;
+    border: 1px solid black;
+    margin-bottom: 20px;
+    /* position: relative; */
+    background-color: lightgrey;
+    padding: 2rem;
+    flex-grow: 1;
+}
+
+.notification-gallery {
+    margin-top: 20px;
+    display: flex;
+    position: relative;
+    /* overflow-x: auto; */
+    /* white-space: nowrap; */
+
+    flex-direction: column;
+}
+
+.notif-text {
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+.notif-link {
+    color: blue;
+    text-decoration: none;
+    font-size: medium;
+}
+
+.notif-time {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    font-size: small;
+}
+
+@media (max-width: 900px) {
+    body {
+        /* margin: 1rem; */
+        padding: 0px;
+    }
+
+    main {
+        margin: 0px;
+        padding: 0px;
+    }
+
+    .main {
+        padding: 0px;
+    }
+
+    header {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+        .logo {
+                font-size: 20px;
+        }
+
+        .nav-link {
+            font-size: 15px;
+            margin-left: 20px;
+        }
+
+   
+    .title {
+        height: 100px;
+        font-size: 50px;
+        padding-left: 25px;
+    }
+
+    /* Sticky Header and Title */
+        /* header {
+            position: sticky;
+            z-index: 100;
+            background-color: white;
+            top: 15px;
+        } */
+
+
+    .calendar-gallery {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-y: auto;
+    }
+
+    .calendar-card {
+        max-width: 70vw;
+        height: 150px;
+    }
+
+    .calendar-number {
+        font-size: 20px;
+    }
+    .calendar-title {
+        font-size: 35px;
+    }
+
+    .redirect-arrow {
+        bottom: 20px;
+        right: 10px;
+        width: 60px;
+        height: 60px;
+    }
+
+    .add-icon {
+        max-width: 130px;
+    }
+}
+
+/* For Smaller Screens */
+
+@media (max-width: 330px) {
+
+    .title {
+        padding-right: 25px;
+    }
+    .calendar-card {
+        width: 90%;
+    }
+}
+
+@media (max-width: 250px) {
+
+    .title {
+        font-size: min(40px, 20vw);
+    }
+
+    .calendar-card {
+        padding: 16px;
+        width: 90%;
+    }
+
+    .calendar-title {
+        font-size: 12vw;
+    }
+
+    .redirect-arrow {
+        width: 20vw;
+        height: 15vw;
+    }
+}
+
+@media (max-width: 215px) {
+    .title {
+        margin-left: -10px;
+        min-width: 98%;
+    }
+
+    .calendar-card {
+        padding: 16px;
+        width: 70%;
+    }
+
+    header {
+        margin-left: 5px;
+    }
+    
+    .logo {
+        font-size: 15px;
+    }
+
+    .nav-link {
+        font-size: min(13px, 7vw);
+        margin-left: 10px;
+    }
+}
