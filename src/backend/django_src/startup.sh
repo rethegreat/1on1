@@ -10,7 +10,7 @@ python3 -m venv venv
 # 3. Activate the virtual environment
 source venv/bin/activate
 
-pip install django pillow djangorestframework djangorestframework-simplejwt django-environ django-cors-headers psycopg2
+pip install django pillow djangorestframework djangorestframework-simplejwt django-environ django-cors-headers
 
 # # 4. Install Django
 # python3 -m pip install Django
