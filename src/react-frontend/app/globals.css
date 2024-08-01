@@ -1,0 +1,36 @@
+* {
+  font-family: "Gothic A1", sans-serif;
+
+}
+
+html, body {
+  padding: 0;
+  margin: 0;
+}
+
+
+h1 {
+  font-family: "Gothic A1", sans-serif;
+  font-weight: 900;
+  font-style: normal;
+}
+
+h1.black {
+  font-family: "Roboto", sans-serif;
+  font-weight: 900;
+  font-style: normal;
+}
+
+p {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+
+  font-size: 2vw;
+}
+
+p.light {
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+}

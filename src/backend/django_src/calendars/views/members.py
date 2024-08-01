@@ -9,6 +9,10 @@ from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from accounts.models import Contact
+from ..signals import member_added_to_calendar, member_removed_from_cal, member_submit_reminder
+from django.contrib.auth import get_user_model
+
+UserModel = get_user_model()
 
 # Members
 # - User should be able to ...
@@ -60,7 +64,15 @@ class MemberListView(APIView):
         if serializer.is_valid():
             new_member = serializer.save(calendar=calendar)
             new_member.invite()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            try:
+                # Send signal for notification app
+                user = UserModel.objects.get(email=new_member.email)
+                link = f"https://1on1-frontend.vercel.app/{new_member.calendar.id}/availability/{new_member.member_hash}/"
+                member_added_to_calendar.send(sender=calendar.__class__, calendar=calendar, member=user, link=link)
+            finally:
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # EndPoint: /calendars/<int:calendar_id>/members/list/selection/
@@ -121,7 +133,15 @@ class MemberSelectionView(APIView):
         if serializer.is_valid():
             new_member = serializer.save(calendar=calendar)
             new_member.invite()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            try:
+                # Send signal for notification app
+                user = UserModel.objects.get(email=new_member.email)
+                link = f"https://1on1-frontend.vercel.app/{new_member.calendar.id}/availability/{new_member.member_hash}/"
+                member_added_to_calendar.send(sender=calendar.__class__, calendar=calendar, member=user, link=link)
+            finally:
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 # EndPoint: /calendars/<int:calendar_id>/members/<int:member_id>/
@@ -154,7 +174,12 @@ class MemberDetailView(APIView):
         except Member.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         member.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        try:
+            # Send signal for notification app
+            user = UserModel.objects.get(email=member.email)
+            member_removed_from_cal.send(sender=calendar.__class__, calendar=calendar, member=user)
+        finally:
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
     def patch(self, request, calendar_id, member_id):
         """Edit a member's details or remind them to submit their availability"""
@@ -174,7 +199,15 @@ class MemberDetailView(APIView):
         action = request.data.get('action', None)
         if action == 'remind':
             member.remind()  # Trigger reminder if requested
-            return Response({'message': 'Reminder sent'}, status=status.HTTP_200_OK)
+
+            # notif
+            try:
+            # Send signal for notification app
+                user = UserModel.objects.get(email=member.email)
+                link = f"https://1on1-frontend.vercel.app/calendars/{member.calendar.id}/availability/{member.member_hash}/"
+                member_submit_reminder.send(sender=calendar.__class__, calendar=calendar, member=user, link=link)
+            finally:
+                return Response({'message': 'Reminder sent'}, status=status.HTTP_200_OK)
         
         elif action == 'edit':
             # Update member fields as before

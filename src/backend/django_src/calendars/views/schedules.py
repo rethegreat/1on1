@@ -95,8 +95,8 @@ def _create_schedules(calendar: Calendar):
         
     high1_schedule = _create_another_schedule(base_schedule, owner_mapping['HIGH'], times_members, used)
     high2_schedule = _create_another_schedule(base_schedule, owner_mapping['HIGH'][::-1], times_members, used)
-    mid1_schedule = _create_another_schedule(base_schedule, owner_mapping['NO_PREF'], times_members, used)
-    mid2_schedule = _create_another_schedule(base_schedule, owner_mapping['NO_PREF'][::-1], times_members, used)
+    mid1_schedule = _create_another_schedule(base_schedule, owner_mapping['LOW'], times_members, used)
+    mid2_schedule = _create_another_schedule(base_schedule, owner_mapping['LOW'][::-1], times_members, used)
 
     return [base_schedule, high1_schedule, high2_schedule, mid1_schedule, mid2_schedule]
 
@@ -188,7 +188,6 @@ class ScheduleListView(APIView):
         # delete all schedules and events related to this calendar
         # Event.objects.filter()
 
-
         #starttime: member
             mapping = _create_schedules(calendar)
             if not mapping:
@@ -228,6 +227,7 @@ class ScheduleListView(APIView):
         # Construct custom paginated response
         response_data = {
             'count': paginator.count,
+            'finalized': calendar.finalized,
             'next': page_obj.next_page_number() if page_obj.has_next() else None,
             'previous': page_obj.previous_page_number() if page_obj.has_previous() else None,
             'results': results  # Include paginated data
@@ -391,6 +391,6 @@ def delete_event(event):
     Delete an event from the schedule.
     """
     event.delete()
-    return Response({'message': 'Event deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+    return Response({'message': 'Event deleted successfully'}, status=status.HTTP_200_OK)
 
 #  ========================================================

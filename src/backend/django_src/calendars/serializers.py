@@ -62,14 +62,12 @@ class MemberListSerializer(serializers.ModelSerializer):
         # add calendar to the validated data
         try:
             return super().create(validated_data)
-        except IntegrityError as e:
-            error_message = str(e)
-            raise ValidationError("Member already exists in the calendar.")
+        except IntegrityError:
+            raise ValidationError("Member with the same email already exists in the calendar.")
 
 
 # Availability
-# Availability is a list of all the time slots submitted by the calendar or each member
-
+# OwnerTimeSlot
 class OwnerTimeSlotSerializer(serializers.ModelSerializer):
     class Meta:
         model = OwnerTimeSlot
@@ -88,11 +86,6 @@ class OwnerTimeSlotSerializer(serializers.ModelSerializer):
             # If there's a conflict, raise a validation error with the same message
             raise ValidationError("Time slot conflicts with existing slot.")
 
-
-class MemberTimeSlotSerializer(serializers.Serializer):
-    time_slot_time = serializers.DateTimeField(required=True, validators=[validate_datetime_format])
-    preference = serializers.ChoiceField(choices=MemberTimeSlot.PREF_CHOICES)
-
 # Event
 # Show event.id as event_id, time_slot as when, and member as who
 class EventSerializer(serializers.ModelSerializer):
@@ -101,7 +94,8 @@ class EventSerializer(serializers.ModelSerializer):
     member_id = serializers.IntegerField(source='member.id')
     member_name = serializers.CharField(source='member.name')
     member_email = serializers.CharField(source='member.email')
+    pref_choice = serializers.CharField(source='time_slot.preference')
 
     class Meta:
         model = Event
-        fields = ['event_id', 'start_time', 'member_id', 'member_name', 'member_email']
+        fields = ['event_id', 'start_time', 'member_id', 'member_name', 'member_email', 'pref_choice']

@@ -24,7 +24,7 @@ class Member(models.Model):
     # 4) submitted: whether the member submitted their availability or not
     submitted = models.BooleanField(default=False)
     
-    member_hash = models.CharField(max_length=16, unique=True, blank=True)
+    member_hash = models.CharField(max_length=100, unique=True, blank=True)
 
     # No duplicate email within one calendar
     class Meta:
@@ -45,7 +45,7 @@ class Member(models.Model):
         Sends a reminder email to the given member to submit their availability.
         """
         subject = 'Reminder: Submit Your Availability'
-        unique_link = f"http://127.0.0.1:8000/calendars/{self.calendar.id}/availability/{self.member_hash}/"
+        unique_link = f"https://1on1-frontend.vercel.app/calendars/{self.calendar.id}/availability/{self.member_hash}/"
         message = (
             f"Dear {self.name},\n\n"
             f"This is a friendly reminder to submit your availability to the calendar {self.calendar.name}.\n\n"
@@ -56,12 +56,28 @@ class Member(models.Model):
         to_email = self.email
         send_mail(subject, message, from_email, [to_email])
         
+    def remind_update(self):
+        """
+        Sends a reminder email to the given member to submit their availability.
+        """
+        subject = 'Reminder: Submit Your Availability'
+        unique_link = f"https://1on1-frontend.vercel.app/calendars/{self.calendar.id}/availability/{self.member_hash}/"
+        message = (
+            f"Dear {self.name},\n\n"
+            f"New possible time slots has been added.\n This is a friendly reminder to update your availability to the calendar {self.calendar.name}.\n\n"
+            f"{unique_link}\n\n"
+            "Thank you.\n"
+        )
+        from_email = settings.EMAIL_HOST_USER
+        to_email = self.email
+        send_mail(subject, message, from_email, [to_email])
+        
     def invite(self):
         """
-        Sends a inivtation email to the given member to submit their availability.
+        Sends an invitation email to the given member to submit their availability.
         """
         subject = 'Invitation to calendar: Submit Your Availability'
-        unique_link = f"http://127.0.0.1:8000/calendars/{self.calendar.id}/availability/{self.member_hash}/"
+        unique_link = f"https://1on1-frontend.vercel.app/calendars/{self.calendar.id}/availability/{self.member_hash}/"
         message = (
             f"Dear {self.name},\n\n"
             f"You haven been invited to submit your availability to the calendar {self.calendar.name}.\n\n"

@@ -4,8 +4,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from .serializers import ProfileUserSerializer
+from .serializers import ProfileUserSerializer, LoginUserSerializer
 
 user_model = get_user_model()
 
@@ -26,9 +25,12 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        username = request.data.get('username')
-        password = request.data.get('password')
-        user = authenticate(request, username=username, password=password)
+        serializer = LoginUserSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=400)
+        username = serializer.validated_data.get("username")
+        password = serializer.validated_data.get("password")
+        user = authenticate(username=username, password=password)
         if user is not None:
             # login(request, user)
             token, _ = Token.objects.get_or_create(user=user)

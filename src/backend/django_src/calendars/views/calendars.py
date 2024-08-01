@@ -10,6 +10,10 @@ from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from django.utils import timezone
+from ..signals import member_submit_reminder, member_cal_finalized
+from django.contrib.auth import get_user_model
+
+UserModel = get_user_model()
 
 # Calendars
 # - User should be able to ...
@@ -29,7 +33,7 @@ class CalendarList(APIView):
         for calendar in calendars:
             is_calendar_finalized(calendar)
         return Response(serializer.data)
-    
+
     def post(self, request):
         """Create a new calendar"""
         data = request.data.copy()
@@ -43,7 +47,8 @@ class CalendarList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
 # EndPoint: /calendars/<int:calendar_id>/
 class CalendarDetail(APIView):
     permission_classes = [IsAuthenticated, IsCalendarOwner]
@@ -66,7 +71,7 @@ class CalendarDetail(APIView):
         if is_calendar_finalized_manually(calendar):
             return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
 
-        # If automaitcally finalized, you can modify the deadline to later date and finalized status
+        # If automatically finalized, you can modify the deadline to later date and finalized status
         if is_calendar_finalized(calendar):
             if 'deadline' in request.data:
                 calendar.deadline = request.data['deadline']
@@ -94,7 +99,8 @@ class CalendarDetail(APIView):
 
         calendar.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
+
 # EndPoint: /calendars/<int:calendar_id>/remindAll
 class CalendarRemind(APIView):
     permission_classes = [IsAuthenticated, IsCalendarOwner]
@@ -119,4 +125,50 @@ class CalendarRemind(APIView):
         for member in members:
             if not member.submitted:
                 member.remind()
+
+                # notif
+                try:
+                # Send signal for notification app
+                    user = UserModel.objects.get(email=member.email)
+                    link = f"https://1on1-frontend.vercel.app/calendars/{member.calendar.id}/availability/{member.member_hash}/"
+                    member_submit_reminder.send(sender=calendar.__class__, calendar=calendar, member=user, link=link)
+                except:
+                    pass
+
+        return Response({'detail': 'Emails sent successfully'}, status=status.HTTP_200_OK)
+    
+    
+# EndPoint: /calendars/<int:calendar_id>/remindAdd
+class CalendarRemindAdd(APIView):
+    permission_classes = [IsAuthenticated, IsCalendarOwner]
+    
+    def post(self, request, calendar_id):
+        """Remind all members of the calendar to submit their availability"""
+        calendar = get_object_or_404(Calendar, id=calendar_id)
+        self.check_object_permissions(request, calendar)
+
+        # Check additional permission
+        if is_calendar_finalized(calendar):
+            return Response({"detail": "Calendar is finalized"}, status=status.HTTP_403_FORBIDDEN)
+
+        members = Member.objects.filter(calendar=calendar)
+        owner_name = request.user.first_name
+
+        # If `pending_only` option is set, only remind those who haven't submitted!
+        pending_only = request.data.get('pending_only')
+        if pending_only:
+            members = members.filter(submitted=False)
+        
+        for member in members:
+            member.remind_update()
+
+            # notif
+            try:
+            # Send signal for notification app
+                user = UserModel.objects.get(email=member.email)
+                link = f"https://1on1-frontend.vercel.app/{member.calendar.id}/availability/{member.member_hash}/"
+                member_submit_reminder.send(sender=calendar.__class__, calendar=calendar, member=user, link=link)
+            except:
+                pass
+
         return Response({'detail': 'Emails sent successfully'}, status=status.HTTP_200_OK)
